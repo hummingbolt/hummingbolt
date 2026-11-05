@@ -1,16 +1,10 @@
 <title>Hummingbolt — Long Exposure</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Crect width='1000' height='1000' fill='%23E2E3DE'/%3E%3Cg transform='translate(42 815) scale(1.06)'%3E%3Cpath d='M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z' fill='%23B5B8AF' transform='translate(-50 -70)'/%3E%3Cpath d='M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z' fill='%232B2E2A'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Fragment+Mono&display=swap">
 <style>
 /* Layout: one fitted wordmark that behaves like a long-exposure photo of a hummingbird; editorial index rows below;
    the page runs from day (fog) to evening (dusk). Colour lives only inside the letters, as a gorget glint. */
 :root{
-  --fog:#E2E3DE; --mist:#D5D7D0; --graphite:#2B2E2A; --lichen:#585C55; --haze:#B5B8AF; --rule:#BEC1B8; --line-btn:#9C9F96;
-  --rose:#A3405F; --copper:#9E5C2E; --bronze:#56653F;
+  --fog:#E2E3DE; --mist:#D5D7D0; --graphite:#2B2E2A; --lichen:#585C55; --haze:#B5B8AF; --rule:#BEC1B8; --line-btn:#8A8D84;
+  --rose:#A3405F; --copper:#9E5C2E; --bronze:#56653F; --flash:#C0587A;
   --dusk-top:#272A24; --dusk:#22251F; --dusk-low:#1E201B;
   --dusk-fog:#D8D9D2; --dusk-lichen:#9EA298; --dusk-haze:#41453D; --dusk-rule:#3A3E36; --dusk-raise:#30342D;
   --rose-light:#C98AA0; --bronze-light:#8E9E6D;
@@ -37,6 +31,7 @@ h1,h2,h3,p,ul{margin:0}
 .sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 .skip{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:-120px;z-index:60;background:var(--graphite);color:var(--fog);font:14px/1 var(--f-mono);padding:15px 18px;border-radius:999px;text-decoration:none}
 .skip:focus{top:calc(env(safe-area-inset-top,0px) + 10px)}
+#main:focus{outline:none}
 
 .wrap{box-sizing:border-box;width:100%;max-width:1440px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 @media (min-width:600px){.wrap{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
@@ -68,6 +63,8 @@ h1,h2,h3,p,ul{margin:0}
 .nav .wide{display:none}
 @media (min-width:760px){.nav .wide{display:list-item}.nav ul{gap:8px}}
 .nav li:last-child a{padding-right:0}
+/* Very narrow phones (320-374px): the logo and both links must fit without a sideways scroll. */
+@media (max-width:374px){.hdr__in{gap:8px}.mark{height:20px}.nav ul{gap:0}.nav a{padding-inline:7px;font-size:12px}}
 
 /* Hero */
 .hero{position:relative;overflow:hidden;overflow:clip}
@@ -89,7 +86,7 @@ h1,h2,h3,p,ul{margin:0}
 
 /* The fitted wordmark (shared by the hero and "Say hello.") */
 .wm{--ink:var(--graphite);--echo:var(--haze);display:block;position:relative;isolation:isolate;white-space:nowrap;color:var(--ink);font-weight:300;font-stretch:112%;letter-spacing:-.035em;line-height:.86;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;transform:translate3d(calc(var(--lx,0) * 1px),0,0)}
-.wm--hero{font-size:calc((100vw - 32px) / 4.33);line-height:.96;touch-action:pan-y}
+.wm--hero{font-size:calc((100vw - 32px) / 4.33);line-height:1;touch-action:pan-y}
 .wm--hero .wl{display:block}
 .wm--hero .wl2{text-align:right}
 @media (min-width:600px){.wm--hero{font-size:calc((100vw - 64px) / 6.02);line-height:.86}.wm--hero .wl{display:inline}}
@@ -100,14 +97,21 @@ h1,h2,h3,p,ul{margin:0}
 .l::after{opacity:.55;transform:translate3d(calc(var(--bx,0) * 1em),calc((var(--y,0) + var(--by,0)) * 1em),0) skewX(calc(var(--k,0) * 1deg))}
 .m2{--ax:-.05;--ay:-.07}
 .kin .wm .g,.kin .wm .l::before,.kin .wm .l::after{will-change:transform}
+/* FULL tier only: echoes are soft, like wings in a slow shutter. The logo's own echo on the second m stays crisp. */
+:root[data-tier="2"].kin .wm .l::before{filter:blur(.009em)}
+:root[data-tier="2"].kin .wm .l::after{filter:blur(.02em)}
+:root[data-tier="2"].kin .wm .m2::before{filter:none}
+:root[data-tier="2"].kin .be::before{filter:blur(.012em)}
+:root[data-tier="2"].kin .be::after{filter:blur(.024em)}
 @supports ((-webkit-background-clip:text) or (background-clip:text)){
   .sheen .g::after{content:attr(data-ch);position:absolute;left:0;right:0;top:-.22em;bottom:-.22em;padding-top:.22em;box-sizing:border-box;text-align:center;color:transparent;pointer-events:none;
-    --o:calc(var(--sp,0) * 1.5em);
-    background-image:repeating-linear-gradient(calc(var(--sa,90) * 1deg),var(--graphite) var(--o),var(--graphite) calc(var(--o) + .32em),var(--bronze) calc(var(--o) + .56em),var(--copper) calc(var(--o) + .8em),var(--rose) calc(var(--o) + 1.04em),var(--graphite) calc(var(--o) + 1.5em));
+    --o:calc(var(--sp,0) * 2.4em);
+    background-image:repeating-linear-gradient(calc(var(--sa,90) * 1deg),var(--graphite) var(--o),var(--graphite) calc(var(--o) + 1em),var(--bronze) calc(var(--o) + 1.22em),var(--copper) calc(var(--o) + 1.42em),var(--rose) calc(var(--o) + 1.6em),var(--flash) calc(var(--o) + 1.7em),var(--rose) calc(var(--o) + 1.82em),var(--graphite) calc(var(--o) + 2.1em),var(--graphite) calc(var(--o) + 2.4em));
     -webkit-background-clip:text;background-clip:text;opacity:var(--so,0)}
   .kin .sheen .g::after{will-change:opacity}
-  .still .sheen .mm .g::after{background-image:linear-gradient(104deg,var(--bronze) -10%,var(--copper) 32%,var(--rose) 72%,#7E3049 110%);opacity:.94}
-  @media (prefers-reduced-motion:reduce){.sheen .mm .g::after{background-image:linear-gradient(104deg,var(--bronze) -10%,var(--copper) 32%,var(--rose) 72%,#7E3049 110%);opacity:.94}}
+  .still .sheen .mm .g::after{background-image:linear-gradient(90deg,var(--bronze) 0%,var(--copper) 26%,var(--rose) 62%,#86344F 100%);background-size:200% 100%;opacity:.9}
+  .still .sheen .m2 .g::after{background-position:100% 0}
+  @media (prefers-reduced-motion:reduce){.sheen .mm .g::after{background-image:linear-gradient(90deg,var(--bronze) 0%,var(--copper) 26%,var(--rose) 62%,#86344F 100%);background-size:200% 100%;opacity:.9}.sheen .m2 .g::after{background-position:100% 0}}
 }
 .still .hint{display:none}
 @media (prefers-reduced-motion:reduce){.hint{display:none}}
@@ -126,7 +130,6 @@ h1,h2,h3,p,ul{margin:0}
 .make{padding-block:clamp(64px,9vw,132px) clamp(72px,9vw,128px);overflow:hidden;overflow:clip}
 .rows{list-style:none;padding:0;margin-top:22px;border-top:1px solid var(--rule)}
 .row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px 32px;padding-block:clamp(16px,2.2vw,30px) clamp(20px,2.4vw,32px);border-bottom:1px solid var(--rule)}
-@media (min-width:760px){.row{grid-template-columns:minmax(0,1fr) minmax(0,21rem);align-items:last baseline}}
 .big{position:relative;font-size:clamp(64px,16vw,220px);line-height:.9;letter-spacing:-.03em;font-weight:620;font-variation-settings:"wdth" var(--w,92),"wght" var(--g,620);color:var(--graphite);transform:translate3d(calc(var(--dx,0) * 1px),0,0);min-width:0}
 @supports (color:color-mix(in srgb,red 50%,blue)){.big{color:color-mix(in srgb,var(--graphite) calc(var(--fo,1) * 100%),var(--lichen))}}
 .big .bw{position:relative;z-index:1}
@@ -134,6 +137,7 @@ h1,h2,h3,p,ul{margin:0}
 .be::before,.be::after{content:attr(data-ch);position:absolute;left:0;top:0;white-space:nowrap;color:var(--haze);transform:translate3d(calc(var(--ax,0) * 1em),calc(var(--ay,0) * 1em),0)}
 .be::after{opacity:.55;transform:translate3d(calc(var(--bx,0) * 1em),calc(var(--by,0) * 1em),0)}
 .row p{max-width:30ch;font-size:inherit}
+@media (min-width:900px){.row{grid-template-columns:minmax(0,1fr) minmax(0,18rem);align-items:last baseline}.big{font-size:min(13vw,200px)}}
 
 /* Toppleton: evening begins */
 .dusk{color:var(--dusk-fog)}
@@ -149,6 +153,7 @@ h1,h2,h3,p,ul{margin:0}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--bronze-light);flex:none}
 .tower{order:-1;display:flex;flex-direction:column;align-items:center;font-size:clamp(40px,6.4vw,88px);line-height:.79;font-weight:700;color:var(--dusk-fog);-webkit-user-select:none;user-select:none;touch-action:pan-y;position:relative;padding-block:4px;-webkit-tap-highlight-color:transparent}
 @media (min-width:860px){.tower{order:0}}
+.tower::after{content:"";display:block;width:2.6em;height:1px;margin-top:.14em;background:var(--dusk-rule)}
 .tl{display:block;font-variation-settings:"wdth" var(--tw,100),"wght" var(--tg,700);transform-origin:50% 90%;transform:translate3d(calc(var(--tx,0) * 1em),calc(var(--ty,0) * 1em),0) rotate(calc(var(--tr,0) * 1deg))}
 .kin .tl{will-change:transform}
 
@@ -191,7 +196,7 @@ h1,h2,h3,p,ul{margin:0}
 .email{min-width:0;font-size:clamp(26px,4.6vw,64px);line-height:1.15;letter-spacing:-.02em;font-weight:360;font-variation-settings:"wdth" 100,"wght" 360;color:var(--dusk-fog);text-decoration:none;overflow-wrap:anywhere;padding-bottom:6px;
   background:linear-gradient(var(--rose-light),var(--rose-light)) 0 100%/0 2px no-repeat,linear-gradient(var(--dusk-rule),var(--dusk-rule)) 0 100%/100% 1px no-repeat;transition:background-size .5s cubic-bezier(.2,.7,.2,1)}
 .email:hover,.email:focus-visible{background-size:100% 2px,100% 1px}
-.copy{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--dusk-haze);background:transparent;color:var(--dusk-fog);font:13px/1 var(--f-mono);letter-spacing:.04em;cursor:pointer;transition:background-color .25s,border-color .25s}
+.copy{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #686C63;background:transparent;color:var(--dusk-fog);font:13px/1 var(--f-mono);letter-spacing:.04em;cursor:pointer;transition:background-color .25s,border-color .25s}
 .copy:hover{background:var(--dusk-raise);border-color:var(--dusk-lichen)}
 
 /* Footer: the exposure closes into the logo */
@@ -207,13 +212,21 @@ h1,h2,h3,p,ul{margin:0}
 .ftr__links a:hover{color:var(--dusk-fog);text-decoration:underline;text-decoration-color:var(--rose-light);text-underline-offset:4px}
 .ftr__legal{display:flex;flex-wrap:wrap;gap:0 28px}
 </style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Crect width='1000' height='1000' fill='%23E2E3DE'/%3E%3Cg transform='translate(42 815) scale(1.06)'%3E%3Cpath d='M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z' fill='%23B5B8AF' transform='translate(-50 -70)'/%3E%3Cpath d='M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z' fill='%232B2E2A'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Web fonts load without blocking the first paint (a slow or blocked font CDN must never leave the page blank). The script switches media to "all". -->
+<link id="fcss" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Fragment+Mono&display=swap" media="print">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Fragment+Mono&display=swap"></noscript>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><path id="gl-b" d="M353 12Q297 12 252-9Q207-31 177-76H170L160 0H69V-723H181V-461H187Q205-487 231-504Q257-521 290-530Q323-538 360-538Q426-538 476-509Q525-479 553-419Q581-359 581-264Q581-169 553-108Q526-47 475-17Q424 12 353 12ZM324-84Q371-84 402-102Q434-120 450-158Q465-195 465-254V-271Q465-330 450-368Q435-405 403-424Q372-442 323-442Q290-442 264-432Q237-421 219-400Q200-379 190-346Q180-313 180-269V-256Q180-200 196-162Q212-124 244-104Q276-84 324-84Z"/><path id="gl-g" d="M165 186Q126 186 93 172Q59 158 39 129Q19 101 19 60Q19 17 44-11Q70-39 105-53Q79-66 65-88Q51-111 51-139Q51-176 78-201Q105-226 144-233Q107-256 87-290Q67-324 67-366Q67-421 94-459Q121-497 175-518Q230-538 309-538Q342-538 371-534Q400-530 425-522Q464-540 482-566Q501-592 504-614H613Q612-580 598-554Q584-527 559-509Q534-492 498-484Q524-462 538-432Q551-402 551-366Q551-313 525-275Q500-236 448-215Q397-194 320-194H220Q195-194 180-184Q165-174 165-154Q165-137 180-126Q194-114 220-114H469Q532-114 571-74Q609-34 609 27Q609 73 586 109Q562 145 522 165Q481 186 427 186ZM196 105H425Q445 105 461 97Q477 89 487 75Q496 60 496 43Q496 13 478-3Q460-19 433-19H198Q170-19 151-2Q132 15 132 43Q132 70 150 87Q168 105 196 105ZM309-274Q373-274 406-298Q439-321 439-366Q439-411 406-435Q373-458 309-458Q245-458 212-435Q179-411 179-366Q179-337 194-316Q208-295 237-285Q266-274 309-274Z"/><path id="gl-h" d="M69 0V-723H181V-459H188Q209-486 237-504Q264-521 297-530Q330-538 366-538Q423-538 464-519Q506-500 529-459Q551-418 551-349V0H439V-331Q439-363 431-384Q423-406 408-418Q393-431 371-436Q350-441 325-441Q286-441 253-424Q221-406 201-375Q181-343 181-300V0Z"/><path id="gl-i" d="M69-616V-723H181V-616ZM69 0V-526H181V0Z"/><path id="gl-l" d="M69 0V-723H181V0Z"/><path id="gl-m" d="M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z"/><path id="gl-n" d="M69 0V-526H160L169-447H177Q199-478 229-499Q258-519 293-528Q328-538 366-538Q423-538 464-519Q506-500 529-459Q551-418 551-349V0H439V-331Q439-363 431-384Q423-406 408-418Q393-431 371-436Q350-441 325-441Q286-441 253-424Q221-406 201-374Q181-343 181-300V0Z"/><path id="gl-o" d="M317 12Q228 12 167-18Q106-48 75-109Q44-170 44-263Q44-357 75-418Q106-478 167-508Q228-538 317-538Q406-538 466-508Q527-478 558-418Q590-357 590-263Q590-170 558-109Q527-48 466-18Q406 12 317 12ZM317-79Q369-79 404-98Q439-117 456-156Q474-195 474-254V-272Q474-332 456-371Q439-409 404-428Q369-447 317-447Q265-447 230-428Q195-409 177-371Q160-332 160-272V-254Q160-195 177-156Q195-117 230-98Q265-79 317-79Z"/><path id="gl-t" d="M222 12Q175 12 146-5Q118-22 106-52Q94-82 94-122V-435H17V-526H96L118-675H205V-526H315V-435H205V-135Q205-107 216-93Q227-79 258-79H315V-4Q304 0 287 4Q271 8 254 10Q237 12 222 12Z"/><path id="gl-u" d="M250 12Q164 12 114-32Q64-75 64-177V-526H176V-196Q176-163 184-142Q192-121 207-108Q223-96 244-90Q265-85 290-85Q329-85 362-103Q394-120 414-152Q434-184 434-226V-526H546V0H455L446-79H439Q416-48 387-28Q358-8 323 2Q288 12 250 12Z"/></defs></svg>
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="hdr" id="hdr">
   <div class="wrap hdr__in">
-    <a class="logo" href="#top" aria-label="Hummingbolt, back to top"><svg class="mark" viewBox="-80 -755 6250 971" role="img" aria-label="Hummingbolt"><use class="mark-echo" href="#gl-m" x="2031" y="-70"/><g class="mark-ink"><use href="#gl-h" x="0"/><use href="#gl-u" x="586"/><use href="#gl-m" x="1171"/><use href="#gl-m" x="2081"/><use href="#gl-i" x="2991"/><use href="#gl-n" x="3210"/><use href="#gl-g" x="3796"/><use href="#gl-b" x="4387"/><use href="#gl-o" x="4982"/><use href="#gl-l" x="5585"/><use href="#gl-t" x="5804"/></g></svg></a>
+    <a class="logo" href="#top" aria-label="Hummingbolt, back to top"><svg class="mark" viewBox="40 -745 6140 945" role="img" aria-label="Hummingbolt"><use class="mark-echo" href="#gl-m" x="2031" y="-70"/><g class="mark-ink"><use href="#gl-h" x="0"/><use href="#gl-u" x="586"/><use href="#gl-m" x="1171"/><use href="#gl-m" x="2081"/><use href="#gl-i" x="2991"/><use href="#gl-n" x="3210"/><use href="#gl-g" x="3796"/><use href="#gl-b" x="4387"/><use href="#gl-o" x="4982"/><use href="#gl-l" x="5585"/><use href="#gl-t" x="5804"/></g></svg></a>
     <nav class="nav" aria-label="Primary">
       <ul>
         <li class="wide"><a href="#make"><span>What we make</span></a></li>
@@ -233,7 +246,7 @@ h1,h2,h3,p,ul{margin:0}
       <h1 class="wm-h1" id="hero-title"><span class="sr">Hummingbolt, a software studio</span><span class="wm wm--hero sheen" id="wm" aria-hidden="true"><span class="wl wl1"><span class="l" data-ch="h"><span class="g" data-ch="h">h</span></span><span class="l" data-ch="u"><span class="g" data-ch="u">u</span></span><span class="l mm" data-ch="m"><span class="g" data-ch="m">m</span></span><span class="l mm m2" data-ch="m"><span class="g" data-ch="m">m</span></span><span class="l" data-ch="i"><span class="g" data-ch="i">i</span></span><span class="l" data-ch="n"><span class="g" data-ch="n">n</span></span><span class="l" data-ch="g"><span class="g" data-ch="g">g</span></span></span><span class="wl wl2"><span class="l" data-ch="b"><span class="g" data-ch="b">b</span></span><span class="l" data-ch="o"><span class="g" data-ch="o">o</span></span><span class="l" data-ch="l"><span class="g" data-ch="l">l</span></span><span class="l" data-ch="t"><span class="g" data-ch="t">t</span></span></span></span></h1>
       <p class="lead">We make mobile and web apps, games, and AI.</p>
       <div class="ctas">
-        <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 3h7v7M11 3 3 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="sr"> (opens in a new tab)</span><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 3h7v7M11 3 3 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
         <a class="btn btn--line" href="#contact">Say hello</a>
       </div>
     </div>
@@ -244,7 +257,7 @@ h1,h2,h3,p,ul{margin:0}
       <h2 class="eyebrow" id="make-h">What we make</h2>
       <ul class="rows">
         <li class="row"><h3 class="big"><span class="bw">Apps</span><span class="be" aria-hidden="true" data-ch="Apps"></span></h3><p>Mobile and web apps. Clear, quick and easy to use.</p></li>
-        <li class="row"><h3 class="big"><span class="bw">Games</span><span class="be" aria-hidden="true" data-ch="Games"></span></h3><p>Games for all ages. Our first is Toppleton.</p></li>
+        <li class="row"><h3 class="big"><span class="bw">Games</span><span class="be" aria-hidden="true" data-ch="Games"></span></h3><p>Our first is Toppleton, a stacking game for all ages.</p></li>
         <li class="row"><h3 class="big"><span class="bw">AI</span><span class="be" aria-hidden="true" data-ch="AI"></span></h3><p>AI applications, models and agents.</p></li>
       </ul>
     </div>
@@ -258,7 +271,7 @@ h1,h2,h3,p,ul{margin:0}
         <p>A stacking game for all ages, children included.</p>
         <p class="soft">Free to play on the web. Versions for phones and tablets are coming later.</p>
         <div class="play">
-          <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 3h7v7M11 3 3 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+          <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="sr"> (opens in a new tab)</span><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 3h7v7M11 3 3 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
           <span class="url"><span class="dot" aria-hidden="true"></span>play.toppleton.app</span>
         </div>
       </div>
@@ -269,7 +282,7 @@ h1,h2,h3,p,ul{margin:0}
   <section class="work dusk" id="studio" aria-labelledby="work-h">
     <div class="wrap">
       <h2 class="eyebrow" id="work-h">How we work</h2>
-      <p class="statement" id="statement">We are a small studio. We make a few things, and we make them with care. We keep them light, quick and steady. Then we keep making them better.</p>
+      <p class="statement" id="statement">We are a small studio. We work on a few things at a time, and we make them with care. We keep them light, quick and steady. Then we keep making them better.</p>
       <ul class="traits">
         <li class="trait t-precise"><h3>Precise</h3><p>Small details, done right.</p></li>
         <li class="trait t-quick"><h3><span class="tw">Quick</span><span class="tt" aria-hidden="true" data-ch="Quick"></span></h3><p>Short loops. Build, test, improve.</p></li>
@@ -285,7 +298,7 @@ h1,h2,h3,p,ul{margin:0}
         <p>Questions, ideas or feedback on Toppleton. Write to us.</p>
         <div class="mail">
           <a class="email" id="email" href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a>
-          <button class="copy" id="copy-email" type="button">Copy email</button>
+          <button class="copy" id="copy-email" type="button" hidden>Copy email</button>
           <span class="sr" id="copy-status" aria-live="polite"></span>
         </div>
       </div>
@@ -295,7 +308,7 @@ h1,h2,h3,p,ul{margin:0}
 
 <footer class="ftr dusk" id="ftr">
   <div class="wrap">
-    <svg class="fmark" viewBox="-80 -755 6250 971" role="img" aria-label="Hummingbolt"><g class="fmark-echo"><use href="#gl-h" x="0" style="--dx:38;--dy:16"/><use href="#gl-u" x="586" style="--dx:70;--dy:16"/><use href="#gl-m" x="1171" style="--dx:80;--dy:-24"/><use href="#gl-m" x="2081" style="--dx:64;--dy:-56"/><use href="#gl-i" x="2991" style="--dx:28;--dy:-44"/><use href="#gl-n" x="3210" style="--dx:-17;--dy:-1"/><use href="#gl-g" x="3796" style="--dx:-57;--dy:22"/><use href="#gl-b" x="4387" style="--dx:-78;--dy:-1"/><use href="#gl-o" x="4982" style="--dx:-75;--dy:-44"/><use href="#gl-l" x="5585" style="--dx:-48;--dy:-56"/><use href="#gl-t" x="5804" style="--dx:-6;--dy:-24"/></g><use class="mark-echo" href="#gl-m" x="2031" y="-70"/><g class="mark-ink"><use href="#gl-h" x="0"/><use href="#gl-u" x="586"/><use href="#gl-m" x="1171"/><use href="#gl-m" x="2081"/><use href="#gl-i" x="2991"/><use href="#gl-n" x="3210"/><use href="#gl-g" x="3796"/><use href="#gl-b" x="4387"/><use href="#gl-o" x="4982"/><use href="#gl-l" x="5585"/><use href="#gl-t" x="5804"/></g></svg>
+    <svg class="fmark" viewBox="40 -745 6140 945" role="img" aria-label="Hummingbolt"><g class="fmark-echo"><use href="#gl-h" x="0" style="--dx:38;--dy:16"/><use href="#gl-u" x="586" style="--dx:70;--dy:16"/><use href="#gl-m" x="1171" style="--dx:80;--dy:-24"/><use href="#gl-m" x="2081" style="--dx:64;--dy:-56"/><use href="#gl-i" x="2991" style="--dx:28;--dy:-44"/><use href="#gl-n" x="3210" style="--dx:-17;--dy:-1"/><use href="#gl-g" x="3796" style="--dx:-57;--dy:22"/><use href="#gl-b" x="4387" style="--dx:-78;--dy:-1"/><use href="#gl-o" x="4982" style="--dx:-75;--dy:-44"/><use href="#gl-l" x="5585" style="--dx:-48;--dy:-56"/><use href="#gl-t" x="5804" style="--dx:-6;--dy:-24"/></g><use class="mark-echo" href="#gl-m" x="2031" y="-70"/><g class="mark-ink"><use href="#gl-h" x="0"/><use href="#gl-u" x="586"/><use href="#gl-m" x="1171"/><use href="#gl-m" x="2081"/><use href="#gl-i" x="2991"/><use href="#gl-n" x="3210"/><use href="#gl-g" x="3796"/><use href="#gl-b" x="4387"/><use href="#gl-o" x="4982"/><use href="#gl-l" x="5585"/><use href="#gl-t" x="5804"/></g></svg>
     <div class="ftr__row">
       <div class="ftr__legal">
         <p>© 2026 Hummingbolt LLC</p>
@@ -319,6 +332,20 @@ const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
 const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const TAU = M.PI * 2, DEG = 180 / M.PI, NONE = -2147483647, now = () => performance.now();
 const HASH = location.hash;
+
+// Web fonts: the stylesheet is linked with media="print" so it never blocks the first paint. Switch it on here.
+// fontsIn settles when the faces the wordmark is measured with are loaded (or failed); boot caps the wait at 1.5 s.
+const fontsIn = new Promise(res => {
+  const l = D.getElementById('fcss');
+  if (!l) { res(); return; }
+  const on = () => { l.media = 'all'; res(); };
+  if (l.sheet) on();
+  else { l.addEventListener('load', on, { once: true }); l.addEventListener('error', () => res(), { once: true }); }
+}).then(() => {
+  const F = D.fonts;
+  if (!F || !F.load) return 0;
+  return Promise.all([F.load('300 100px Archivo', 'hummingbolt'), F.load('13px "Fragment Mono"', 'Move')]).then(() => F.ready, () => F.ready);
+}).catch(() => 0);
 const REDUCED = mq('(prefers-reduced-motion: reduce)');
 const FINE = mq('(hover: hover) and (pointer: fine)');
 const SMALL = mq('(max-width: 700px)');
@@ -344,7 +371,8 @@ function wr(el, C, i, name, val, mul) {
 (function ui() {
   const btn = D.getElementById('copy-email'), mail = D.getElementById('email'), st = D.getElementById('copy-status');
   if (!btn || !mail) return;
-  if (!NV.clipboard || !NV.clipboard.writeText) { btn.hidden = true; return; }
+  if (!NV.clipboard || !NV.clipboard.writeText) return; // the button stays hidden
+  btn.hidden = false;
   let tm = 0;
   const say = (label, msg) => {
     btn.textContent = label; st.textContent = msg; clearTimeout(tm);
@@ -375,8 +403,8 @@ if (!tier) staticHeader();
 // ---------- Core: ticker, visibility, watchdog ----------
 const actors = [];
 let ready = false, raf = 0, last = 0, fresh = true, sy = scrollY, psy = sy, vy = 0, vh = innerHeight, vw = innerWidth;
-const fbuf = new Float32Array(60);
-let fi = 0, fc = 0;
+const fbuf = new Float32Array(60), fsrt = new Float32Array(60);
+let fi = 0, fbad = 0, fwarm = true;
 const io = ('IntersectionObserver' in W) ? new IntersectionObserver(es => {
   for (const e of es) {
     const a = e.target.__actor; if (!a) continue;
@@ -420,15 +448,21 @@ function loop(t) {
   dog(dt);
   if (any && tier) raf = requestAnimationFrame(loop);
 }
-// Watchdog: rolling mean of 60 active frames. FULL drops to LITE above 22 ms.
-// LITE drops to STATIC above 36 ms, so a 30 fps low-power display is not mistaken for jank.
+// Watchdog over windows of 60 active frames (the first window, during boot, is skipped).
+// FULL drops to LITE when the mean is above 22 ms. LITE drops to STATIC only when the median is above
+// 36 ms in two windows running, so a 30 fps low-power or throttled display is not mistaken for jank.
 function dog(dt) {
-  fbuf[fi] = dt; fi = (fi + 1) % 60;
-  if (fc < 60) { fc++; return; }
+  fbuf[fi++] = dt;
+  if (fi < 60) return;
+  fi = 0;
+  if (fwarm) { fwarm = false; return; }
   let m = 0; for (let i = 0; i < 60; i++) m += fbuf[i];
   m /= 60;
-  if (tier === 2 && m > 22) { setTier(1); fc = 0; }
-  else if (tier === 1 && m > 36) { setTier(0); fc = 0; }
+  fsrt.set(fbuf); fsrt.sort();
+  const med = (fsrt[29] + fsrt[30]) / 2;
+  if (tier === 2 && m > 22) { setTier(1); fbad = 0; }
+  else if (tier === 1 && med > 36) { if (++fbad >= 2) setTier(0); }
+  else fbad = 0;
 }
 function setTier(n) {
   tier = n; R.dataset.tier = n;
@@ -440,7 +474,7 @@ function setTier(n) {
 }
 let mraf = 0;
 function remeasure() {
-  if (mraf || !tier) return;
+  if (mraf || !tier || !ready) return; // nothing is measured before boot: an early resize must not lock slots to a fallback font
   mraf = requestAnimationFrame(() => {
     mraf = 0; vh = innerHeight; vw = innerWidth; sy = scrollY;
     for (const a of actors) { if (a.dead || !a.measure) continue; try { a.measure(); } catch (e) { kill(a, e); } }
@@ -570,7 +604,7 @@ function flutter(root, o) {
     if (quiet && t - lastDraw < 41) return true; // idle drift runs at 24 fps
     const gap = t - lastDraw, sd = (lastDraw && gap < 100) ? M.min(gap / 1000, 0.05) : s;
     lastDraw = t;
-    if (o.lift) { lift = clamp(sy / (hTop + hH), 0, 1); liftX = -lift * (FINE ? 0.03 : 0.015) * vw; }
+    if (o.lift) { lift = clamp(sy / (hTop + hH), 0, 1); liftX = -lift * (FINE ? 0.03 : 0.015) * M.min(vw, 1440); }
     if (apOn) { if (apPos(t)) infT = 1; else { apOn = false; infT = 0; } }
     else if (ptr) { local(); if (ptr === 3 && t >= rel) { infT = 0; ptr = 0; } }
     if (snap) { bx = tx; by = ty; bvx = bvy = 0; snap = false; }
@@ -587,7 +621,7 @@ function flutter(root, o) {
     // Light source for the gorget sheen
     let Lx = 0, Ly = 0, Sg = 0, Rs = fs * 0.95, drift = false;
     if (sheen) {
-      if (infc > 0.01 || infT > 0) { const p = t * 0.001 * TAU * 0.35; Lx = bx + fs * 0.24 * M.cos(p); Ly = by + fs * 0.16 * M.sin(2 * p); Sg = 0.88 * infc; }
+      if (infc > 0.01 || infT > 0) { const p = t * 0.001 * TAU * 0.35; Lx = bx + fs * 0.24 * M.cos(p); Ly = by + fs * 0.16 * M.sin(2 * p); Sg = 0.8 * infc; }
       if (arS >= 0) {
         const u = (t - arS) / arDur;
         if (u >= 0 && u <= 1) { const g = 0.82 * M.sin(M.PI * u); if (g > Sg) { Lx = bw * (-0.1 + 1.2 * u); Ly = bh * 0.42; Sg = g; Rs = fs * 1.15; } }
@@ -680,7 +714,7 @@ function focusRows() {
       const a1 = 0.035 * clamp(ho[i], 0, 1.2) * es, e = ev[i] * 0.07 * es, so = M.sin(ph + i), o2 = 0.5 * M.sin(2 * (ph + i));
       const el = H[i], b = i * 8;
       wr(el, C, b, '--w', 120 - 28 * fo, 1); wr(el, C, b + 1, '--g', 220 + 400 * fo, 0.1); wr(el, C, b + 2, '--fo', fo, 50);
-      wr(el, C, b + 3, '--dx', (i % 2 ? -1 : 1) * clamp(dist, -1, 1) * 0.03 * vw, 2);
+      wr(el, C, b + 3, '--dx', (i % 2 ? -1 : 1) * clamp(dist, -1, 1) * 0.03 * M.min(vw, 1440), 2);
       wr(el, C, b + 4, '--ax', a1 * so, 500); wr(el, C, b + 5, '--ay', a1 * o2 + e, 500);
       wr(el, C, b + 6, '--bx', -a1 * so, 500); wr(el, C, b + 7, '--by', a1 * o2 + e * 2, 500);
       if (M.abs(evv[i]) > 1e-3 || M.abs(ev[i] - vt) > 1e-3 || M.abs(hov[i]) > 1e-3 || M.abs(ho[i] - ht) > 1e-3 || ho[i] > 1e-3) moving = true;
@@ -694,8 +728,9 @@ function focusRows() {
 function tower() {
   const el = D.getElementById('tower'), T = Array.from(el.children), n = T.length;
   const hb = new Float32Array(n), r = new Float32Array(n), rv = new Float32Array(n), C = new Int32Array(n * 3).fill(NONE);
-  const RT = [5, -6, 4, -5, 6, -4, 5, -6, 4], XT = [0.1, -0.12, 0.08, -0.1, 0.12, -0.08, 0.1, -0.12, 0.08];
-  let top = 0, hgt = 1, fs = 60, cxD = 0, leanT = 0, ptr = 0, dX = 0, dY = 0, dT = 0;
+  // Small, calm offsets. Lift per letter is 0.16em, so the top letter (9 x 0.16em) stays inside the section padding.
+  const RT = [3, -3.5, 2.5, -3, 3.5, -2.5, 3, -3.5, 2.5], XT = [0.06, -0.07, 0.05, -0.06, 0.07, -0.05, 0.06, -0.07, 0.05];
+  let top = 0, hgt = 1, fs = 60, cxD = 0, leanT = 0, ptr = 0, dX = 0, dY = 0, dT = 0, qm = 0;
   const a = { name: 'tower', scroll: true };
   a.measure = () => {
     const rr = el.getBoundingClientRect(); top = rr.top + scrollY; hgt = rr.height || 1; cxD = rr.left + rr.width / 2;
@@ -725,12 +760,14 @@ function tower() {
   if (FINE) el.addEventListener('click', e => { const side = e.clientX < cxD ? 1 : -1; for (let b = 0; b < n; b++) rv[b] += side * 22 * (0.35 + b / n); wake(a); });
 
   a.tick = s => {
-    const q = clamp((sy + vh - top) / (vh * 0.55 + hgt * 0.5), 0, 1.5), settle = sstep(0.9, 1.05, q);
+    // Progress only moves forward: the tower stacks once and does not come apart when you scroll back up.
+    qm = M.max(qm, clamp((sy + vh - top) / (vh * 0.55 + hgt * 0.5), 0, 1.5));
+    const q = qm, settle = sstep(0.9, 1.05, q);
     let moving = false, cum = 0;
     for (let b = 0; b < n; b++) {
       const i = n - 1 - b, x = clamp((q - 0.065 * b) / 0.42, 0, 1);
       const sb = x >= 1 ? 1 : 1 - M.exp(-5 * x) * M.cos(8 * x), u = 1 - sb;
-      cum += u * 0.42;
+      cum += u * 0.16;
       const k = 70 - 5 * b, c = 2 * 0.32 * M.sqrt(k), lt = leanT * settle;
       rv[b] += (-k * (r[b] - lt) - c * rv[b]) * s; r[b] = clamp(r[b] + rv[b] * s, -6, 6);
       const txL = (hb[b] / fs) * M.sin(r[b] / DEG);
@@ -841,6 +878,7 @@ if (tier) {
   });
   addEventListener('pagehide', () => { cancelAnimationFrame(raf); raf = 0; });
 
+  const refitAll = () => { for (const a of actors) if (a.refit && !a.dead) a.refit(); };
   let started = false;
   const go = () => {
     if (started || !tier) return;
@@ -848,8 +886,12 @@ if (tier) {
     try {
       R.classList.add('kin'); ready = true;
       vh = innerHeight; vw = innerWidth; sy = scrollY;
+      refitAll(); // always a full pass at boot, with whatever font is in now
       for (const a of actors) { try { a.measure && a.measure(); } catch (e) { kill(a, e); } }
     } catch (e) { setTier(0); return; }
+    // Scroll-linked states are pure functions of position: settle every one of them once, on or off screen.
+    const t0 = now();
+    for (const a of actors) if (a.scroll && a !== hero && !a.dead) { try { a.tick(1 / 60, t0); } catch (e) { kill(a, e); } }
     for (const a of actors) wake(a);
     if (hero && !hero.dead) {
       hero.arrive();
@@ -858,9 +900,10 @@ if (tier) {
       if (FINE && ctas) ctas.addEventListener('focusin', e => { try { if (e.target.matches(':focus-visible')) hero.autopilot(5200); } catch (_) { /* ignore */ } });
     }
     if ('ResizeObserver' in W) { let first = true; new ResizeObserver(() => { if (first) { first = false; return; } remeasure(); }).observe(D.body); }
-    if (D.fonts && D.fonts.addEventListener) D.fonts.addEventListener('loadingdone', () => { if (hero) hero.refit(); remeasure(); });
+    // A late web font changes every glyph width: re-lock the slots of both wordmarks, not only the hero.
+    if (D.fonts && D.fonts.addEventListener) D.fonts.addEventListener('loadingdone', () => { refitAll(); remeasure(); });
   };
-  Promise.race([D.fonts && D.fonts.ready ? D.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1500))]).then(go, go);
+  Promise.race([fontsIn, new Promise(r => setTimeout(r, 1500))]).then(go, go);
 }
 
 </script>

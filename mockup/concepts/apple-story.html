@@ -1,10 +1,4 @@
 <title>Hummingbolt — One Line</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='11' fill='%23F2F3F0'/%3E%3Cpath d='M23.18 22.52C23.39 22.14 23.98 21.01 24.39 20.27C24.81 19.52 25.22 18.78 25.67 18.05C26.11 17.33 26.56 16.6 27.05 15.9C27.54 15.21 28.04 14.51 28.6 13.88C29.16 13.24 29.74 12.59 30.41 12.08C31.08 11.57 31.83 11.05 32.62 10.81C33.4 10.58 34.33 10.49 35.13 10.65C35.93 10.81 36.74 11.27 37.42 11.75C38.09 12.24 38.68 12.91 39.21 13.57C39.73 14.23 40.18 14.97 40.59 15.71C41 16.45 41.35 17.24 41.65 18.03C41.96 18.82 42.22 19.64 42.43 20.47C42.63 21.29 42.8 22.13 42.89 22.98C42.98 23.82 43.04 24.68 42.98 25.53C42.92 26.37 42.81 27.25 42.52 28.03C42.22 28.81 41.79 29.63 41.2 30.19C40.61 30.76 39.78 31.17 38.99 31.4C38.19 31.63 37.29 31.62 36.45 31.57C35.61 31.53 34.76 31.33 33.93 31.13C33.11 30.93 32.3 30.66 31.5 30.37C30.69 30.09 29.9 29.76 29.12 29.43C28.34 29.1 27.56 28.74 26.79 28.38C26.02 28.01 25.26 27.64 24.5 27.26C23.73 26.88 22.97 26.49 22.21 26.11C21.45 25.72 20.7 25.33 19.94 24.95C19.18 24.57 18.41 24.18 17.64 23.82C16.87 23.46 16.1 23.1 15.31 22.77C14.53 22.45 13.73 22.13 12.92 21.89C12.11 21.65 11.27 21.39 10.43 21.32C9.59 21.25 8.66 21.19 7.9 21.46C7.14 21.73 6.36 22.3 5.88 22.95C5.41 23.59 5.2 24.52 5.07 25.34C4.94 26.17 5 27.05 5.08 27.89C5.17 28.73 5.36 29.58 5.6 30.39C5.83 31.21 6.13 32.02 6.5 32.78C6.87 33.54 7.28 34.31 7.8 34.97C8.32 35.64 8.91 36.34 9.62 36.75C10.32 37.17 11.24 37.49 12.03 37.44C12.82 37.4 13.67 36.96 14.37 36.51C15.07 36.06 15.65 35.38 16.21 34.74C16.76 34.1 17.24 33.39 17.71 32.68C18.18 31.97 18.6 31.23 19.03 30.49C19.45 29.75 20.04 28.62 20.24 28.24' fill='none' stroke='%231F2422' stroke-width='3.6' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&display=swap">
 <style>
 @font-face{font-family:"Mona Fallback";src:local("Arial"),local("ArialMT");size-adjust:101%;ascent-override:92%;descent-override:24%;line-gap-override:0%}
 :root{
@@ -89,7 +83,7 @@ h1 .t2{color:var(--slate)}
 .rule i{position:absolute;right:0;top:3px;width:5px;height:5px;border-radius:50%;background:var(--graphite);box-shadow:0 0 0 2px var(--mist)}
 .hint{display:none;margin-top:16px;font-size:13px;font-stretch:116%;font-weight:600;letter-spacing:.06em;color:var(--slate)}
 .line-on .rule{visibility:hidden}
-.line-on .hint{display:block}
+.line-on .hint{display:block;opacity:var(--ho,1)}
 
 /* the line story: static four frames by default */
 .reel{padding-block:clamp(48px,9vh,112px) clamp(56px,10vh,128px)}
@@ -108,7 +102,7 @@ h1 .t2{color:var(--slate)}
 .line-on .cap{display:flex;align-items:center;height:37.5vh;height:37.5svh}
 .line-on .cap p{max-width:12em;font-size:clamp(1.625rem,1.05rem + 2.1vw,3rem);line-height:1.12;color:var(--graphite);color:color-mix(in oklab,var(--slate),var(--graphite) calc(var(--a,1) * 100%))}
 @media (min-width:900px){
-  .line-on .caps{padding-top:0;padding-bottom:calc(50vh - 40px)}
+  .line-on .caps{padding-top:0;padding-bottom:calc(20vh - 40px)}
   .line-on .cap{height:55vh}
   .line-on .cap p{max-width:min(10.5em,33vw)}
 }
@@ -130,7 +124,8 @@ h1 .t2{color:var(--slate)}
 .ai-node{fill:var(--stone);stroke:var(--graphite);stroke-width:1.5}
 .orbit{transform:rotate(calc(var(--o,60) * 1deg));transform-origin:200px 120px}
 .orbit circle{fill:var(--plumage)}
-.g-b{transform:translateY(calc(var(--ty,0) * 1px)) rotate(calc(var(--rt,0) * 1deg));transform-box:fill-box;transform-origin:50% 100%}
+.g-b{transform-box:fill-box;transform-origin:50% 100%}
+.fx .g-b{transform:translateY(calc(var(--ty,0) * 1px)) rotate(calc(var(--rt,0) * 1deg))}
 .fx .dr{stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--d,1))}
 .fx .a-chrome{opacity:var(--w,1)}
 .fx .a-home{opacity:calc(1 - var(--w,1))}
@@ -161,7 +156,8 @@ h1 .t2{color:var(--slate)}
 .stack{display:block;width:100%;max-width:380px;margin:0;padding:0;border:0;border-radius:16px;background:none;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .stack svg{display:block;width:100%;height:auto;overflow:visible}
 .ground{stroke:var(--tile-ink);stroke-opacity:.28;stroke-width:1.5;stroke-linecap:round}
-.blk{opacity:var(--op,1);transform:translateY(calc(var(--ty,0) * 1px)) rotate(calc(var(--rt,0) * 1deg));transform-box:fill-box;transform-origin:50% 100%}
+.blk{transform-box:fill-box;transform-origin:50% 100%}
+.fx .blk{opacity:var(--op,1);transform:translateY(calc(var(--ty,0) * 1px)) rotate(calc(var(--rt,0) * 1deg))}
 .blk rect{fill:rgba(242,243,240,.02);stroke:var(--tile-ink);stroke-opacity:.8;stroke-width:1.5}
 .blk.lit rect{fill:url(#litg);stroke:var(--lit-edge);stroke-opacity:1}
 .wb{transform-box:fill-box;transform-origin:50% 100%}
@@ -214,6 +210,12 @@ h1 .t2{color:var(--slate)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}.mk-g{display:none}}
 </style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='11' fill='%23F2F3F0'/%3E%3Cpath d='M23.18 22.52C23.39 22.14 23.98 21.01 24.39 20.27C24.81 19.52 25.22 18.78 25.67 18.05C26.11 17.33 26.56 16.6 27.05 15.9C27.54 15.21 28.04 14.51 28.6 13.88C29.16 13.24 29.74 12.59 30.41 12.08C31.08 11.57 31.83 11.05 32.62 10.81C33.4 10.58 34.33 10.49 35.13 10.65C35.93 10.81 36.74 11.27 37.42 11.75C38.09 12.24 38.68 12.91 39.21 13.57C39.73 14.23 40.18 14.97 40.59 15.71C41 16.45 41.35 17.24 41.65 18.03C41.96 18.82 42.22 19.64 42.43 20.47C42.63 21.29 42.8 22.13 42.89 22.98C42.98 23.82 43.04 24.68 42.98 25.53C42.92 26.37 42.81 27.25 42.52 28.03C42.22 28.81 41.79 29.63 41.2 30.19C40.61 30.76 39.78 31.17 38.99 31.4C38.19 31.63 37.29 31.62 36.45 31.57C35.61 31.53 34.76 31.33 33.93 31.13C33.11 30.93 32.3 30.66 31.5 30.37C30.69 30.09 29.9 29.76 29.12 29.43C28.34 29.1 27.56 28.74 26.79 28.38C26.02 28.01 25.26 27.64 24.5 27.26C23.73 26.88 22.97 26.49 22.21 26.11C21.45 25.72 20.7 25.33 19.94 24.95C19.18 24.57 18.41 24.18 17.64 23.82C16.87 23.46 16.1 23.1 15.31 22.77C14.53 22.45 13.73 22.13 12.92 21.89C12.11 21.65 11.27 21.39 10.43 21.32C9.59 21.25 8.66 21.19 7.9 21.46C7.14 21.73 6.36 22.3 5.88 22.95C5.41 23.59 5.2 24.52 5.07 25.34C4.94 26.17 5 27.05 5.08 27.89C5.17 28.73 5.36 29.58 5.6 30.39C5.83 31.21 6.13 32.02 6.5 32.78C6.87 33.54 7.28 34.31 7.8 34.97C8.32 35.64 8.91 36.34 9.62 36.75C10.32 37.17 11.24 37.49 12.03 37.44C12.82 37.4 13.67 36.96 14.37 36.51C15.07 36.06 15.65 35.38 16.21 34.74C16.76 34.1 17.24 33.39 17.71 32.68C18.18 31.97 18.6 31.23 19.03 30.49C19.45 29.75 20.04 28.62 20.24 28.24' fill='none' stroke='%231F2422' stroke-width='3.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&display=swap">
 
 <svg class="vh" aria-hidden="true" focusable="false" width="0" height="0">
   <defs>
@@ -296,10 +298,10 @@ h1 .t2{color:var(--slate)}
         <div class="ch-body"><p class="ch-lede">Mobile and web apps. Quick to open. Clear to use.</p></div>
         <figure class="art" aria-hidden="true">
           <svg viewBox="0 0 400 240">
-            <rect class="ln dr a-frame" x="20" y="20" width="360" height="200" rx="12" pathLength="1"/>
+            <path class="ln dr a-frame" d="M32 20H368A12 12 0 0 1 380 32V208A12 12 0 0 1 368 220H32A12 12 0 0 1 20 208V32A12 12 0 0 1 32 20Z" pathLength="1"/>
             <line class="ln a-pill" x1="110" y1="36" x2="290" y2="36"/>
             <line class="ln a-chrome a-div" x1="20" y1="52" x2="380" y2="52"/>
-            <g class="a-chrome"><circle cx="38" cy="36" r="3.2" fill="#1F2422"/><circle cx="51" cy="36" r="3.2" fill="#1F2422"/><circle cx="64" cy="36" r="3.2" fill="#1F2422"/></g>
+            <g class="a-chrome a-dots"><circle cx="38" cy="36" r="3.2" fill="#1F2422"/><circle cx="51" cy="36" r="3.2" fill="#1F2422"/><circle cx="64" cy="36" r="3.2" fill="#1F2422"/></g>
             <line class="ln a-home" x1="186" y1="214" x2="214" y2="214" opacity="0"/>
             <line class="a-bar" x1="52" y1="86" x2="292" y2="86"/>
             <line class="a-bar" x1="52" y1="108" x2="340" y2="108"/>
@@ -316,9 +318,9 @@ h1 .t2{color:var(--slate)}
         <figure class="art" aria-hidden="true">
           <svg viewBox="0 0 400 240">
             <line class="ln" x1="70" y1="226" x2="330" y2="226"/>
-            <g class="g-b"><rect class="ln dr" x="112" y="166" width="176" height="60" rx="10" pathLength="1"/></g>
-            <g class="g-b"><rect class="ln dr" x="140" y="106" width="124" height="60" rx="10" pathLength="1"/></g>
-            <g class="g-b"><rect class="ln dr" x="164" y="46" width="84" height="60" rx="10" pathLength="1"/></g>
+            <g class="g-b"><path class="ln dr" d="M122 166H278A10 10 0 0 1 288 176V216A10 10 0 0 1 278 226H122A10 10 0 0 1 112 216V176A10 10 0 0 1 122 166Z" pathLength="1"/></g>
+            <g class="g-b"><path class="ln dr" d="M150 106H254A10 10 0 0 1 264 116V156A10 10 0 0 1 254 166H150A10 10 0 0 1 140 156V116A10 10 0 0 1 150 106Z" pathLength="1"/></g>
+            <g class="g-b"><path class="ln dr" d="M174 46H238A10 10 0 0 1 248 56V96A10 10 0 0 1 238 106H174A10 10 0 0 1 164 96V56A10 10 0 0 1 174 46Z" pathLength="1"/></g>
           </svg>
         </figure>
       </div>
@@ -337,7 +339,7 @@ h1 .t2{color:var(--slate)}
         </div>
         <figure class="art" aria-hidden="true">
           <svg viewBox="0 0 400 240">
-            <circle class="ln dr ai-loop" cx="200" cy="120" r="92" pathLength="1" transform="rotate(-90 200 120)"/>
+            <path class="ln dr ai-loop" d="M200 28A92 92 0 1 1 200 212A92 92 0 1 1 200 28Z" pathLength="1"/>
             <circle class="ai-node" cx="200" cy="28" r="8"/>
             <circle class="ai-node" cx="279.7" cy="166" r="8"/>
             <circle class="ai-node" cx="120.3" cy="166" r="8"/>
@@ -372,7 +374,7 @@ h1 .t2{color:var(--slate)}
               <g class="blk"><g class="wb" style="--amp:1.9"><rect x="143" y="21" width="96" height="56" rx="12"/></g></g>
             </svg>
           </div>
-          <p class="stack-hint" aria-hidden="true">Tap the stack.</p>
+          <p class="stack-hint" aria-hidden="true">Tap or click the stack.</p>
         </div>
       </div>
     </div>
@@ -382,19 +384,19 @@ h1 .t2{color:var(--slate)}
     <div class="wrap">
       <div class="sweep" aria-hidden="true"></div>
       <h2 id="st-h" class="eyebrow">How we work</h2>
-      <p class="statement"><span class="w" style="--i:0">We</span> <span class="w" style="--i:1">are</span> <span class="w" style="--i:2">a</span> <span class="w" style="--i:3">small</span> <span class="w" style="--i:4">studio.</span> <span class="w" style="--i:5">We</span> <span class="w" style="--i:6">stay</span> <span class="w" style="--i:7">on</span> <span class="w" style="--i:8">a</span> <span class="w" style="--i:9">detail</span> <span class="w" style="--i:10">until</span> <span class="w" style="--i:11">it</span> <span class="w" style="--i:12">is</span> <span class="w" style="--i:13">right.</span> <span class="w" style="--i:14">Then</span> <span class="w" style="--i:15">we</span> <span class="w" style="--i:16">move</span> <span class="w" style="--i:17">fast.</span> <span class="w" style="--i:18">And</span> <span class="w" style="--i:19">we</span> <span class="w" style="--i:20">go</span> <span class="w" style="--i:21">back</span> <span class="w" style="--i:22">to</span> <span class="w" style="--i:23">fix</span> <span class="w" style="--i:24">what</span> <span class="w" style="--i:25">we</span> <span class="w" style="--i:26">learn.</span></p>
+      <p class="statement"><span class="w" style="--i:0">We</span> <span class="w" style="--i:1">are</span> <span class="w" style="--i:2">a</span> <span class="w" style="--i:3">small</span> <span class="w" style="--i:4">studio.</span> <span class="w" style="--i:5">We</span> <span class="w" style="--i:6">stay</span> <span class="w" style="--i:7">on</span> <span class="w" style="--i:8">a</span> <span class="w" style="--i:9">detail</span> <span class="w" style="--i:10">until</span> <span class="w" style="--i:11">it</span> <span class="w" style="--i:12">is</span> <span class="w" style="--i:13">right.</span> <span class="w" style="--i:14">Then</span> <span class="w" style="--i:15">we</span> <span class="w" style="--i:16">move</span> <span class="w" style="--i:17">fast.</span> <span class="w" style="--i:18">And</span> <span class="w" style="--i:19">we</span> <span class="w" style="--i:20">keep</span> <span class="w" style="--i:21">improving</span> <span class="w" style="--i:22">what</span> <span class="w" style="--i:23">we</span> <span class="w" style="--i:24">make</span> <span class="w" style="--i:25">as</span> <span class="w" style="--i:26">we</span> <span class="w" style="--i:27">learn.</span></p>
       <ul class="principles">
         <li class="pr">
           <svg viewBox="0 0 64 32" aria-hidden="true" focusable="false"><path class="gl dr" d="M4 22H44" pathLength="1"/><circle cx="53" cy="15" r="3.1" fill="#1F2422"/></svg>
-          <h3>Hover</h3><p>We stay on the detail until it is right.</p>
+          <h3>Hover</h3><p>We stay close to the work and get the details right.</p>
         </li>
         <li class="pr">
           <svg viewBox="0 0 64 32" aria-hidden="true" focusable="false"><path class="gl dr" d="M40 3 24 17.5 37 14 21 29" pathLength="1"/></svg>
-          <h3>Dart</h3><p>When it is right, we ship it quickly.</p>
+          <h3>Dart</h3><p>When it is ready, we ship it quickly.</p>
         </li>
         <li class="pr">
           <svg viewBox="0 0 64 32" aria-hidden="true" focusable="false"><path class="gl dr" d="M58 23H40C33 23 28 18.5 28 13S32 4.5 37 4.5 45 8 45 13 40 23 31 23H8M14 17 8 23 14 29" pathLength="1"/></svg>
-          <h3>Reverse</h3><p>We go back and improve what we learn.</p>
+          <h3>Reverse</h3><p>We go back and improve it as we learn.</p>
         </li>
       </ul>
     </div>
@@ -472,12 +474,17 @@ const prog = (top, a, b) => clamp((vh * a - top) / (vh * (a - b)));
 function setupSections() {
   const apps = $('#apps .art svg');
   if (apps) {
-    const fr = $('.a-frame', apps), pill = $('.a-pill', apps), dv = $('.a-div', apps), home = $('.a-home', apps), bars = $$('.a-bar', apps);
+    const fr = $('.a-frame', apps), pill = $('.a-pill', apps), dv = $('.a-div', apps), home = $('.a-home', apps), bars = $$('.a-bar', apps), dots = $('.a-dots', apps);
     const PB = [[166, 58, 230], [166, 76, 224], [166, 94, 206]], BB = [[52, 86, 292], [52, 108, 340], [52, 130, 242]];
+    const f2 = (v) => Math.round(v * 100) / 100;
+    // a path, not a rect: pathLength on basic shapes is unreliable in some Safari versions
+    const rr = (x, y, w, h, r) => 'M' + f2(x + r) + ' ' + f2(y) + 'H' + f2(x + w - r) + 'A' + f2(r) + ' ' + f2(r) + ' 0 0 1 ' + f2(x + w) + ' ' + f2(y + r) + 'V' + f2(y + h - r) + 'A' + f2(r) + ' ' + f2(r) + ' 0 0 1 ' + f2(x + w - r) + ' ' + f2(y + h) + 'H' + f2(x + r) + 'A' + f2(r) + ' ' + f2(r) + ' 0 0 1 ' + f2(x) + ' ' + f2(y + h - r) + 'V' + f2(y + r) + 'A' + f2(r) + ' ' + f2(r) + ' 0 0 1 ' + f2(x + r) + ' ' + f2(y) + 'Z';
+    let lastD = '', lastT = '';
     track(apps, 0.95, 0.3, (el, p) => {
       const d = clamp(p / 0.42), w = eio(clamp((p - 0.48) / 0.46));
       const x = lerp(148, 20, w), y = lerp(12, 20, w), ww = lerp(104, 360, w), hh = lerp(216, 200, w);
-      seta(fr, 'x', x); seta(fr, 'y', y); seta(fr, 'width', ww); seta(fr, 'height', hh); seta(fr, 'rx', lerp(20, 12, w));
+      const pd = rr(x, y, ww, hh, lerp(20, 12, w)); if (pd !== lastD) { lastD = pd; fr.setAttribute('d', pd); }
+      const tr = 'translate(' + f2(x - 20) + ' ' + f2(y - 20) + ')'; if (dots && tr !== lastT) { lastT = tr; dots.setAttribute('transform', tr); }
       seta(pill, 'x1', lerp(186, 110, w)); seta(pill, 'x2', lerp(214, 290, w)); seta(pill, 'y1', lerp(26, 36, w)); seta(pill, 'y2', lerp(26, 36, w));
       seta(dv, 'x1', x); seta(dv, 'x2', x + ww);
       seta(home, 'opacity', (1 - w) * d);
@@ -494,12 +501,13 @@ function setupSections() {
     });
   }
   const ai = $('#ai .art svg');
-  if (ai) track(ai, 0.95, 0.3, (el, p) => { setv(ai, '--d', clamp(p / 0.55)); setv(ai, '--o', 60 + 600 * p); });
+  // the orbit dot leads the loop like a pen tip, then glides on to rest between two nodes
+  if (ai) track(ai, 0.95, 0.3, (el, p) => { const d = clamp(p / 0.55); setv(ai, '--d', d); setv(ai, '--o', 360 * d + 300 * clamp((p - 0.55) / 0.45)); });
   $$('.ch-word').forEach((w) => track(w, 1, 0, (el, p, top, h) => { setv(el, '--f', ss(0, 1, 1 - clamp(Math.abs(top + h / 2 - vh * 0.45) / (vh * 0.5)))); }));
   const stack = $('.stack');
   if (stack) {
     const bk = $$('.blk', stack);
-    track(stack, 0.92, 0.3, (el, p) => {
+    track(stack, 0.92, 0.42, (el, p) => {
       for (let k = 0; k < bk.length; k++) { const t = clamp((p - k * 0.092) / 0.14); setv(bk[k], '--ty', -40 * (1 - back(t))); setv(bk[k], '--op', clamp(t * 2.5)); }
       const u = clamp((p - 0.6) / 0.2);
       setv(bk[bk.length - 1], '--rt', 2.8 * (1 - u) * (1 - u) * Math.sin(u * Math.PI * 3));
@@ -538,7 +546,8 @@ const QA = new Float64Array(6), TA = new Float64Array(6), CAPY = new Float64Arra
 const GRAPHITE = '#1F2422', MIST = '#F2F3F0';
 let ctx = null, lineOn = false, storyVis = true, N = 0, dpr = 1, cw = 1, ch = 1;
 let KT, PX, PY, CO, SI, NX, NY, WD, BK, BC, JN, DX, DY, DL, noisePat = null;
-let wide = false, cx = 0, cy = 0, stBot = 0, headBot = 56, hairY = 0, hairL = 0, hairR = 0, s0 = 1, E = 2, readY = 0;
+let wide = false, cx = 0, cy = 0, stBot = 0, headBot = 56, hairY = 0, hairL = 0, hairR = 0, s0 = 1, E = 2, readY = 0, c3Top = 0;
+const hint = $('.hint');
 let sTip = 0.25, markW = 1.7, markR = 2.05, logoUW = 1, tauNow = 0, glinted = false;
 let Lx = 0, Ly = 0, Tx = 0, Ty = 0, ptr = false, vel = 0, lastSy = 0, lastSt = 0;
 let introT0 = -1, dartT0 = -1, MX = 0, MY = 0, bdGrad = null, bx0 = 0, by0 = 0, bx1 = 0, by1 = 0;
@@ -615,7 +624,7 @@ function morph(a, b, t, soft, su, pinch) {
   for (let i = 0; i < N; i++) { PX[i] += dx; PY[i] += dy; }
 }
 
-// colour LUT: Plumage -> Bronze -> Gorget, mixed (in OKLab) at most ~35% into Graphite
+// colour LUT: Plumage -> Bronze -> Gorget, mixed (in OKLab) at most ~55% into Graphite
 function okl(h) {
   const n = parseInt(h.slice(1), 16), f = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
   const r = f(n >> 16 & 255), g = f(n >> 8 & 255), b = f(n & 255);
@@ -633,7 +642,7 @@ function buildLUT() {
   const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
   for (let i = 0; i < NB; i++) {
     const u = (i + 0.5) / NB, hue = u < 0.55 ? mix(P, B, u / 0.55) : mix(B, R, (u - 0.55) / 0.45);
-    LUT[i] = rgbs(mix(G, hue, 0.44 * u));
+    LUT[i] = rgbs(mix(G, hue, 0.6 * u));
   }
 }
 
@@ -656,7 +665,9 @@ function measureLine() {
   else { stBot = Math.max(headBot + 220, vh * 0.56); cx = vw / 2; cy = (headBot + stBot) / 2; sw = vw; sh = stBot - headBot; readY = (stBot + vh) / 2; }
   s0 = Math.max(1, hairY - cy);
   const sr = story.getBoundingClientRect();
-  E = Math.max(s0 + 50, sr.bottom + sy - vh);
+  // desktop: the sequence completes while the next section is already rising into view (no empty screen after the dock)
+  E = Math.max(s0 + 50, sr.bottom + sy - vh * (wide ? 0.7 : 1));
+  const lp = capEls[3].querySelector('p'); c3Top = (lp || capEls[3]).getBoundingClientRect().top + sy;
   // caption anchors: caption k is read at story time (k + .5) / 4
   QA[0] = 0; TA[0] = 0; QA[5] = 1; TA[5] = 1; let ok = true;
   for (let k = 0; k < 4; k++) {
@@ -687,7 +698,8 @@ function measureLine() {
   const o6 = 6 * (N - 1), o7 = 7 * (N - 1); for (let i = 0; i < N - 1; i++) KT[o7 + i] = KT[o6 + i];
   markW = 1.7 * ms; markR = 2.05 * ms;
   bdGrad = ctx.createLinearGradient(0, stBot, 0, stBot + 28);
-  bdGrad.addColorStop(0, 'rgba(242,243,240,1)'); bdGrad.addColorStop(1, 'rgba(242,243,240,0)');
+  // the soft edge fades from the grained page's mean tone, not pure mist, so it leaves no light band
+  bdGrad.addColorStop(0, 'rgba(239,240,237,1)'); bdGrad.addColorStop(1, 'rgba(239,240,237,0)');
   if (!Lx) { Lx = Tx = cx + vw * 0.1; Ly = Ty = cy - vh * 0.3; }
 }
 
@@ -700,7 +712,9 @@ function storyUpdate() {
   if (!lineOn) return;
   const q = clamp((sy - s0) / (E - s0)), tau = sy <= s0 ? 0 : tauOf(q);
   tauNow = tau;
-  const mo = tau < 0.965 ? lerp(1, 0.2, ss(0, 0.07, tau)) : lerp(0.2, 1, ss(0.965, 1, tau));
+  // the hint lives just under the hairline: fade it before the line settles, so text never runs through the line
+  if (hint) setv(hint, '--ho', 1 - ss(s0 * 0.2, s0 * 0.85, sy));
+  const mo =tau < 0.965 ? lerp(1, 0.2, ss(0, 0.07, tau)) : lerp(0.2, 1, ss(0.965, 1, tau));
   setv(mk, '--mo', mo);
   if (tau >= 0.985 && !glinted) { glinted = true; mk.classList.remove('glint'); void mk.getBoundingClientRect(); mk.classList.add('glint'); }
   else if (tau < 0.9 && glinted) { glinted = false; mk.classList.remove('glint'); }
@@ -708,7 +722,7 @@ function storyUpdate() {
 }
 
 function draw(t, dt) {
-  const tau = tauNow;
+  const tau = tauNow, WK = wide ? 1.35 : 1.15;
   const d0 = hairY - sy - cy, kk = 40;
   KY[0] = cy + (d0 >= kk ? d0 : d0 <= -kk ? 0 : (d0 + kk) * (d0 + kk) / (4 * kk));
   let a = 0, b = 0, m = 0, w0 = 1, c = 0, sd = 0, soft = -1, su = 0, pinch = 0;
@@ -720,8 +734,10 @@ function draw(t, dt) {
   else if (tau < 0.62) { m = ss(0, 1, ss(0, 1, ss(0, 1, (tau - 0.55) / 0.07))); a = 4; b = 5; pinch = 0.22; w0 = lerp(2, 2.3, m); c = 1; }
   else if (tau < 0.72) { a = b = 5; w0 = 2.3; c = 1; }
   else if (tau < 0.84) { const r0 = (tau - 0.72) / 0.12; m = eio(r0); a = 5; b = 6; soft = 8; su = ss(0, 0.3, r0); pinch = 0.3; w0 = lerp(2.3, 2.2, m); c = 1 - m; }
-  else if (tau < 0.97) { m = eio((tau - 0.84) / 0.13); a = 6; b = 7; w0 = lerp(2.2, markW, m); }
+  else if (tau < 0.97) { m = eio((tau - 0.84) / 0.13); a = 6; b = 7; w0 = lerp(2.2 * WK, markW, m); }
   else { a = b = 7; w0 = markW; }
+  // a little more ink on the stage than on the hairline it grew from
+  if (tau < 0.84) w0 *= lerp(1, WK, ss(0, 0.2, tau));
   const fade = 1 - ss(0.965, 1, tau), dock = ss(0.84, 0.97, tau);
   if (tau >= 0.27 && tau < 0.48) { const v = 3 * eio((tau - 0.27) / 0.21); sd = v - Math.floor(v); }
   else if (tau >= 0.72) sd = sTip * eio(clamp((tau - 0.72) / 0.12));
@@ -738,6 +754,14 @@ function draw(t, dt) {
   let s = sd + ds; s = closed ? s - Math.floor(s) : clamp(s);
 
   morph(a, b, m, soft, su, pinch);
+  // the dock flies a curve that lands in the logo slot from below: it clears the last caption and never slides across the wordmark
+  if (a === 6 && m > 0 && m < 1) {
+    // cubic: rise while still right of the caption, glide left under the header, then settle up into the slot
+    const u = 1 - m, b0 = u * u * u, b1 = 3 * u * u * m, b2 = 3 * u * m * m, b3 = m * m * m, qy = KY[7] + vh * 0.15;
+    const ox = b0 * KX[6] + b1 * KX[6] + b2 * (KX[7] + vw * 0.02) + b3 * KX[7] - MX, oy = b0 * KY[6] + (b1 + b2) * qy + b3 * KY[7] - MY;
+    for (let i = 0; i < N; i++) { PX[i] += ox; PY[i] += oy; }
+    MX += ox; MY += oy;
+  }
 
   // intro: one standing wave runs along the hairline, then settles flat
   if (introT0 > 0) {
@@ -782,15 +806,18 @@ function draw(t, dt) {
   const mg = gh > 0.01 ? 14 + 0.08 * (nx1 - nx0) + 0.14 * (ny1 - ny0) : dart >= 0 ? 34 : 14;
   nx0 = Math.max(0, Math.floor(nx0 - mg)); ny0 = Math.max(0, Math.floor(ny0 - mg)); nx1 = Math.min(cw, Math.ceil(nx1 + mg)); ny1 = Math.min(ch, Math.ceil(ny1 + mg));
   if (fade <= 0.002) { nx0 = ny0 = nx1 = ny1 = 0; }
-  // phones: a mist plate behind the stage so captions slip under it
+  // phones: a mist plate behind the stage so captions slip under it.
+  // Its top edge rides just under the hairline (the hero above it is never washed out) and its bottom edge
+  // stops above the last caption (so that caption is never hidden and never pops back in at the end).
   if (!wide) {
-    const ba = ss(s0 - vh * 0.16, s0 + vh * 0.02, sy) * ss(stBot - 20, stBot + 90, E + vh - sy);
-    if (ba > 0.002) {
-      ctx.globalAlpha = ba; ctx.fillStyle = MIST; ctx.fillRect(0, headBot, cw, stBot - headBot);
-      if (noisePat) { ctx.fillStyle = noisePat; ctx.fillRect(0, headBot, cw, stBot - headBot); }
-      ctx.fillStyle = bdGrad; ctx.fillRect(0, stBot, cw, 28);
-      if (nx1 <= nx0) { nx0 = 0; nx1 = cw; ny0 = headBot; ny1 = stBot + 28; }
-      else { nx0 = 0; nx1 = cw; ny0 = Math.min(ny0, headBot); ny1 = Math.max(ny1, stBot + 28); }
+    const pt = Math.max(headBot, hairY - sy + 8), pb = Math.min(stBot, c3Top - sy - 30);
+    if (pb - pt > 1) {
+      ctx.globalAlpha = 1; ctx.fillStyle = MIST; ctx.fillRect(0, pt, cw, pb - pt);
+      if (noisePat) { ctx.fillStyle = noisePat; ctx.fillRect(0, pt, cw, pb - pt); }
+      ctx.save(); ctx.translate(0, pb - stBot); ctx.fillStyle = bdGrad; ctx.fillRect(0, stBot, cw, 28); ctx.restore();
+      if (nx1 <= nx0) { nx0 = 0; nx1 = cw; ny0 = pt; ny1 = Math.min(ch, pb + 28); }
+      else { nx0 = 0; nx1 = cw; ny0 = Math.min(ny0, pt); ny1 = Math.min(ch, Math.max(ny1, pb + 28)); }
+      ny0 = Math.max(0, Math.floor(ny0)); ny1 = Math.ceil(ny1);
     }
   }
   bx0 = nx0; by0 = ny0; bx1 = nx1; by1 = ny1;
@@ -868,8 +895,11 @@ function frame(t) {
   try {
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 1 / 60; last = t;
     if (dirty) { dirty = false; sy = W.scrollY; hdr.classList.toggle('scrolled', sy > 8); runSections(); storyUpdate(); }
-    if (lineOn && storyVis) { draw(t, dt); raf = W.requestAnimationFrame(frame); }
-    else last = 0;
+    if (lineOn && storyVis) {
+      draw(t, dt);
+      // once the line has docked nothing moves on its own: idle until the next scroll
+      if (tauNow < 1 || dartT0 > 0) raf = W.requestAnimationFrame(frame); else last = 0;
+    } else last = 0;
   } catch (e) { fail(e); }
 }
 function kick() { if (!raf && !D.hidden) raf = W.requestAnimationFrame(frame); }
@@ -877,7 +907,12 @@ function kick() { if (!raf && !D.hidden) raf = W.requestAnimationFrame(frame); }
 function fail(e) {
   fails++;
   if (lineOn) { lineOn = false; H.classList.remove('line-on'); try { ctx && ctx.clearRect(0, 0, cv.width, cv.height); } catch (_) { /* ignore */ } setv(mk, '--mo', 1); }
-  if (fails > 1) { fx = false; H.classList.remove('fx'); }
+  if (fails > 1 && fx) {
+    // leave every section in its finished state before effects switch off
+    for (let i = 0; i < T.length; i++) { try { T[i].fn(T[i].el, 1, T[i].top - sy, T[i].h); } catch (_) { /* ignore */ } }
+    $$('.ch-word').forEach((w) => w.style.removeProperty('--f'));
+    fx = false; H.classList.remove('fx');
+  }
   if (raf) W.cancelAnimationFrame(raf);
   raf = 0;
   if (W.console && e) console.warn('One Line fell back to the still version.', e);
