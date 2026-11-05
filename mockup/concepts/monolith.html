@@ -1,0 +1,1090 @@
+<title>Hummingbolt — Monolith</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{
+  /* Layout: one fixed, full-bleed WebGL stage under the page. Chapters scroll over it; each holds type on one side
+     and an empty .stage box. The sculpture (180 machined slats) is framed into that box and re-forms per chapter. */
+  color-scheme: dark;
+  --bg:#0f0d0c; --bg-rgb:15,13,12; --bg-2:#171412; --black:#070605;
+  --bone:#ece4d7; --dim:#aca295; --faint:#857c71;
+  --accent:#93acd9;            /* blued steel, lightened for text */
+  --line:rgba(236,228,215,.14); --line-2:rgba(236,228,215,.34);
+  --f-display:"Anybody","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --f-body:"Albert Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"Azeret Mono",ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --hdr:60px;
+  --ease:cubic-bezier(.2,.7,0,1);
+}
+@media (min-width:860px){:root{--hdr:76px}}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg);overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--bg);color:var(--bone);font:400 1.0625rem/1.6 var(--f-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip;touch-action:pan-y pinch-zoom}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3{margin:0;font-weight:inherit;text-wrap:balance}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+/* ---------- fixed layers ---------- */
+.layer{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;display:block;pointer-events:none}
+#poster{z-index:0}
+#gl{z-index:1;opacity:0;transition:opacity 1.1s var(--ease)}
+#gl.on{opacity:1}
+.fx{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 55% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:1}
+/* one fixed scrim behind the type; JS flips its side per chapter, so sections never show seams */
+.scrim{position:fixed;inset:0;z-index:2;pointer-events:none}
+.scrim i{position:absolute;inset:0;opacity:0;transition:opacity 1s var(--ease)}
+.scrim .s-l{background:linear-gradient(90deg,rgba(var(--bg-rgb),.78) 0%,rgba(var(--bg-rgb),.52) 34%,rgba(var(--bg-rgb),0) 60%)}
+.scrim .s-r{background:linear-gradient(270deg,rgba(var(--bg-rgb),.78) 0%,rgba(var(--bg-rgb),.52) 34%,rgba(var(--bg-rgb),0) 60%)}
+.scrim .s-tb{background:linear-gradient(rgba(var(--bg-rgb),.6),rgba(var(--bg-rgb),0) 32%,rgba(var(--bg-rgb),0) 60%,rgba(var(--bg-rgb),.78))}
+.scrim[data-side="l"] .s-l,.scrim[data-side="r"] .s-r,.scrim[data-side="tb"] .s-tb{opacity:1}
+@media (max-width:859px){.scrim{display:none}}
+.cut{position:fixed;inset:0;z-index:45;background:var(--black);pointer-events:none;opacity:0}
+
+/* ---------- loader ---------- */
+.ldr{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  transition:opacity .9s var(--ease),visibility 0s linear .9s;animation:ldr-fail .6s ease 3.4s forwards}
+.ldr.out{opacity:0;visibility:hidden}
+.ldr-in{display:grid;justify-items:center;gap:20px;text-align:center;transition:transform 1.1s var(--ease),opacity .7s ease}
+.ldr.out .ldr-in{transform:scale(1.6);opacity:0}
+.ldr-mk{width:88px;height:88px;color:var(--bone);overflow:visible}
+.ldr-p{fill:none;stroke:currentColor;stroke-width:6;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.25s var(--ease) .05s forwards}
+.ldr-o{fill:none;stroke:currentColor;stroke-width:6;opacity:0;animation:show .25s ease 1.1s forwards}
+.ldr-name{font-family:var(--f-display);font-stretch:118%;font-weight:520;font-size:1.3rem;letter-spacing:.01em}
+.ldr-st{font:500 .68rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);display:flex;gap:14px;min-height:1em}
+.ldr-bar{width:200px;height:1px;background:var(--line);overflow:hidden}
+.ldr-bar i{display:block;height:100%;background:var(--bone);transform-origin:0 50%;transform:scaleX(0);transition:transform .45s var(--ease)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes show{to{opacity:1}}
+@keyframes ldr-fail{to{opacity:0;visibility:hidden}}
+
+/* ---------- cursor ---------- */
+.cur{position:fixed;left:0;top:0;z-index:60;pointer-events:none;display:none;transition:opacity .25s}
+html.has-cur .cur{display:block}
+html.has-cur,html.has-cur *{cursor:none!important}
+.cur.off{opacity:0}
+.cur-r,.cur-d{position:fixed;left:0;top:0;will-change:transform}
+.cur-ring{position:absolute;left:-18px;top:-18px;width:36px;height:36px;border:1px solid rgba(236,228,215,.5);border-radius:50%;
+  transition:transform .45s var(--ease),background-color .3s,border-color .3s}
+.cur.link .cur-ring{transform:scale(1.9);background:rgba(147,172,217,.12);border-color:rgba(147,172,217,.9)}
+.cur-lbl{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font:500 .6rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--bone);opacity:0;transition:opacity .2s;white-space:nowrap}
+.cur.link .cur-lbl{opacity:1}
+.cur-d i{position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:var(--bone)}
+.cur.link .cur-d{opacity:0}
+
+/* ---------- skip + header ---------- */
+.skip{position:fixed;z-index:70;left:max(16px, env(safe-area-inset-left, 0px));top:calc(env(safe-area-inset-top, 0px) + 8px);
+  background:var(--bone);color:var(--bg);font-weight:600;text-decoration:none;padding:12px 18px;min-height:44px;transform:translateY(-220%);transition:transform .2s}
+.skip:focus{transform:none}
+.hdr{position:fixed;top:0;left:0;right:0;z-index:20;padding-top:env(safe-area-inset-top, 0px);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.hdr::before{content:"";position:absolute;inset:0 0 -28px;z-index:-1;pointer-events:none;background:linear-gradient(rgba(var(--bg-rgb),.86),rgba(var(--bg-rgb),.5) 62%,rgba(var(--bg-rgb),0))}
+html.menu-open .hdr::before{background:var(--bg);bottom:0}
+.hdr-in{height:var(--hdr);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:11px;min-height:44px;color:var(--bone);text-decoration:none;flex:none}
+.brand .mk{width:30px;height:30px;flex:none}
+.wm{font-family:var(--f-display);font-stretch:114%;font-weight:540;font-size:1.06rem;letter-spacing:.004em}
+.nav{display:flex;gap:2px;align-items:center}
+.nav a,.nav-v{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;text-decoration:none;color:var(--dim);font:500 .9rem/1 var(--f-body);letter-spacing:.01em;position:relative;transition:color .2s}
+.nav a:hover,.nav-v:hover{color:var(--bone)}
+.nav a::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:0 50%;transition:transform .35s var(--ease)}
+.nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
+.nav a[aria-current="page"],.nav-v[aria-current="page"]{color:var(--bone)}
+.hdr-m{display:none;align-items:center;gap:4px}
+.menu-btn{appearance:none;border:1px solid var(--line-2);background:rgba(var(--bg-rgb),.5);color:var(--bone);font:500 .9rem/1 var(--f-body);min-height:44px;min-width:76px;padding:0 16px;border-radius:3px}
+@media (max-width:859px){.nav{display:none}.hdr-m{display:flex}}
+.menu{position:fixed;inset:0;z-index:19;background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;justify-content:space-between;gap:32px;
+  padding-top:calc(env(safe-area-inset-top, 0px) + var(--hdr) + 20px);padding-bottom:max(28px, env(safe-area-inset-bottom, 0px));
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.menu nav{display:flex;flex-direction:column}
+.menu nav a{font-family:var(--f-display);font-stretch:114%;font-weight:420;font-size:clamp(2rem,9vw,3rem);line-height:1.05;letter-spacing:-.02em;color:var(--bone);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--line);min-height:44px}
+.menu nav a[aria-current="page"]{color:var(--accent)}
+.menu-foot{font-size:.95rem;color:var(--dim);display:grid;gap:4px}
+
+/* ---------- type ---------- */
+.eyebrow{display:flex;align-items:center;gap:12px;font:500 .7rem/1.3 var(--f-mono);letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);flex:none}
+.d-xl{font-family:var(--f-display);font-stretch:116%;font-weight:380;font-size:clamp(2.9rem,1rem + 6vw,7.4rem);line-height:.93;letter-spacing:-.04em;color:var(--bone)}
+.d-l{font-family:var(--f-display);font-stretch:114%;font-weight:400;font-size:clamp(2.35rem,1rem + 3.9vw,5.4rem);line-height:.95;letter-spacing:-.035em;color:var(--bone)}
+.d-v{font-family:var(--f-display);font-stretch:118%;font-weight:430;font-size:clamp(2.7rem,.9rem + 5.4vw,7.25rem);line-height:.92;letter-spacing:-.04em;color:var(--bone)}
+.lede{font-size:clamp(1.08rem,.98rem + .42vw,1.36rem);line-height:1.5;color:var(--bone);max-width:34ch}
+.body{color:var(--dim);max-width:44ch}
+.mono{font:500 .7rem/1.5 var(--f-mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- buttons ---------- */
+.ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 22px;border-radius:3px;border:1px solid var(--line-2);
+  color:var(--bone);background:rgba(var(--bg-rgb),.55);text-decoration:none;font:500 .95rem/1 var(--f-body);letter-spacing:.01em;
+  transition:background-color .25s,border-color .25s,color .25s;-webkit-tap-highlight-color:transparent}
+.btn:hover{border-color:var(--bone)}
+.btn--solid{background:var(--bone);border-color:var(--bone);color:var(--bg)}
+.btn--solid:hover{background:#fff8ec;border-color:#fff8ec}
+.btn .ar{font-family:var(--f-mono);font-size:.9em}
+button.btn{appearance:none;cursor:pointer}
+
+/* ---------- chapters ---------- */
+main{position:relative;z-index:3;display:block}
+.ch{position:relative;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));scroll-margin-top:0}
+.stage{pointer-events:none}
+.ch-in{position:relative;display:grid;gap:22px;align-content:start;min-width:0}
+.ch-in > .ctas{margin-top:8px}
+
+@media (max-width:859px){
+  .ch{padding-block:0 72px}
+  .stage{height:44vh;height:44svh;min-height:250px}
+  .ch-in{isolation:isolate}
+  .ch-in::before{content:"";position:absolute;z-index:-1;pointer-events:none;
+    left:calc(-1 * max(16px, env(safe-area-inset-left, 0px)));right:calc(-1 * max(16px, env(safe-area-inset-right, 0px)));top:-64px;bottom:-72px;
+    background:linear-gradient(rgba(var(--bg-rgb),0),rgba(var(--bg-rgb),.9) 64px)}
+  .ch--hero{padding-top:calc(env(safe-area-inset-top, 0px) + var(--hdr))}
+  .ch--hero .stage{height:40vh;height:40svh;min-height:240px}
+  .ch--make .stage{height:30vh;height:30svh;min-height:200px}
+}
+@media (min-width:860px){
+  .ch{min-height:100vh;min-height:100svh;display:flex;align-items:center;padding-block:calc(var(--hdr) + 56px) 88px;
+    padding-left:max(48px, env(safe-area-inset-left, 0px));padding-right:max(48px, env(safe-area-inset-right, 0px))}
+  .ch-in{width:min(38rem,42vw)}
+  .ch--r .ch-in{margin-left:auto}
+  .stage{position:absolute;top:calc(var(--hdr) + 3%);bottom:7%;right:2%;width:54%}
+  .ch--r .stage{right:auto;left:2%}
+}
+
+/* hero */
+.ch--hero .lede{max-width:36ch}
+.cue{display:none}
+@media (min-width:860px){
+  .ch--hero{align-items:center}
+  .ch--hero .ch-in{width:min(52rem,52vw)}
+  .ch--hero .stage{right:0;width:58%;top:calc(var(--hdr) + 1%);bottom:4%}
+  .cue{display:flex;position:absolute;right:max(48px, env(safe-area-inset-right, 0px));bottom:36px;align-items:center;gap:14px;font:500 .66rem/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .cue i{display:block;width:56px;height:1px;background:var(--line-2);position:relative;overflow:hidden}
+  .cue i::after{content:"";position:absolute;inset:0;background:var(--bone);transform:translateX(-100%);animation:cue 2.4s var(--ease) infinite}
+}
+@keyframes cue{50%{transform:none}100%{transform:translateX(100%)}}
+
+/* make */
+.make-head{display:grid;gap:18px}
+.make-list{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.make-list li{border-top:1px solid var(--line);padding-block:20px 18px;display:grid;gap:8px;align-content:start;min-width:0}
+.make-list h3{font-family:var(--f-display);font-stretch:112%;font-weight:480;font-size:clamp(1.35rem,1rem + 1vw,1.95rem);line-height:1.1;letter-spacing:-.018em}
+.make-list p{color:var(--dim)}
+.make-list .tag{font:500 .66rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+@media (max-width:859px){
+  .ch--make{display:grid;gap:0}
+  .ch--make .make-head{order:1;padding-top:8px}
+  .ch--make .stage{order:2}
+  .ch--make .make-list{order:3;position:relative;isolation:isolate}
+  .ch--make .make-list::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:calc(-1 * max(16px, env(safe-area-inset-left, 0px)));right:calc(-1 * max(16px, env(safe-area-inset-right, 0px)));top:-48px;bottom:-72px;background:linear-gradient(rgba(var(--bg-rgb),0),rgba(var(--bg-rgb),.9) 48px)}
+}
+@media (min-width:860px){
+  .ch--make{display:grid;grid-template-rows:auto minmax(36vh,1fr) auto;align-items:stretch;gap:28px}
+  .ch--make .stage{position:relative;inset:auto;width:100%;height:auto;min-height:36vh}
+  .make-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+}
+
+/* toppleton */
+.url{font:500 .78rem/1 var(--f-mono);letter-spacing:.06em;color:var(--dim)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;margin:0;padding:0}
+.facts li{font:500 .68rem/1.4 var(--f-mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim);display:flex;gap:8px;align-items:center}
+.facts li::before{content:"";width:5px;height:5px;background:var(--accent);flex:none}
+
+/* values teaser */
+.vlist{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.08em .34em;font-family:var(--f-display);font-stretch:112%;font-weight:420;font-size:clamp(1.5rem,1rem + 1.7vw,2.6rem);line-height:1.12;letter-spacing:-.025em}
+.vlist li:nth-child(odd){color:var(--bone)}
+.vlist li:nth-child(even){color:var(--dim)}
+
+/* contact */
+.email{font-family:var(--f-display);font-stretch:100%;font-weight:420;font-size:clamp(1.5rem,.6rem + 2.7vw,3.5rem);line-height:1.05;letter-spacing:-.03em;color:var(--bone);user-select:text;-webkit-user-select:text;overflow-wrap:anywhere}
+.status{min-height:1.5em;font-size:.95rem;color:var(--accent)}
+
+/* values view */
+.v-line{font-size:clamp(1.18rem,1rem + .7vw,1.7rem);line-height:1.38;color:var(--bone);max-width:26ch}
+.v-cap{display:flex;align-items:center;gap:10px;font:500 .66rem/1.5 var(--f-mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim);padding-top:16px;border-top:1px solid var(--line);max-width:30rem}
+.v-cap b{width:10px;height:10px;flex:none;border-radius:1px;background:var(--sw,#888);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+@media (min-width:860px){.ch--v .ch-in{width:min(46rem,46vw)}}
+.ch--vend .ctas{margin-top:6px}
+@media (min-width:860px){#contact .ch-in{width:min(48rem,52vw)}.email{white-space:nowrap}}
+
+/* footer */
+.foot{position:relative;z-index:3;background:var(--bg);border-top:1px solid var(--line);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:40px max(32px, env(safe-area-inset-bottom, 0px))}
+.foot-in{display:grid;gap:14px 40px;font-size:.92rem;color:var(--dim)}
+.foot nav{display:flex;flex-wrap:wrap;gap:0 4px;margin-left:-12px}
+.foot nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;color:var(--dim);text-decoration:none}
+.foot nav a:hover{color:var(--bone);text-decoration:underline;text-underline-offset:4px}
+.foot .brand{margin-bottom:6px}
+@media (min-width:860px){
+  .foot{padding-left:max(48px, env(safe-area-inset-left, 0px));padding-right:max(48px, env(safe-area-inset-right, 0px))}
+  .foot-in{grid-template-columns:auto 1fr auto auto;align-items:center}
+  .foot .brand{margin:0}
+}
+
+/* HUD: real values only (fps, slats, material) */
+.hud{position:fixed;z-index:4;left:max(48px, env(safe-area-inset-left, 0px));bottom:max(22px, env(safe-area-inset-bottom, 0px));display:flex;gap:22px;
+  font:500 .62rem/1 var(--f-mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim);pointer-events:none;transition:opacity .4s;font-variant-numeric:tabular-nums}
+.hud span{white-space:nowrap}
+.hud em{font-style:normal;color:var(--bone)}
+.hud.hide{opacity:0}
+@media (max-width:859px){.hud{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .ldr-p{stroke-dashoffset:0}.ldr-o{opacity:1}
+  .ldr.out .ldr-in{transform:none}
+}
+</style>
+<meta name="description" content="Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI: applications, models and agents.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&family=Anybody:wdth,wght@50..150,100..900&family=Azeret+Mono:wght@400;500&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js"}}</script>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <mask id="wpm" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M31.99 38.01 L40.94 19.67" stroke="#000" stroke-width="10.8"/></mask>
+    <mask id="wpms" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M30.45 40.5 L41.48 17.89" stroke="#000" stroke-width="11.6"/></mask>
+    <symbol id="mk-s" viewBox="0 0 64 64"><path d="M20.42 26.45 L47.34 31.2 A8.7 8.7 0 1 0 41.03 18.82 L29.05 43.39 A11.9 11.9 0 1 1 20.42 26.45 Z" fill="none" stroke="currentColor" stroke-width="7.4" mask="url(#wpms)"/><path d="M30.19 41.04 L41.75 17.35" stroke="currentColor" stroke-width="7.4"/></symbol>
+  </defs>
+</svg>
+
+<canvas id="poster" class="layer" aria-hidden="true"></canvas>
+<canvas id="gl" class="layer" aria-hidden="true"></canvas>
+<div class="fx" aria-hidden="true"></div>
+<div class="scrim" id="scrim" data-side="l" aria-hidden="true"><i class="s-l"></i><i class="s-r"></i><i class="s-tb"></i></div>
+<div class="cut" id="cut" aria-hidden="true" hidden></div>
+
+<div class="ldr" id="ldr" aria-hidden="true">
+  <div class="ldr-in">
+    <svg class="ldr-mk" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path class="ldr-p" pathLength="1" d="M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z" mask="url(#wpm)"/><path class="ldr-o" d="M31.73 38.55 L41.2 19.14"/></svg>
+    <p class="ldr-name">Hummingbolt</p>
+    <p class="ldr-st"><span id="ldr-txt">Loading type</span><span id="ldr-n">0/4</span></p>
+    <div class="ldr-bar"><i id="ldr-bar"></i></div>
+  </div>
+</div>
+
+<div class="cur off" id="cur" aria-hidden="true"><div class="cur-r" id="cur-r"><i class="cur-ring"></i><span class="cur-lbl" id="cur-lbl"></span></div><div class="cur-d" id="cur-d"><i></i></div></div>
+
+<a class="skip" href="#content" id="skip">Skip to content</a>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="#top" aria-label="Hummingbolt home"><svg class="mk" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#mk-s"/></svg><span class="wm">Hummingbolt</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="#make">Make</a>
+      <a href="#toppleton">Toppleton</a>
+      <a href="#lab">Lab</a>
+      <a href="#values" data-nav="values">Values</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="hdr-m">
+      <a class="nav-v" href="#values" data-nav="values">Values</a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu" hidden>
+  <nav aria-label="Menu">
+    <a href="#top">Home</a>
+    <a href="#make">What we make</a>
+    <a href="#toppleton">Toppleton</a>
+    <a href="#lab">The lab</a>
+    <a href="#values" data-nav="values">Values</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="menu-foot"><span>admin@hummingbolt.com</span><span>San Francisco Bay Area</span></div>
+</div>
+
+<main id="content">
+  <!-- ================= HOME ================= -->
+  <div class="view" id="home" data-view="home">
+    <section class="ch ch--hero" id="top" data-ch="hero" aria-labelledby="h-home">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">Hummingbolt · San Francisco Bay Area</p>
+        <h1 class="d-xl" id="h-home" tabindex="-1">A software and AI lab.</h1>
+        <p class="lede">Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI: applications, models and agents.</p>
+        <div class="ctas">
+          <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener" data-cursor="Play">Play Toppleton <span class="ar" aria-hidden="true">↗</span><span class="sr"> (opens in a new tab)</span></a>
+          <a class="btn" href="#values" data-cursor="Read">Our values</a>
+        </div>
+      </div>
+      <p class="cue" aria-hidden="true"><span>Scroll</span><i></i></p>
+    </section>
+
+    <section class="ch ch--make" id="make" data-ch="make" aria-labelledby="h-make">
+      <div class="make-head">
+        <p class="eyebrow">What we make</p>
+        <h2 class="d-l" id="h-make">Apps. Games. AI.</h2>
+      </div>
+      <div class="stage" aria-hidden="true"></div>
+      <ul class="make-list">
+        <li><span class="tag">Apps</span><h3>Mobile and web apps</h3><p>Apps for phones and for the browser.</p></li>
+        <li><span class="tag">Games</span><h3>Games</h3><p>Games for all ages. Toppleton is the first.</p></li>
+        <li><span class="tag">AI</span><h3>AI applications, models and agents</h3><p>Software that uses AI, the models behind it, and agents that do the work.</p></li>
+      </ul>
+    </section>
+
+    <section class="ch ch--r" id="toppleton" data-ch="game" aria-labelledby="h-top">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">Our first game</p>
+        <h2 class="d-l" id="h-top">Toppleton</h2>
+        <p class="lede">A stacking game for all ages, children included.</p>
+        <p class="body">Free to play on the web. Phone versions are coming later.</p>
+        <ul class="facts"><li>Free</li><li>All ages</li><li>Plays in the browser</li></ul>
+        <div class="ctas">
+          <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener" data-cursor="Play">Play Toppleton <span class="ar" aria-hidden="true">↗</span><span class="sr"> (opens in a new tab)</span></a>
+          <span class="url">play.toppleton.app</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="ch" id="lab" data-ch="lab" aria-labelledby="h-lab">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">The lab</p>
+        <h2 class="d-l" id="h-lab">We build to find out.</h2>
+        <p class="lede">Ideas start as small prototypes. We test them early and keep what holds up.</p>
+        <p class="body">That goes for apps, for games, and for AI applications, models and agents.</p>
+      </div>
+    </section>
+
+    <section class="ch ch--r" id="how" data-ch="how" aria-labelledby="h-how">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">Values</p>
+        <h2 class="d-l" id="h-how">Five rules we work by.</h2>
+        <ul class="vlist"><li>Be bold.</li><li>Tinker.</li><li>Fail fast. Learn faster.</li><li>Forgiveness over permission.</li><li>Sweat the small stuff.</li></ul>
+        <div class="ctas"><a class="btn" href="#values" data-cursor="Read">Read our values <span class="ar" aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+
+    <section class="ch" id="contact" data-ch="contact" aria-labelledby="h-contact">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">Contact</p>
+        <h2 class="d-l" id="h-contact">Say hello.</h2>
+        <p><span class="email" id="email">admin@hummingbolt.com</span></p>
+        <div class="ctas">
+          <a class="btn btn--solid" href="mailto:admin@hummingbolt.com" data-cursor="Write">Email us</a>
+          <button class="btn" type="button" id="copy" data-cursor="Copy">Copy address</button>
+        </div>
+        <p class="status" id="copy-st" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= VALUES ================= -->
+  <div class="view" id="values" data-view="values" hidden>
+    <section class="ch" id="v-intro" data-ch="vintro" aria-labelledby="h-values">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">Values</p>
+        <h1 class="d-xl" id="h-values" tabindex="-1">How we work.</h1>
+        <p class="lede">Five rules. Short on purpose. Scroll and the sculpture takes a new shape for each one.</p>
+      </div>
+    </section>
+    <section class="ch ch--v" data-ch="bold" aria-labelledby="v-bold">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in"><h2 class="d-v" id="v-bold">Be bold.</h2><p class="v-line">Pick the hard problem. Go after it.</p><p class="v-cap" data-cap="bold"><b></b><span>Fan · polished steel</span></p></div>
+    </section>
+    <section class="ch ch--v ch--r" data-ch="tinker" aria-labelledby="v-tinker">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in"><h2 class="d-v" id="v-tinker">Tinker.</h2><p class="v-line">We learn by building. Prototype first, debate later.</p><p class="v-cap" data-cap="tinker"><b></b><span>Parts tray · bead-blasted steel</span></p></div>
+    </section>
+    <section class="ch ch--v" data-ch="fail" aria-labelledby="v-fail">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in"><h2 class="d-v" id="v-fail">Fail fast. Learn faster.</h2><p class="v-line">Small bets. Quick tests. Honest results.</p><p class="v-cap" data-cap="fail"><b></b><span>Tower · tool steel</span></p></div>
+    </section>
+    <section class="ch ch--v ch--r" data-ch="forgive" aria-labelledby="v-forgive">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in"><h2 class="d-v" id="v-forgive">Forgiveness over permission.</h2><p class="v-line">On small calls, we act and own the outcome. On safety and privacy, we always ask first.</p><p class="v-cap" data-cap="forgive"><b></b><span>Wall · gunmetal, blued core</span></p></div>
+    </section>
+    <section class="ch ch--v" data-ch="small" aria-labelledby="v-small">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in"><h2 class="d-v" id="v-small">Sweat the small stuff.</h2><p class="v-line">Hummingbirds are tiny and exact. Good software is too.</p><p class="v-cap" data-cap="small"><b></b><span>Rosette · thin-film steel</span></p></div>
+    </section>
+    <section class="ch ch--vend" data-ch="vend" aria-labelledby="v-end">
+      <div class="stage" aria-hidden="true"></div>
+      <div class="ch-in">
+        <p class="eyebrow">That is the list</p>
+        <h2 class="d-l" id="v-end">Now, back to work.</h2>
+        <p class="body">Questions about how we work? Write to admin@hummingbolt.com.</p>
+        <div class="ctas">
+          <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener" data-cursor="Play">Play Toppleton <span class="ar" aria-hidden="true">↗</span><span class="sr"> (opens in a new tab)</span></a>
+          <a class="btn" href="#top">Back to home</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot" id="foot">
+  <div class="foot-in">
+    <a class="brand" href="#top" aria-label="Hummingbolt home"><svg class="mk" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#mk-s"/></svg><span class="wm">Hummingbolt</span></a>
+    <p>© 2026 Hummingbolt LLC</p>
+    <p>2108 N St #18140, Sacramento, CA 95816</p>
+    <nav aria-label="Legal"><a href="#">Privacy</a><a href="#">Legal notice</a></nav>
+  </div>
+</footer>
+
+<div class="hud" id="hud" aria-hidden="true"><span id="hud-scene">Scene <em>01/06</em> Wingpath</span><span id="hud-mat">Roughness <em>0.16</em></span><span id="hud-slats"><em>180</em> slats</span><span id="hud-fps"><em>—</em> fps</span></div>
+
+<noscript><style>.view[hidden]{display:block!important}.ldr{display:none}</style></noscript>
+
+<script>
+(function(){
+'use strict';
+var W=window,D=document,DE=D.documentElement;
+function $(s,r){return (r||D).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s))}
+function mm(q){try{return W.matchMedia(q)}catch(e){return {matches:false,addEventListener:function(){}}}}
+var mqR=mm('(prefers-reduced-motion: reduce)'),mqPhone=mm('(max-width: 700px)'),mqFine=mm('(hover: hover) and (pointer: fine)'),mqStack=mm('(max-width: 859px)');
+var HB=W.HB={N:180,reduced:!!mqR.matches,noGL:/nogl/i.test(location.hash)||W.HB_NOGL===true,phone:!!mqPhone.matches,
+  view:'home',ver:0,c:0,cT:0,tx:0,ty:0,lastIn:0,touch:false,gl:'pending',revealed:false,steps:{},t0:performance.now(),menuOpen:false,scrollY:W.scrollY||0};
+
+/* ===================== math ===================== */
+var N=180,PI=Math.PI,TAU=PI*2;
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function qAA(o,x,y,z,a){var s=Math.sin(a/2);o[0]=x*s;o[1]=y*s;o[2]=z*s;o[3]=Math.cos(a/2);return o}
+function qE(o,x,y,z){var c1=Math.cos(x/2),c2=Math.cos(y/2),c3=Math.cos(z/2),s1=Math.sin(x/2),s2=Math.sin(y/2),s3=Math.sin(z/2);
+  o[0]=s1*c2*c3+c1*s2*s3;o[1]=c1*s2*c3-s1*c2*s3;o[2]=c1*c2*s3-s1*s2*c3;o[3]=c1*c2*c3+s1*s2*s3;return o}
+function qMul(o,a,b){var ax=a[0],ay=a[1],az=a[2],aw=a[3],bx=b[0],by=b[1],bz=b[2],bw=b[3];
+  o[0]=ax*bw+aw*bx+ay*bz-az*by;o[1]=ay*bw+aw*by+az*bx-ax*bz;o[2]=az*bw+aw*bz+ax*by-ay*bx;o[3]=aw*bw-ax*bx-ay*by-az*bz;return o}
+function qRot(o,q,x,y,z){var qx=q[0],qy=q[1],qz=q[2],qw=q[3],tx=2*(qy*z-qz*y),ty=2*(qz*x-qx*z),tz=2*(qx*y-qy*x);
+  o[0]=x+qw*tx+qy*tz-qz*ty;o[1]=y+qw*ty+qz*tx-qx*tz;o[2]=z+qw*tz+qx*ty-qy*tx;return o}
+function qBasis(o,X,Y,Z){var m11=X[0],m12=Y[0],m13=Z[0],m21=X[1],m22=Y[1],m23=Z[1],m31=X[2],m32=Y[2],m33=Z[2],tr=m11+m22+m33,s;
+  if(tr>0){s=0.5/Math.sqrt(tr+1);o[3]=0.25/s;o[0]=(m32-m23)*s;o[1]=(m13-m31)*s;o[2]=(m21-m12)*s}
+  else if(m11>m22&&m11>m33){s=2*Math.sqrt(1+m11-m22-m33);o[3]=(m32-m23)/s;o[0]=0.25*s;o[1]=(m12+m21)/s;o[2]=(m13+m31)/s}
+  else if(m22>m33){s=2*Math.sqrt(1+m22-m11-m33);o[3]=(m13-m31)/s;o[0]=(m12+m21)/s;o[1]=0.25*s;o[2]=(m23+m32)/s}
+  else{s=2*Math.sqrt(1+m33-m11-m22);o[3]=(m21-m12)/s;o[0]=(m13+m31)/s;o[1]=(m23+m32)/s;o[2]=0.25*s}return o}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+var rnd=rng(20260517);
+var QI=[0,0,0,1],QT=[0,0,0,1],QL=[0,0,0,1],QO=[0,0,0,1],QG=[0,0,0,1],QT2=[0,0,0,1],QO2=[0,0,0,1],V3=[0,0,0];
+
+/* per-slat constants: scatter vectors, spin axes, stagger delays, a fixed permutation */
+var SC=new Float32Array(N*3),AX=new Float32Array(N*3),DL=new Float32Array(N),PERM=new Uint16Array(N);
+(function(){for(var i=0;i<N;i++){var u=rnd()*2-1,a=rnd()*TAU,r=Math.sqrt(1-u*u),m=0.55+0.45*rnd();
+  SC[i*3]=r*Math.cos(a)*m;SC[i*3+1]=u*m;SC[i*3+2]=r*Math.sin(a)*m;
+  u=rnd()*2-1;a=rnd()*TAU;r=Math.sqrt(1-u*u);AX[i*3]=r*Math.cos(a);AX[i*3+1]=u;AX[i*3+2]=r*Math.sin(a);
+  DL[i]=0.62*(i/N)+0.38*rnd();PERM[i]=i}
+  for(i=N-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),t=PERM[i];PERM[i]=PERM[j];PERM[j]=t}})();
+HB.SC=SC;HB.AX=AX;HB.DL=DL;
+
+function put(o,i,x,y,z,q,hx,hy,hz,r,a){var j=i*3,k=i*4,P=o.P,Q=o.Q,S=o.S;P[j]=x;P[j+1]=y;P[j+2]=z;Q[k]=q[0];Q[k+1]=q[1];Q[k+2]=q[2];Q[k+3]=q[3];
+  S[k]=hx;S[k+1]=hy;S[k+2]=hz;S[k+3]=Math.min(r,hx,hy,hz);o.A[i]=a}
+function grp(o,i0,i1,G,tx,ty,tz,px,py,pz){px=px||0;py=py||0;pz=pz||0;var P=o.P,Q=o.Q;
+  for(var i=i0;i<i1;i++){var j=i*3,k=i*4;qRot(V3,G,P[j]-px,P[j+1]-py,P[j+2]-pz);P[j]=V3[0]+px+tx;P[j+1]=V3[1]+py+ty;P[j+2]=V3[2]+pz+tz;
+    QT2[0]=Q[k];QT2[1]=Q[k+1];QT2[2]=Q[k+2];QT2[3]=Q[k+3];qMul(QO2,G,QT2);Q[k]=QO2[0];Q[k+1]=QO2[1];Q[k+2]=QO2[2];Q[k+3]=QO2[3]}}
+HB.newPose=function(){return {P:new Float32Array(N*3),Q:new Float32Array(N*4),S:new Float32Array(N*4),A:new Float32Array(N)}};
+
+/* ===================== WINGPATH, swept into 3D =====================
+   Same construction as the logo: two circles and the two lines that touch both, one stroke that passes over itself once. */
+var WP=new Float32Array(N*3),WQ=new Float32Array(N*4),WU=new Float32Array(N);
+(function(){
+  var P0=[21.31,26.17],P1=[46.92,30.69],P2=[41.12,19.3],P3=[29.72,42.68],Cs=[48.31,22.81],rs=8,Cb=[19.29,37.59],rb=11.6;
+  function at(p,c){return Math.atan2(p[1]-c[1],p[0]-c[0])}
+  var L1=Math.hypot(P1[0]-P0[0],P1[1]-P0[1]),L2=Math.hypot(P3[0]-P2[0],P3[1]-P2[1]);
+  var s0=at(P1,Cs),s1=at(P2,Cs),dS=-((((s0-s1)%TAU)+TAU)%TAU),b0=at(P3,Cb),b1=at(P0,Cb),dB=((((b1-b0)%TAU)+TAU)%TAU);
+  var As=-dS*rs,Ab=dB*rb,L=L1+As+L2+Ab,t2=[0,0];
+  function pt(s){s=((s%L)+L)%L;var u;
+    if(s<L1){u=s/L1;t2[0]=P0[0]+(P1[0]-P0[0])*u;t2[1]=P0[1]+(P1[1]-P0[1])*u;return}s-=L1;
+    if(s<As){u=s0+dS*(s/As);t2[0]=Cs[0]+rs*Math.cos(u);t2[1]=Cs[1]+rs*Math.sin(u);return}s-=As;
+    if(s<L2){u=s/L2;t2[0]=P2[0]+(P3[0]-P2[0])*u;t2[1]=P2[1]+(P3[1]-P2[1])*u;return}s-=L2;
+    u=b0+dB*(s/Ab);t2[0]=Cb[0]+rb*Math.cos(u);t2[1]=Cb[1]+rb*Math.sin(u)}
+  var d1x=P1[0]-P0[0],d1y=P1[1]-P0[1],d2x=P3[0]-P2[0],d2y=P3[1]-P2[1],den=d1x*d2y-d1y*d2x,ex=P2[0]-P0[0],ey=P2[1]-P0[1];
+  var uu=(ex*d2y-ey*d2x)/den,vv=(ex*d1y-ey*d1x)/den,sc1=uu*L1,sc2=L1+As+vv*L2,span=(((sc1-sc2)%L)+L)%L;
+  function lift(s){var ds=(((s-sc2)%L)+L)%L;return Math.cos(ds<span?PI*ds/span:PI+PI*(ds-span)/(L-span))}
+  var K=15,H=0.2,a=[0,0,0],b=[0,0,0],c=[0,0,0],X=[0,0,0],Y=[0,0,0],T=[0,0,0],X2=[0,0,0],Y2=[0,0,0],q=[0,0,0,1];
+  function p3(s,o){pt(s);o[0]=(t2[0]-32)/K;o[1]=-(t2[1]-32)/K;o[2]=H*lift(s)}
+  for(var i=0;i<N;i++){var s=(i+0.5)/N*L;p3(s,a);p3(s+0.3,b);p3(s-0.3,c);
+    T[0]=b[0]-c[0];T[1]=b[1]-c[1];T[2]=b[2]-c[2];var l=Math.hypot(T[0],T[1],T[2]);T[0]/=l;T[1]/=l;T[2]/=l;
+    l=Math.hypot(T[1],T[0]);X[0]=T[1]/l;X[1]=-T[0]/l;X[2]=0;
+    Y[0]=T[1]*X[2]-T[2]*X[1];Y[1]=T[2]*X[0]-T[0]*X[2];Y[2]=T[0]*X[1]-T[1]*X[0];
+    var tw=0.3*Math.sin(TAU*2*s/L+0.6),ct=Math.cos(tw),st=Math.sin(tw);
+    for(var k=0;k<3;k++){X2[k]=X[k]*ct+Y[k]*st;Y2[k]=Y[k]*ct-X[k]*st}
+    qBasis(q,X2,Y2,T);WQ[i*4]=q[0];WQ[i*4+1]=q[1];WQ[i*4+2]=q[2];WQ[i*4+3]=q[3];WP[i*3]=a[0];WP[i*3+1]=a[1];WP[i*3+2]=a[2];WU[i]=s/L}
+})();
+
+var CUBE6=[[0.13,0,0],[-0.13,0,0],[0,0.13,0],[0,-0.13,0],[0,0,0.13],[0,0,-0.13]],FANT=[[2.35,0.042,0],[1.75,0.046,0.055],[1.15,0.05,0.11]];
+/* knolling layout: count, cols, x0, z0, dx, dz, hx, hy, hz, radius */
+var KN=[[24,12,-1.75,-1.15,.135,.135,.055,.055,.055,.055],[36,12,-1.75,-.78,.13,.13,.045,.045,.045,.012],[39,10,-1.75,-.3,.085,.085,.028,.012,.028,.008],
+  [24,6,-.85,-.3,.12,.12,.045,.008,.045,.008],[16,16,-1.75,.5,.1,0,.03,.03,.26,.03],[20,5,.2,-1.12,.26,.17,.09,.05,.06,.02],
+  [12,3,.3,-.3,.38,.27,.16,.012,.11,.01],[8,1,.98,.74,0,.09,.8,.035,.035,.012]];
+
+/* ===================== the ten forms =====================
+   mat: [colour, roughness, metalness, clearcoat, iridescence]   bg: [glow, edge] */
+var POSES=HB.POSES={
+  wing:{label:'Wingpath',finish:'Liquid steel',ex:1.85,ey:1.4,still:1.6,mat:['#cdc5ba',.16,1,0,0],bg:['#2c241e','#0e0c0b'],
+    fill:function(t,o,cfg){var sw=cfg&&cfg.dock?0.14:1,uc=(t*0.05)%1;
+      qE(QG,sw*0.13*Math.sin(t*0.21+1.2),sw*0.5*Math.sin(t*0.19),sw*0.05*Math.sin(t*0.13));
+      for(var i=0;i<N;i++){var j=i*3,k=i*4;qRot(V3,QG,WP[j],WP[j+1],WP[j+2]);QL[0]=WQ[k];QL[1]=WQ[k+1];QL[2]=WQ[k+2];QL[3]=WQ[k+3];qMul(QO,QG,QL);
+        var du=Math.abs(WU[i]-uc);du=Math.min(du,1-du);var a=clamp(1-du/0.03,0,1);put(o,i,V3[0],V3[1],V3[2],QO,0.2,0.135,0.0165,0.015,a*a*(3-2*a))}}},
+  split:{label:'Three forms',finish:'Machined steel',ex:2.7,ey:0.98,still:0.6,mat:['#c6bfb5',.22,1,0,0],bg:['#28211c','#0e0c0b'],
+    fill:function(t,o){var i=0,r,c,k,s,g,a;
+      put(o,i++,0,0,0,QI,0.37,0.74,0.03,0.03,0);put(o,i++,0,0.02,0.13,QI,0.33,0.66,0.008,0.008,0);
+      for(r=0;r<5;r++)for(c=0;c<4;c++)put(o,i++,-0.225+c*0.15,0.46-r*0.16,0.25,QI,0.052,0.052,0.016,0.016,(r===1&&c===2)?1:0);
+      for(c=0;c<4;c++)put(o,i++,-0.225+c*0.15,-0.56,0.25,QI,0.052,0.052,0.016,0.016,0);
+      while(i<60)put(o,i++,0,0,0,QI,0.3,0.6,0.02,0.01,0);
+      qE(QG,-0.1+0.04*Math.sin(t*0.5),-0.4+0.12*Math.sin(t*0.3),0);grp(o,0,60,QG,-2.0,0.03*Math.sin(t*0.8),0);
+      for(k=0;k<5;k++){qAA(QL,0,1,0,(k%2)*PI/2+0.12*Math.sin(k*2.1));var ox=0.06*Math.sin(k*1.7),oz=0.05*Math.cos(k*1.3),y=-0.4+k*0.205;
+        for(s=0;s<12;s++){qRot(V3,QL,-0.458+s*0.0833,0,0);put(o,i++,V3[0]+ox,y,V3[2]+oz,QL,0.034,0.098,0.16,0.016,k===4?1:0)}}
+      qE(QG,0.02*Math.sin(t*1.1),0.5+t*0.18,0.025*Math.sin(t*0.9));grp(o,60,120,QG,0,0,0,0,-0.5,0);
+      for(g=0;g<3;g++){qE(QT,g*PI/3+0.4,g*0.9,0.35);var rad=0.5+g*0.12;
+        for(s=0;s<18;s++){a=TAU*s/18+t*(g%2?0.45:-0.35);qRot(V3,QT,Math.cos(a)*rad,0,Math.sin(a)*rad);qAA(QL,0,1,0,-a);qMul(QO,QT,QL);
+          put(o,i++,V3[0],V3[1],V3[2],QO,0.05,0.05,0.05,0.022,s===0?1:0)}}
+      for(k=0;k<6;k++)put(o,i++,CUBE6[k][0],CUBE6[k][1],CUBE6[k][2],QI,0.062,0.062,0.062,0.03,0);
+      qE(QG,0.25,t*0.12,0);grp(o,120,180,QG,2.0,0.02,0)}},
+  tower:{label:'Tower',finish:'Laminated steel',ex:1.0,ey:1.32,still:0,mat:['#d2c6b5',.28,1,0,0],bg:['#30261e','#0f0c0b'],
+    fill:function(t,o){var i=0,base=-1.2;
+      for(var k=0;k<10;k++){qAA(QL,0,1,0,(k%2)*PI/2+0.16*Math.sin(k*2.3+0.4));var ox=0.15*Math.sin(k*1.25),oz=0.09*Math.cos(k*0.95+0.5),y=base+0.12+k*0.245;
+        for(var s=0;s<18;s++){qRot(V3,QL,-0.7083+s*0.0833,0,0);put(o,i++,V3[0]+ox,y,V3[2]+oz,QL,0.0355,0.118,0.205,0.02,k===9?1:0)}}
+      qE(QG,0.016*Math.sin(t*0.83),0.35+t*0.1,0.022*Math.sin(t*1.07));grp(o,0,N,QG,0,0,0,0,base,0)}},
+  lattice:{label:'Lattice',finish:'Polished steel',ex:1.32,ey:1.16,still:1.0,mat:['#bcc0c6',.13,1,0,0],bg:['#221e1c','#0c0b0b'],
+    fill:function(t,o){var i=0,sp=0.34;
+      for(var y=0;y<5;y++){qAA(QL,0,1,0,(y-2)*0.42*Math.sin(t*0.33)+t*0.1);var br=1+0.05*Math.sin(t*0.6+y*0.9);
+        for(var x=0;x<6;x++)for(var z=0;z<6;z++){qRot(V3,QL,(x-2.5)*sp*br,(y-2)*sp*br,(z-2.5)*sp*br);put(o,i++,V3[0],V3[1],V3[2],QL,0.068,0.068,0.068,0.03,0)}}
+      var h=Math.floor(t*2.4);for(var m=0;m<3;m++)o.A[PERM[((h-m)%N+N)%N]]=m===0?1:(m===1?0.55:0.25);
+      qE(QG,0.42,t*0.07,0.12);grp(o,0,N,QG,0,0,0)}},
+  monolith:{label:'Monolith',finish:'Black lacquer',ex:0.66,ey:1.2,still:0,mat:['#1d1b1a',.34,.65,1,0],bg:['#2a231e','#0d0b0a'],
+    fill:function(t,o){var i=0,tw=0.06+0.16*Math.sin(t*0.3),hh=2.25/90-0.003;
+      for(var k=0;k<45;k++){var f=k/44,y=-1.125+2.25*(k+0.5)/45;qAA(QL,0,1,0,tw*(f-0.5)*2);
+        for(var m=0;m<4;m++)put(o,i++,0,y,0,QL,0.5,hh,0.125,0.006,0)}
+      qE(QG,0,0.55+t*0.09,0);grp(o,0,N,QG,0,0.03*Math.sin(t*0.6),0)}},
+  fan:{label:'Fan',finish:'Polished steel',ex:1.72,ey:1.45,still:0,mat:['#d8d1c6',.09,1,0,0],bg:['#33291f','#0f0c0a'],
+    fill:function(t,o){var i=0,open=0.93+0.07*Math.sin(t*0.6),hx=-0.95,hy=-1.25,T=FANT;
+      for(var g=0;g<3;g++){var L=T[g][0],w=T[g][1],z=T[g][2];
+        for(var k=0;k<60;k++){var f=k/59,a=-0.1+f*2.0*open+g*0.012,rr=0.16+L/2;
+          qAA(QT,0,0,1,a);qAA(QL,1,0,0,0.55);qMul(QO,QT,QL);
+          put(o,i++,hx+Math.cos(a)*rr,hy+Math.sin(a)*rr,z-f*0.08*(g+1),QO,L/2,w,0.0075,0.0068,(g===0&&k>=57)?1:0)}}
+      qE(QG,0.05*Math.sin(t*0.4),0.12*Math.sin(t*0.25),0);grp(o,0,N,QG,0.1,0.06,0)}},
+  knoll:{label:'Parts tray',finish:'Bead-blasted steel',ex:2.05,ey:1.62,still:0.9,mat:['#bfb7ac',.46,1,0,0],bg:['#29221c','#0e0c0b'],
+    fill:function(t,o){var i=0;put(o,i++,0,-0.075,0.05,QI,1.98,0.012,1.42,0.012,0);
+      for(var g=0;g<KN.length;g++){var K=KN[g];for(var n=0;n<K[0];n++){var c=n%K[1],r=(n/K[1])|0;put(o,i++,K[2]+c*K[4],K[7]-0.06,K[3]+r*K[5]-0.09,QI,K[6],K[7],K[8],K[9],0)}}
+      var per=2.2,cyc=Math.floor(t/per),ph=(t-cyc*per)/per,idx=1+PERM[(cyc*37)%N]%(N-1),l=Math.sin(PI*clamp((ph-0.08)/0.8,0,1));
+      o.P[idx*3+1]+=l*0.42;qE(QT,l*0.5,l*PI*0.6,0);o.Q[idx*4]=QT[0];o.Q[idx*4+1]=QT[1];o.Q[idx*4+2]=QT[2];o.Q[idx*4+3]=QT[3];o.A[idx]=l}},
+  topple:{label:'Topple',finish:'Tool steel',ex:1.78,ey:1.12,still:3.3,mat:['#aea79e',.27,1,0,0],bg:['#252019','#0d0b0a'],
+    fill:function(t,o){var tc=((t%6.4)+6.4)%6.4,base=-0.95,i=0,SH=-0.47;
+      for(var k=0;k<9;k++){var yaw=(k%2)*PI/2+0.1*Math.sin(k*1.9),rx=-0.55+0.08*Math.sin(k*1.4),rz=0.05*Math.cos(k*1.1),ry=base+0.11+k*0.225,X=rx,Y=ry,Z=rz,ang=0,yw=yaw;
+        if(k>=4){var m=k-4,fx=0.3+m*0.44,fz=0.32*Math.sin(m*1.9+0.4),fy=base+0.11,fyaw=PI/2+0.22*Math.sin(m*2.3+1),p;
+          if(tc>=1.8&&tc<3.9){p=clamp((tc-1.8-(4-m)*0.08)/0.8,0,1);X=rx+(fx-rx)*p;Y=ry+(fy-ry)*p*p;Z=rz+(fz-rz)*p;ang=-PI*p;yw=yaw+(fyaw-yaw)*p}
+          else if(tc>=3.9){var q=clamp((tc-3.9-m*0.28)/0.55,0,1);q=q*q*(3-2*q);p=1-q;X=rx+(fx-rx)*p;Y=ry+(fy-ry)*p+Math.sin(PI*q)*0.5;Z=rz+(fz-rz)*p;ang=-PI*p;yw=yaw+(fyaw-yaw)*p}}
+        qAA(QT,0,0,1,ang);qAA(QL,0,1,0,yw);qMul(QO,QT,QL);
+        for(var s=0;s<20;s++){qRot(V3,QO,-0.6175+s*0.065,0,0);put(o,i++,V3[0]+X+SH,V3[1]+Y,V3[2]+Z,QO,0.0285,0.105,0.19,0.018,k===8?1:0)}}}},
+  wall:{label:'Wall',finish:'Gunmetal, blued core',ex:1.55,ey:1.26,still:1.2,mat:['#c3bcb2',.2,1,0,0],bg:['#271f1b','#0d0b0b'],
+    fill:function(t,o){var i=0;
+      for(var r=0;r<12;r++)for(var c=0;c<15;c++){var x=(c-7)*0.2,y=(r-5.5)*0.2,lock=(c>=6&&c<=8&&r>=4&&r<=7),push=0;
+        if(!lock){var s=0.5+0.5*Math.sin((x*0.9+y*0.55)*1.7-t*1.5);push=s*s*s*s}
+        qE(QL,-push*0.75,push*0.45,0);put(o,i++,x,y,push*0.42-(lock?0.03:0),QL,0.088,0.088,0.032,0.02,lock?1:0)}
+      qE(QG,0.04*Math.sin(t*0.3),0.08*Math.sin(t*0.21),0);grp(o,0,N,QG,0,0,0)}},
+  spiral:{label:'Rosette',finish:'Thin-film steel',ex:1.6,ey:1.06,still:0,mat:['#a59e95',.15,1,0,1],bg:['#231d1c','#0d0b0b'],
+    fill:function(t,o){var GA=2.399963229728653,rot=t*0.06;
+      for(var i=0;i<N;i++){var f=Math.sqrt((i+0.5)/N),r=1.45*f,a=i*GA+rot,y=0.38*(1-f*f)-0.2;
+        qAA(QT,0,1,0,-a);qAA(QL,0,0,1,Math.atan(-0.3615*r)+0.18);qMul(QO,QT,QL);
+        put(o,i,Math.cos(a)*r,y,Math.sin(a)*r,QO,0.035+0.075*f,0.0065,0.02+0.035*f,0.006,i%21===0?1:0)}}}
+};
+
+/* chapter → form + camera (az/el radians, fov degrees, zoom > 1 crops in) */
+var CH={
+  hero:{pose:'wing',az:-0.34,el:0.1,fov:28},
+  make:{pose:'split',az:0,el:0.16,fov:28},
+  game:{pose:'tower',az:0.6,el:-0.12,fov:30,roll:-0.025},
+  lab:{pose:'lattice',az:-0.72,el:0.3,fov:30,roll:0.02},
+  how:{pose:'monolith',az:0.3,el:-0.07,fov:26},
+  contact:{pose:'wing',dock:1,az:0,el:0.02,fov:24},
+  vintro:{pose:'monolith',az:-0.5,el:0.14,fov:28},
+  bold:{pose:'fan',az:0.24,el:0.12,fov:30,roll:0.04},
+  tinker:{pose:'knoll',az:0,el:1.12,fov:30,roll:-0.32},
+  fail:{pose:'topple',az:0.62,el:0.18,fov:30},
+  forgive:{pose:'wall',az:-0.6,el:0.08,fov:30},
+  small:{pose:'spiral',az:0.2,el:0.72,fov:22,zoom:1.45},
+  vend:{pose:'wing',dock:1,az:0,el:0.02,fov:24}
+};
+HB.CH=CH;
+var DEF_F={x:0,y:0,h:0.8,w:0.8};
+HB.camOf=function(ch,asp,o){var cfg=ch.cfg,P=POSES[cfg.pose],f=ch.f||DEF_F,tanH=Math.tan(cfg.fov*PI/360),fill=0.88*(cfg.zoom||1);
+  var d1=P.ey/(tanH*Math.max(0.08,f.h)*fill),d2=P.ex/(tanH*asp*Math.max(0.08,f.w)*fill);
+  o.D=Math.max(d1,d2,2.4);o.az=cfg.az;o.el=cfg.el;o.roll=cfg.roll||0;o.fov=cfg.fov;o.sx=f.x;o.sy=f.y;return o};
+
+/* ===================== chapters & scroll ===================== */
+HB.views={home:[],values:[]};
+$$('.view').forEach(function(v){var key=v.getAttribute('data-view');$$('[data-ch]',v).forEach(function(s){var k=s.getAttribute('data-ch');HB.views[key].push({el:s,stage:$('.stage',s),key:k,cfg:CH[k],a:0,f:null})})});
+HB.list=function(){return HB.views[HB.view]};
+
+function measure(){var vw=DE.clientWidth||W.innerWidth,vh=W.innerHeight,cv=$('#gl'),chh=(cv&&cv.clientHeight)||vh,sy=W.scrollY||0,list=HB.list();
+  var maxS=Math.max(0,DE.scrollHeight-vh),focus=mqStack.matches?0.3:0.5;HB.vw=vw;HB.vh=chh;
+  for(var i=0;i<list.length;i++){var c=list[i],r=c.stage.getBoundingClientRect(),cy=r.top+sy+r.height/2,a=i===0?0:clamp(cy-vh*focus,0,maxS);
+    if(i>0&&a<=list[i-1].a)a=list[i-1].a+1;c.a=a;var yp=cy-a;
+    c.f={x:((r.left+r.width/2)/vw)*2-1,y:1-(yp/chh)*2,h:Math.max(0.1,r.height/chh),w:Math.max(0.1,r.width/vw)}}
+  HB.cT=target();HB.dirty=true}
+HB.measure=measure;
+function target(){var l=HB.list(),y=W.scrollY||0,n=l.length;if(!n)return 0;if(y<=l[0].a)return 0;if(y>=l[n-1].a)return n-1;
+  for(var i=0;i<n-1;i++){if(y<l[i+1].a){var u=(y-l[i].a)/Math.max(1,l[i+1].a-l[i].a);return i+clamp((u-0.18)/0.64,0,1)}}return n-1}
+var lastR=-1,scrimEl=$('#scrim');
+function scrimSide(r){var l=HB.list();if(!l.length)return;var el=l[clamp(r,0,l.length-1)].el;scrimEl.setAttribute('data-side',el.classList.contains('ch--make')?'tb':(el.classList.contains('ch--r')?'r':'l'))}
+function onScroll(){HB.scrollY=W.scrollY||0;HB.cT=target();var r=Math.round(HB.cT);if(r!==lastR){lastR=r;hudScene(r);scrimSide(r);if(HB.gl!=='on')drawPoster()}
+  if(HB.reduced&&HB.requestFrame)HB.requestFrame()}
+W.addEventListener('scroll',onScroll,{passive:true});
+
+/* ===================== HUD (live values only) ===================== */
+var hudSc=$('#hud-scene'),hudMat=$('#hud-mat'),hudFps=$('#hud-fps');
+function pad(n){return (n<10?'0':'')+n}
+function hudScene(r){var l=HB.list();if(!l.length)return;r=clamp(r,0,l.length-1);hudSc.innerHTML='Scene <em>'+pad(r+1)+'/'+pad(l.length)+'</em> '+POSES[l[r].cfg.pose].label;
+  if(HB.gl!=='on'){hudMat.innerHTML='Roughness <em>'+POSES[l[r].cfg.pose].mat[1].toFixed(2)+'</em>'}}
+HB.hudScene=hudScene;
+HB.hudSet=function(sceneIdx,rough,fps,dpr){hudScene(sceneIdx);hudMat.innerHTML='Roughness <em>'+rough.toFixed(2)+'</em>';hudFps.innerHTML='<em>'+fps+'</em> fps · dpr <em>'+dpr.toFixed(2)+'</em>'};
+try{var io=new IntersectionObserver(function(es){es.forEach(function(e){$('#hud').classList.toggle('hide',e.isIntersecting)})});io.observe($('#foot'))}catch(e){}
+/* value captions: written from the same numbers the renderer uses */
+$$('[data-cap]').forEach(function(el){var P=POSES[CH[el.getAttribute('data-cap')].pose];$('span',el).textContent=P.label+' · '+P.finish+' · roughness '+P.mat[1].toFixed(2)+(P.label==='Rosette'?' · golden angle 137.5°':'')+' · 180 slats';$('b',el).style.setProperty('--sw',P.mat[3]?P.mat[0]:P.mat[0])});
+
+/* ===================== static poster (canvas 2D) =====================
+   Used before WebGL is ready, when WebGL is off, and after a lost context. Same forms, drawn as flat-shaded boxes. */
+var PO=HB.newPose(),pcam={},order=new Array(N);for(var oi=0;oi<N;oi++)order[oi]=oi;
+function hex(h){return [parseInt(h.substr(1,2),16)/255,parseInt(h.substr(3,2),16)/255,parseInt(h.substr(5,2),16)/255]}
+function drawPoster(){var cv=$('#poster');if(!cv||cv.hidden)return;var ctx=cv.getContext('2d');if(!ctx)return;
+  var w=cv.clientWidth||W.innerWidth,h=cv.clientHeight||W.innerHeight,dpr=Math.min(W.devicePixelRatio||1,2),asp=w/h;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  var l=HB.list(),ci=clamp(Math.round(HB.cT),0,l.length-1),ch=l[ci],P=POSES[ch.cfg.pose];HB.camOf(ch,asp,pcam);
+  var gx=(pcam.sx+1)/2*w,gy=(1-pcam.sy)/2*h,g=ctx.createRadialGradient(gx,gy,0,gx,gy,Math.max(w,h)*0.75);
+  g.addColorStop(0,P.bg[0]);g.addColorStop(1,P.bg[1]);ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  P.fill(P.still,PO,ch.cfg);
+  var ce=Math.cos(pcam.el),cx=pcam.D*Math.sin(pcam.az)*ce,cy=pcam.D*Math.sin(pcam.el),cz=pcam.D*Math.cos(pcam.az)*ce;
+  var fl=Math.hypot(cx,cy,cz),fx=-cx/fl,fy=-cy/fl,fz=-cz/fl,rx=-fz,ry=0,rz=fx,rl=Math.hypot(rx,rz)||1;rx/=rl;rz/=rl;
+  var ux=ry*fz-rz*fy,uy=rz*fx-rx*fz,uz=rx*fy-ry*fx,cr=Math.cos(pcam.roll),sr=Math.sin(pcam.roll);
+  var Rx=rx*cr+ux*sr,Ry=ry*cr+uy*sr,Rz=rz*cr+uz*sr,Ux=ux*cr-rx*sr,Uy=uy*cr-ry*sr,Uz=uz*cr-rz*sr,tanH=Math.tan(pcam.fov*PI/360);
+  var depth=new Float32Array(N),vol=new Float32Array(N);
+  for(var i=0;i<N;i++){var j=i*3;depth[i]=(PO.P[j]-cx)*fx+(PO.P[j+1]-cy)*fy+(PO.P[j+2]-cz)*fz;vol[i]=PO.S[i*4]*PO.S[i*4+1]*PO.S[i*4+2]}
+  order.sort(function(a,b){return (depth[b]-depth[a])||(vol[a]-vol[b])});
+  var base=hex(P.mat[0]),acc=hex('#3f66b8'),rough=P.mat[1],e1=24*0.16/rough,e2=70*0.16/rough,e3=40*0.16/rough,q=[0,0,0,1],ax=[[0,0,0],[0,0,0],[0,0,0]],sx=[0,0,0],pts=[[0,0],[0,0],[0,0],[0,0]];
+  function proj(px,py,pz,o){var vx=px-cx,vy=py-cy,vz=pz-cz,z=vx*fx+vy*fy+vz*fz;z=Math.max(0.05,z);
+    o[0]=((vx*Rx+vy*Ry+vz*Rz)/(z*tanH*asp)+pcam.sx+1)/2*w;o[1]=(1-((vx*Ux+vy*Uy+vz*Uz)/(z*tanH)+pcam.sy))/2*h}
+  for(var n=0;n<N;n++){var id=order[n],j3=id*3,k4=id*4,px=PO.P[j3],py=PO.P[j3+1],pz=PO.P[j3+2];
+    q[0]=PO.Q[k4];q[1]=PO.Q[k4+1];q[2]=PO.Q[k4+2];q[3]=PO.Q[k4+3];qRot(ax[0],q,1,0,0);qRot(ax[1],q,0,1,0);qRot(ax[2],q,0,0,1);
+    sx[0]=PO.S[k4];sx[1]=PO.S[k4+1];sx[2]=PO.S[k4+2];var am=PO.A[id];
+    var cr0=base[0]+(acc[0]-base[0])*am,cg0=base[1]+(acc[1]-base[1])*am,cb0=base[2]+(acc[2]-base[2])*am;
+    for(var a=0;a<3;a++)for(var sg=-1;sg<=1;sg+=2){var nx=ax[a][0]*sg,ny=ax[a][1]*sg,nz=ax[a][2]*sg,
+        fcx=px+nx*sx[a],fcy=py+ny*sx[a],fcz=pz+nz*sx[a],vx=cx-fcx,vy=cy-fcy,vz=cz-fcz,vl=Math.hypot(vx,vy,vz);
+      if(nx*vx+ny*vy+nz*vz<=0)continue;vx/=vl;vy/=vl;vz/=vl;
+      var dn=2*(nx*vx+ny*vy+nz*vz),Rfx=dn*nx-vx,Rfy=dn*ny-vy,Rfz=dn*nz-vz;
+      var k1=Math.max(0,-0.55*Rfx+0.62*Rfy+0.56*Rfz),k2=Math.max(0,0.97*Rfx+0.05*Rfy+0.22*Rfz),k3=Math.max(0,0.45*Rfy-0.89*Rfz);
+      var L=0.05+0.07*Math.max(0,Rfy)+2.0*Math.pow(k1,e1)+2.6*Math.pow(k2,e2)+0.9*Math.pow(k3,e3);
+      var b=a===0?1:0,c2=a===2?1:2;if(a===1){b=0;c2=2}else if(a===0){b=1;c2=2}else{b=0;c2=1}
+      var us=[-1,1,1,-1],vs=[-1,-1,1,1];
+      for(var m=0;m<4;m++){var ox=nx*sx[a]+ax[b][0]*sx[b]*us[m]+ax[c2][0]*sx[c2]*vs[m],oy=ny*sx[a]+ax[b][1]*sx[b]*us[m]+ax[c2][1]*sx[c2]*vs[m],oz=nz*sx[a]+ax[b][2]*sx[b]*us[m]+ax[c2][2]*sx[c2]*vs[m];proj(px+ox,py+oy,pz+oz,pts[m])}
+      var R=cr0*cr0*L,G=cg0*cg0*L,B=cb0*cb0*L;if(P.mat[3]){R+=0.03*L;G+=0.03*L;B+=0.03*L}
+      R=Math.pow(R/(1+R)*1.3,1/2.2)*255;G=Math.pow(G/(1+G)*1.3,1/2.2)*255;B=Math.pow(B/(1+B)*1.3,1/2.2)*255;
+      var col='rgb('+(R|0)+','+(G|0)+','+(B|0)+')';ctx.fillStyle=col;ctx.strokeStyle=col;ctx.lineWidth=0.6;
+      ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);ctx.lineTo(pts[1][0],pts[1][1]);ctx.lineTo(pts[2][0],pts[2][1]);ctx.lineTo(pts[3][0],pts[3][1]);ctx.closePath();ctx.fill();ctx.stroke()}}}
+HB.drawPoster=drawPoster;
+
+/* ===================== loader ===================== */
+var ldr=$('#ldr'),ldrTxt=$('#ldr-txt'),ldrN=$('#ldr-n'),ldrBar=$('#ldr-bar');
+var STEPS=['type','engine','light','frame'],LBL={type:'Loading type',engine:'Loading 3D engine',light:'Building studio light',frame:'Rendering first frame'};
+function updLoader(){var done=0,next='';STEPS.forEach(function(k){if(HB.steps[k])done++;else if(!next)next=LBL[k]});
+  ldrBar.style.transform='scaleX('+(done/STEPS.length)+')';ldrN.textContent=done+'/'+STEPS.length;ldrTxt.textContent=done===STEPS.length?(HB.gl==='off'?'Static poster ready':'Ready'):next}
+HB.step=function(k){HB.steps[k]=true;updLoader();var all=STEPS.every(function(s){return HB.steps[s]});if(all)maybeReveal()};
+function reveal(){if(HB.revealed)return;HB.revealed=true;HB.revealedAt=performance.now();ldr.classList.add('out');setTimeout(function(){ldr.hidden=true},950);if(HB.onReveal)HB.onReveal()}
+function maybeReveal(){var el=performance.now()-HB.t0,min=HB.reduced?0:1150;if(el>=min)reveal();else setTimeout(reveal,min-el)}
+setTimeout(reveal,HB.reduced?1200:2500);
+ldr.addEventListener('click',reveal);
+D.addEventListener('keydown',function(e){if(!HB.revealed&&(e.key==='Escape'||e.key==='Enter'))reveal()});
+var typeDone=false;function typeOK(){if(typeDone)return;typeDone=true;HB.step('type');measure();drawPoster()}
+try{D.fonts.ready.then(typeOK,typeOK)}catch(e){typeOK()}setTimeout(typeOK,1600);
+updLoader();
+
+/* ===================== GL state hooks ===================== */
+var poster=$('#poster'),glc=$('#gl');
+HB.glFail=function(why){if(HB.gl==='off')return;HB.gl='off';HB.why=why;DE.classList.add('no-gl');glc.classList.remove('on');poster.hidden=false;drawPoster();
+  HB.steps.engine=HB.steps.light=true;HB.step('frame');hudFps.innerHTML='WebGL <em>off</em> · static poster';hudScene(Math.round(HB.cT))};
+HB.glOn=function(){HB.gl='on';glc.classList.add('on');setTimeout(function(){if(HB.gl==='on')poster.hidden=true},1300)};
+HB.glLost=function(){HB.gl='lost';glc.classList.remove('on');poster.hidden=false;drawPoster();hudFps.innerHTML='WebGL <em>paused</em> · static poster'};
+
+/* ===================== router ===================== */
+var HOME_IDS=['top','make','toppleton','lab','how','contact'];
+function jump(y){var s=DE.style.scrollBehavior;DE.style.scrollBehavior='auto';W.scrollTo(0,y);DE.style.scrollBehavior=s}
+function navCurrent(){$$('[data-nav="values"]').forEach(function(a){if(HB.view==='values')a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')})}
+function cut(fn){var el=$('#cut');if(HB.reduced||!el.animate){fn();return}el.hidden=false;
+  var a=el.animate([{opacity:0},{opacity:1}],{duration:240,easing:'ease-in',fill:'forwards'});
+  a.onfinish=function(){fn();var b=el.animate([{opacity:1},{opacity:0}],{duration:620,easing:'ease-out',fill:'forwards'});b.onfinish=function(){el.hidden=true}}}
+function route(first){var h=(location.hash||'').slice(1),v=h==='values'?'values':'home';
+  if(v===HB.view&&!first)return;
+  var go=function(){$$('.view').forEach(function(el){el.hidden=el.getAttribute('data-view')!==v});HB.view=v;HB.ver++;navCurrent();measure();
+    var tgt=(v==='home'&&HOME_IDS.indexOf(h)>0)?D.getElementById(h):null;
+    if(tgt)jump(tgt.getBoundingClientRect().top+(W.scrollY||0));else if(!first||v==='values')jump(0);
+    HB.scrollY=W.scrollY||0;HB.cT=target();HB.c=HB.cT;lastR=-1;onScroll();HB.dirty=true;
+    if(!first){var hh=tgt?$('h2',tgt):$('.view:not([hidden]) h1');if(hh){if(!hh.hasAttribute('tabindex'))hh.setAttribute('tabindex','-1');try{hh.focus({preventScroll:true})}catch(e){}}}
+    if(HB.requestFrame)HB.requestFrame()};
+  if(first)go();else cut(go)}
+W.addEventListener('hashchange',function(){route(false)});
+route(true);
+$('#skip').addEventListener('click',function(e){e.preventDefault();var h=$('.view:not([hidden]) h1');if(h){try{h.focus()}catch(er){}}});
+
+/* ===================== menu ===================== */
+var mb=$('#menu-btn'),menu=$('#menu');
+function setMenu(open,refocus){menu.hidden=!open;HB.menuOpen=open;mb.setAttribute('aria-expanded',String(open));mb.textContent=open?'Close':'Menu';DE.classList.toggle('menu-open',open);
+  D.body.style.overflow=open?'hidden':'';if(open){var a=$('a',menu);if(a)a.focus()}else if(refocus)mb.focus();if(!open&&HB.requestFrame)HB.requestFrame()}
+mb.addEventListener('click',function(){setMenu(menu.hidden,true)});
+$$('a',menu).forEach(function(a){a.addEventListener('click',function(){setMenu(false,false)})});
+D.addEventListener('keydown',function(e){if(e.key==='Escape'&&!menu.hidden)setMenu(false,true)});
+mqStack.addEventListener&&mqStack.addEventListener('change',function(){if(!mqStack.matches&&!menu.hidden)setMenu(false,false)});
+
+/* ===================== copy ===================== */
+$('#copy').addEventListener('click',function(){var addr='admin@hummingbolt.com',st=$('#copy-st');
+  function sel(){try{var r=D.createRange();r.selectNodeContents($('#email'));var s=W.getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}}
+  function fallback(){sel();var ok=false;try{ok=D.execCommand('copy')}catch(e){}st.textContent=ok?'Copied the address.':'Copy is blocked here. The address is selected, so press Ctrl+C or ⌘C.'}
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(addr).then(function(){st.textContent='Copied the address.'},fallback)}else fallback()}catch(e){fallback()}});
+
+/* ===================== pointer, touch, cursor ===================== */
+var cur=$('#cur'),curR=$('#cur-r'),curD=$('#cur-d'),curL=$('#cur-lbl'),useCur=!!mqFine.matches&&!HB.reduced,mx=-100,my=-100,rx=-100,ry=-100,curRaf=0;
+if(useCur)DE.classList.add('has-cur');
+function curLoop(){curRaf=0;rx+=(mx-rx)*0.2;ry+=(my-ry)*0.2;curR.style.transform='translate3d('+rx.toFixed(1)+'px,'+ry.toFixed(1)+'px,0)';
+  if(Math.abs(mx-rx)+Math.abs(my-ry)>0.3)curRaf=requestAnimationFrame(curLoop)}
+W.addEventListener('pointermove',function(e){HB.tx=(e.clientX/(W.innerWidth||1))*2-1;HB.ty=(e.clientY/(W.innerHeight||1))*2-1;HB.lastIn=performance.now();HB.touch=e.pointerType!=='mouse';
+  if(useCur&&e.pointerType==='mouse'){mx=e.clientX;my=e.clientY;if(rx<-50){rx=mx;ry=my}cur.classList.remove('off');curD.style.transform='translate3d('+mx+'px,'+my+'px,0)';if(!curRaf)curRaf=requestAnimationFrame(curLoop)}},{passive:true});
+W.addEventListener('touchmove',function(e){var t=e.touches&&e.touches[0];if(!t)return;HB.tx=(t.clientX/(W.innerWidth||1))*2-1;HB.ty=(t.clientY/(W.innerHeight||1))*2-1;HB.lastIn=performance.now();HB.touch=true},{passive:true});
+W.addEventListener('touchstart',function(e){var t=e.touches&&e.touches[0];if(!t)return;HB.tx=(t.clientX/(W.innerWidth||1))*2-1;HB.ty=(t.clientY/(W.innerHeight||1))*2-1;HB.lastIn=performance.now();HB.touch=true},{passive:true});
+D.addEventListener('mouseout',function(e){if(!e.relatedTarget&&useCur)cur.classList.add('off')});
+D.addEventListener('pointerover',function(e){if(!useCur)return;var t=e.target.closest&&e.target.closest('a,button');cur.classList.toggle('link',!!t);curL.textContent=t?(t.getAttribute('data-cursor')||''):''});
+
+/* ===================== resize, motion preference ===================== */
+var rsT=0;W.addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){HB.phone=!!mqPhone.matches;measure();if(HB.onResize)HB.onResize();if(HB.gl!=='on')drawPoster()},140)});
+mqR.addEventListener&&mqR.addEventListener('change',function(){HB.reduced=!!mqR.matches;if(HB.reduced){DE.classList.remove('has-cur');useCur=false}if(HB.requestFrame)HB.requestFrame()});
+
+measure();onScroll();drawPoster();
+})();
+</script>
+
+<script type="module">
+const HB = window.HB;
+const N = HB.N;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+
+(async function boot() {
+  if (HB.noGL) { HB.glFail('off'); return; }
+  let THREE;
+  try { THREE = await import('three'); }
+  catch (e) { console.warn('Hummingbolt: 3D engine did not load, showing the poster.', e); HB.glFail('engine'); return; }
+  HB.step('engine');
+  try { start(THREE); }
+  catch (e) { console.warn('Hummingbolt: WebGL is not available, showing the poster.', e); HB.glFail('init'); }
+})();
+
+function start(THREE) {
+  const canvas = document.getElementById('gl');
+  const cores = navigator.hardwareConcurrency || 4;
+  let low = HB.phone || cores <= 4;
+  let dprCap = HB.phone ? 1.25 : (low ? 1.4 : 1.75);
+  let level = 0;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, stencil: false, powerPreference: 'high-performance' });
+  renderer.setClearColor(0x0f0d0c, 1);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 80);
+  const target = new THREE.Vector3(0, 0, 0);
+
+  /* ---------- procedural studio: dark cyclorama + softboxes, prefiltered with PMREM ---------- */
+  let pmrem = new THREE.PMREMGenerator(renderer);
+  function buildEnv() {
+    const es = new THREE.Scene();
+    const sky = new THREE.Mesh(new THREE.SphereGeometry(30, 32, 16), new THREE.ShaderMaterial({
+      side: THREE.BackSide, depthWrite: false,
+      vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'varying vec3 vP; void main(){ float y = vP.y; vec3 top = vec3(0.030,0.026,0.024); vec3 hor = vec3(0.085,0.066,0.052); vec3 flo = vec3(0.010,0.008,0.007);' +
+        ' vec3 c = y > 0.0 ? mix(hor, top, pow(y, 0.6)) : mix(hor, flo, pow(-y, 0.35)); gl_FragColor = vec4(c, 1.0); }'
+    }));
+    es.add(sky);
+    const box = (w, h, x, y, z, col, k) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide }));
+      m.position.set(x, y, z); m.lookAt(0, 0, 0); es.add(m);
+    };
+    box(8, 5, -7, 8, 6, '#fff3e4', 5.2);      // key softbox, high left
+    box(1.4, 14, 10, 0, 2, '#ffeedd', 9);     // tall strip, right
+    box(1.0, 14, -10, 0, -3, '#f4efe8', 3.2); // thin strip, left back
+    box(14, 1.2, 0, 6.5, -10, '#d9dfea', 3);  // top rim, behind
+    box(5, 3, -6, -4, -8, '#5f83cf', 2.0);    // blued bounce card (the one accent)
+    box(16, 16, 0, -9, 0, '#3a2c22', 0.55);   // warm floor bounce
+    const rt = pmrem.fromScene(es, 0.025);
+    es.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+    return rt;
+  }
+  let envRT = buildEnv();
+  scene.environment = envRT.texture;
+  HB.step('light');
+
+  /* ---------- backdrop: a soft umber glow that follows the sculpture ---------- */
+  const bgGeo = new THREE.BufferGeometry();
+  bgGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
+  const bgU = { uA: { value: new THREE.Vector3() }, uB: { value: new THREE.Vector3() }, uC: { value: new THREE.Vector2() }, uAsp: { value: 1 }, uT: { value: 0 } };
+  const bgMat = new THREE.ShaderMaterial({
+    uniforms: bgU, depthTest: false, depthWrite: false,
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+    fragmentShader: 'uniform vec3 uA; uniform vec3 uB; uniform vec2 uC; uniform float uAsp; uniform float uT; varying vec2 vUv;' +
+      'void main(){ vec2 p = vUv * 2.0 - 1.0; vec2 d = p - uC; d.x *= uAsp; float r = length(d) * 0.62; float g = exp(-r * r * 2.2);' +
+      ' float floorBand = smoothstep(0.0, -1.2, p.y - uC.y) * 0.18; vec3 c = mix(uB, uA, clamp(g + floorBand * g, 0.0, 1.0));' +
+      ' float n = fract(sin(dot(gl_FragCoord.xy + uT, vec2(12.9898, 78.233))) * 43758.5453); c += (n - 0.5) / 255.0 * 2.0; gl_FragColor = vec4(c, 1.0); }'
+  });
+  const bg = new THREE.Mesh(bgGeo, bgMat);
+  bg.frustumCulled = false; bg.renderOrder = -10;
+  scene.add(bg);
+
+  /* ---------- the slat: an exact rounded box whose size and edge radius are set per instance in the shader ---------- */
+  function slatGeo(n) {
+    const g = new THREE.BoxGeometry(2, 2, 2, n, n, n);
+    const pos = g.attributes.position, cnt = pos.count;
+    const sign = new Float32Array(cnt * 3), nor = new Float32Array(cnt * 3), a = 1 / n;
+    for (let i = 0; i < cnt; i++) {
+      const v = [pos.getX(i), pos.getY(i), pos.getZ(i)], d = [0, 0, 0];
+      for (let k = 0; k < 3; k++) {
+        const u = v[k], s = u < 0 ? -1 : 1;
+        sign[i * 3 + k] = s;
+        d[k] = s * Math.tan(Math.max(0, (Math.abs(u) - a) / (1 - a)) * Math.PI / 4);
+      }
+      const L = Math.hypot(d[0], d[1], d[2]) || 1;
+      nor[i * 3] = d[0] / L; nor[i * 3 + 1] = d[1] / L; nor[i * 3 + 2] = d[2] / L;
+      pos.setXYZ(i, sign[i * 3] * 0.5, sign[i * 3 + 1] * 0.5, sign[i * 3 + 2] * 0.5);
+    }
+    g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    g.setAttribute('aSign', new THREE.BufferAttribute(sign, 3));
+    g.deleteAttribute('uv');
+    return g;
+  }
+  const sizeArr = new Float32Array(N * 4), accArr = new Float32Array(N);
+  let geo = slatGeo(low ? 5 : 7);
+  const aSize = new THREE.InstancedBufferAttribute(sizeArr, 4); aSize.setUsage(THREE.DynamicDrawUsage);
+  const aAcc = new THREE.InstancedBufferAttribute(accArr, 1); aAcc.setUsage(THREE.DynamicDrawUsage);
+  geo.setAttribute('aSize', aSize); geo.setAttribute('aAcc', aAcc);
+
+  const accU = { value: new THREE.Color('#3f66b8') }, accRU = { value: 0.2 };
+  function makeMat(lowQ) {
+    const m = lowQ
+      ? new THREE.MeshStandardMaterial({ color: 0xcdc5ba, metalness: 1, roughness: 0.16 })
+      : new THREE.MeshPhysicalMaterial({ color: 0xcdc5ba, metalness: 1, roughness: 0.16, clearcoat: 0.0001, clearcoatRoughness: 0.14,
+          iridescence: 0.0001, iridescenceIOR: 1.7, iridescenceThicknessRange: [240, 640] });
+    m.onBeforeCompile = (sh) => {
+      sh.uniforms.uAcc = accU; sh.uniforms.uAccR = accRU;
+      sh.vertexShader = 'attribute vec3 aSign;\nattribute vec4 aSize;\nattribute float aAcc;\nvarying float vAcc;\n' +
+        sh.vertexShader.replace('#include <begin_vertex>', 'vec3 transformed = aSign * max(aSize.xyz - vec3(aSize.w), vec3(0.0)) + normal * aSize.w;\nvAcc = aAcc;');
+      sh.fragmentShader = 'uniform vec3 uAcc;\nuniform float uAccR;\nvarying float vAcc;\n' +
+        sh.fragmentShader
+          .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, uAcc, vAcc);')
+          .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, uAccR, vAcc);');
+    };
+    m.customProgramCacheKey = () => 'hb-slat-' + (lowQ ? 'l' : 'h');
+    return m;
+  }
+  let mat = makeMat(low);
+  const mesh = new THREE.InstancedMesh(geo, mat, N);
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+  const im = mesh.instanceMatrix.array;
+
+  const key = new THREE.DirectionalLight(0xfff0e0, 1.5); key.position.set(-4, 6, 5); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xa9bfe8, 0.8); rim.position.set(3, 2, -6); scene.add(rim);
+
+  /* ---------- per-form colours, prepared once ---------- */
+  const P = HB.POSES, PC = {}, BGA = {}, BGB = {};
+  const hx3 = (h) => [parseInt(h.substr(1, 2), 16) / 255, parseInt(h.substr(3, 2), 16) / 255, parseInt(h.substr(5, 2), 16) / 255];
+  for (const k in P) { PC[k] = new THREE.Color(P[k].mat[0]); BGA[k] = hx3(P[k].bg[0]); BGB[k] = hx3(P[k].bg[1]); }
+
+  /* ---------- sizing ---------- */
+  let asp = 1;
+  function setSize() {
+    const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
+    renderer.setSize(w, h, false);
+    asp = w / h; bgU.uAsp.value = asp;
+  }
+  setSize();
+  HB.onResize = () => { setSize(); req(); };
+
+  /* ---------- frame state (all allocated once) ---------- */
+  const PA = HB.newPose(), PB = HB.newPose(), SC = HB.SC, AXS = HB.AX, DL = HB.DL;
+  const camA = {}, camB = {}, q1 = [0, 0, 0, 1], q2 = [0, 0, 0, 1], q3 = [0, 0, 0, 1];
+  let probeT = 0, probeN = 0, probeS = 0, frames = 0, time = 0, last = performance.now(), raf = 0, running = !document.hidden, lost = false, first = false;
+  let mx = 0, my = 0, vel = 0, lastY = window.scrollY || 0, fpsN = 0, fpsT = performance.now(), fps = 0, hudT = 0, introStart = -1, lastVer = HB.ver;
+
+  function qAA(o, x, y, z, a) { const s = Math.sin(a / 2); o[0] = x * s; o[1] = y * s; o[2] = z * s; o[3] = Math.cos(a / 2); }
+  function qMul(o, a, b) { const ax = a[0], ay = a[1], az = a[2], aw = a[3], bx = b[0], by = b[1], bz = b[2], bw = b[3];
+    o[0] = ax * bw + aw * bx + ay * bz - az * by; o[1] = ay * bw + aw * by + az * bx - ax * bz; o[2] = az * bw + aw * bz + ax * by - ay * bx; o[3] = aw * bw - ax * bx - ay * by - az * bz; }
+  function slerp(A, B, k, t, o) {
+    let ax = A[k], ay = A[k + 1], az = A[k + 2], aw = A[k + 3], bx = B[k], by = B[k + 1], bz = B[k + 2], bw = B[k + 3];
+    let c = ax * bx + ay * by + az * bz + aw * bw;
+    if (c < 0) { c = -c; bx = -bx; by = -by; bz = -bz; bw = -bw; }
+    let k0, k1;
+    if (1 - c < 1e-5) { k0 = 1 - t; k1 = t; } else { const s = Math.sqrt(1 - c * c), a = Math.atan2(s, c); k0 = Math.sin((1 - t) * a) / s; k1 = Math.sin(t * a) / s; }
+    o[0] = ax * k0 + bx * k1; o[1] = ay * k0 + by * k1; o[2] = az * k0 + bz * k1; o[3] = aw * k0 + bw * k1;
+    const l = Math.hypot(o[0], o[1], o[2], o[3]) || 1; o[0] /= l; o[1] /= l; o[2] /= l; o[3] /= l;
+  }
+  function writeM(i, x, y, z, q) {
+    const o = i * 16, qx = q[0], qy = q[1], qz = q[2], qw = q[3], x2 = qx + qx, y2 = qy + qy, z2 = qz + qz;
+    const xx = qx * x2, xy = qx * y2, xz = qx * z2, yy = qy * y2, yz = qy * z2, zz = qz * z2, wx = qw * x2, wy = qw * y2, wz = qw * z2;
+    im[o] = 1 - (yy + zz); im[o + 1] = xy + wz; im[o + 2] = xz - wy; im[o + 3] = 0;
+    im[o + 4] = xy - wz; im[o + 5] = 1 - (xx + zz); im[o + 6] = yz + wx; im[o + 7] = 0;
+    im[o + 8] = xz + wy; im[o + 9] = yz - wx; im[o + 10] = 1 - (xx + yy); im[o + 11] = 0;
+    im[o + 12] = x; im[o + 13] = y; im[o + 14] = z; im[o + 15] = 1;
+  }
+  const ss = (t) => t * t * (3 - 2 * t);
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function introE(now) {
+    if (HB.reduced || introStart === -2) return 1;
+    if (introStart < 0) return 0;
+    const k = clamp((now - introStart) / 2700, 0, 1);
+    return 1 - Math.pow(1 - k, 3);
+  }
+  HB.onReveal = () => {
+    if (!first) return;
+    if (introStart === -1) introStart = (!HB.reduced && (window.scrollY || 0) < 300) ? performance.now() : -2;
+    req();
+  };
+
+  function update(dt, rdt, now) {
+    const list = HB.list(), n = list.length;
+    if (HB.ver !== lastVer) { lastVer = HB.ver; HB.c = HB.cT; }
+    if (HB.reduced) HB.c = Math.round(HB.cT);
+    else { const d = HB.cT - HB.c; HB.c += d * (1 - Math.exp(-rdt * 3.4)); if (Math.abs(d) < 1e-4) HB.c = HB.cT; }
+    const c = clamp(HB.c, 0, n - 1), i0 = Math.min(n - 1, Math.floor(c)), i1 = Math.min(n - 1, i0 + 1), t = i1 === i0 ? 0 : c - i0;
+    const A = list[i0], B = list[i1], pa = P[A.cfg.pose], pb = P[B.cfg.pose];
+    pa.fill(HB.reduced ? pa.still : time, PA, A.cfg);
+    const blend = t > 1e-4;
+    if (blend) pb.fill(HB.reduced ? pb.still : time, PB, B.cfg);
+    const ie = introE(now), asm = 1 - ie;
+
+    for (let i = 0; i < N; i++) {
+      const j = i * 3, k = i * 4;
+      let ti = 0;
+      if (blend) { ti = clamp(t * 1.7 - DL[i] * 0.7, 0, 1); ti = ss(ti); }
+      let x, y, z, hx, hy, hz, hr, ac, spin = 0;
+      if (ti <= 0) {
+        x = PA.P[j]; y = PA.P[j + 1]; z = PA.P[j + 2]; q1[0] = PA.Q[k]; q1[1] = PA.Q[k + 1]; q1[2] = PA.Q[k + 2]; q1[3] = PA.Q[k + 3];
+        hx = PA.S[k]; hy = PA.S[k + 1]; hz = PA.S[k + 2]; hr = PA.S[k + 3]; ac = PA.A[i];
+      } else if (ti >= 1) {
+        x = PB.P[j]; y = PB.P[j + 1]; z = PB.P[j + 2]; q1[0] = PB.Q[k]; q1[1] = PB.Q[k + 1]; q1[2] = PB.Q[k + 2]; q1[3] = PB.Q[k + 3];
+        hx = PB.S[k]; hy = PB.S[k + 1]; hz = PB.S[k + 2]; hr = PB.S[k + 3]; ac = PB.A[i];
+      } else {
+        const arc = Math.sin(Math.PI * ti);
+        x = lerp(PA.P[j], PB.P[j], ti) + SC[j] * arc * 0.95;
+        y = lerp(PA.P[j + 1], PB.P[j + 1], ti) + SC[j + 1] * arc * 0.95;
+        z = lerp(PA.P[j + 2], PB.P[j + 2], ti) + SC[j + 2] * arc * 0.95;
+        slerp(PA.Q, PB.Q, k, ti, q1);
+        hx = lerp(PA.S[k], PB.S[k], ti); hy = lerp(PA.S[k + 1], PB.S[k + 1], ti); hz = lerp(PA.S[k + 2], PB.S[k + 2], ti); hr = lerp(PA.S[k + 3], PB.S[k + 3], ti);
+        ac = lerp(PA.A[i], PB.A[i], ti); spin = arc * 1.5;
+      }
+      if (asm > 0) {
+        let as = clamp(asm * 1.5 - (1 - DL[i]) * 0.5, 0, 1); as = as * as;
+        x += SC[j] * as * 5.5; y += SC[j + 1] * as * 5.5; z += SC[j + 2] * as * 5.5; spin += as * 3.4;
+      }
+      if (spin !== 0) { qAA(q2, AXS[j], AXS[j + 1], AXS[j + 2], spin); qMul(q3, q2, q1); q1[0] = q3[0]; q1[1] = q3[1]; q1[2] = q3[2]; q1[3] = q3[3]; }
+      writeM(i, x, y, z, q1);
+      sizeArr[k] = hx; sizeArr[k + 1] = hy; sizeArr[k + 2] = hz; sizeArr[k + 3] = hr; accArr[i] = ac;
+    }
+    mesh.instanceMatrix.needsUpdate = true; aSize.needsUpdate = true; aAcc.needsUpdate = true;
+
+    /* material + backdrop */
+    const tm = ss(t), ma = pa.mat, mb = pb.mat;
+    mat.color.lerpColors(PC[A.cfg.pose], PC[B.cfg.pose], tm);
+    mat.roughness = lerp(ma[1], mb[1], tm); mat.metalness = lerp(ma[2], mb[2], tm);
+    if (mat.isMeshPhysicalMaterial) { mat.clearcoat = Math.max(0.0001, lerp(ma[3], mb[3], tm)); mat.iridescence = Math.max(0.0001, lerp(ma[4], mb[4], tm)); }
+    const ga = BGA[A.cfg.pose], gb = BGA[B.cfg.pose], ea = BGB[A.cfg.pose], eb = BGB[B.cfg.pose];
+    bgU.uA.value.set(lerp(ga[0], gb[0], tm), lerp(ga[1], gb[1], tm), lerp(ga[2], gb[2], tm));
+    bgU.uB.value.set(lerp(ea[0], eb[0], tm), lerp(ea[1], eb[1], tm), lerp(ea[2], eb[2], tm));
+    bgU.uT.value = (frames % 64) * 1.37;
+
+    /* camera: framed into each chapter's .stage box, with a dolly-out between shots */
+    HB.camOf(A, asp, camA); HB.camOf(B, asp, camB);
+    const tc = ss(t);
+    let D = Math.exp(lerp(Math.log(camA.D), Math.log(camB.D), tc)) * (1 + 0.16 * Math.sin(Math.PI * tc));
+    let az = lerp(camA.az, camB.az, tc), el = lerp(camA.el, camB.el, tc);
+    const roll = lerp(camA.roll, camB.roll, tc), fov = lerp(camA.fov, camB.fov, tc), sx = lerp(camA.sx, camB.sx, tc), sy = lerp(camA.sy, camB.sy, tc);
+    const iw = 1 - ie;
+    D *= 1 + 1.7 * iw * iw; el += 0.5 * iw * iw; az -= 0.9 * iw * iw;
+    if (!HB.reduced) { az += Math.sin(time * 0.11) * 0.025; el += Math.sin(time * 0.13 + 1) * 0.015; }
+    camera.fov = fov; camera.aspect = asp; camera.updateProjectionMatrix();
+    const pe = camera.projectionMatrix.elements; pe[8] = -sx; pe[9] = -sy;
+    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+    const ce = Math.cos(el);
+    camera.position.set(D * Math.sin(az) * ce, D * Math.sin(el), D * Math.cos(az) * ce);
+    camera.up.set(0, 1, 0); camera.lookAt(target); camera.rotateZ(roll);
+    bgU.uC.value.set(sx, sy);
+
+    /* pointer: tilts the sculpture and swings the studio light */
+    if (HB.touch && now - HB.lastIn > 2200) { HB.tx *= 0.96; HB.ty *= 0.96; }
+    const k3 = 1 - Math.exp(-rdt * 3);
+    const tx = HB.reduced ? 0 : HB.tx, ty = HB.reduced ? 0 : HB.ty;
+    mx += (tx - mx) * k3; my += (ty - my) * k3;
+    const sy2 = window.scrollY || 0, v = rdt > 0 ? (sy2 - lastY) / rdt : 0; lastY = sy2;
+    vel += (clamp(v, -4000, 4000) - vel) * (1 - Math.exp(-rdt * 5));
+    const spinV = HB.reduced ? 0 : clamp(vel * 0.00022, -0.3, 0.3);
+    mesh.rotation.set(my * 0.14, mx * 0.26 + spinV, 0);
+    scene.environmentRotation.set(my * 0.15, mx * 0.6 + (HB.reduced ? 0 : Math.sin(time * 0.05) * 0.2), 0);
+    key.position.set(-4 + mx * 5, 6 - my * 3, 5);
+
+    /* HUD: four times a second, real numbers only */
+    if (now - hudT > 250) { hudT = now; HB.hudSet(Math.round(c), mat.roughness, fps, renderer.getPixelRatio()); }
+  }
+
+  /* automatic downgrade when frames stay slow: resolution first, then the cheaper material, then coarser bevels */
+  function downgrade() {
+    level++;
+    if (level === 1) { dprCap = Math.max(1, dprCap * 0.72); setSize(); }
+    else if (level === 2) {
+      dprCap = Math.min(dprCap, 0.85); setSize();
+      if (!low) { low = true; const old = mat; mat = makeMat(true); mesh.material = mat; old.dispose(); }
+    } else if (level === 3) {
+      dprCap = 0.65; setSize();
+      const ng = slatGeo(5); ng.setAttribute('aSize', aSize); ng.setAttribute('aAcc', aAcc);
+      const og = mesh.geometry; mesh.geometry = ng; geo = ng; og.dispose();
+    }
+  }
+
+  function tick(now) {
+    raf = 0;
+    if (!running || lost || HB.menuOpen) return;
+    const rdt = Math.min(0.5, Math.max(0, (now - last) / 1000)), dt = Math.min(0.1, rdt); last = now;
+    if (!HB.reduced) time += dt;
+    update(dt, rdt, now);
+    renderer.render(scene, camera);
+    frames++;
+    if (!first) {
+      first = true; HB.step('frame'); HB.glOn();
+      if (HB.revealed && introStart === -1) introStart = (!HB.reduced && (window.scrollY || 0) < 300) ? performance.now() : -2;
+    }
+    fpsN++;
+    if (now - fpsT >= 500) { fps = Math.round(fpsN * 1000 / (now - fpsT)); fpsN = 0; fpsT = now; }
+    if (!HB.reduced && HB.revealed && frames > 8 && level < 3) {
+      probeS += rdt; probeN++;
+      if (probeS >= 1.2) { if (probeS / probeN > 0.036) downgrade(); probeS = 0; probeN = 0; }
+    }
+    const animate = !HB.reduced && (introStart >= 0 || HB.revealed || !first);
+    if (animate) raf = requestAnimationFrame(tick);
+  }
+  function req() { if (!raf && running && !lost) { last = performance.now(); raf = requestAnimationFrame(tick); } }
+  HB.requestFrame = req;
+
+  document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) req(); });
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; if (raf) cancelAnimationFrame(raf); raf = 0; HB.glLost(); }, false);
+  canvas.addEventListener('webglcontextrestored', () => {
+    try {
+      try { envRT.dispose(); pmrem.dispose(); } catch (er) { /* already gone */ }
+      pmrem = new THREE.PMREMGenerator(renderer); envRT = buildEnv(); scene.environment = envRT.texture;
+      lost = false; first = false; setSize(); req();
+    } catch (er) { console.warn('Hummingbolt: could not restore WebGL, keeping the poster.', er); }
+  }, false);
+
+  req();
+}
+</script>

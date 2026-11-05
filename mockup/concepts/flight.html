@@ -22,6 +22,7 @@
   --ease: cubic-bezier(.2, .7, .1, 1);
 }
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { background: var(--ink); scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--ink); color: var(--bone);
@@ -51,9 +52,9 @@ a { color: inherit; }
 
 /* ---------- Loader: the wingpath draws itself, beats twice, and the camera flies through it ---------- */
 .ldr { position: fixed; inset: 0; z-index: 40; display: none; place-items: center; background: var(--ink); }
-.js .ldr { display: grid; animation: ldr-safe .6s ease 3.1s forwards; }
+.js .ldr { display: grid; animation: ldr-safe .45s ease 2.45s forwards; }
 .ldr.out { opacity: 0; visibility: hidden; pointer-events: none; animation: none; transition: opacity .7s ease .1s, visibility 0s linear .85s; }
-@keyframes ldr-safe { to { opacity: 0; visibility: hidden; } }
+@keyframes ldr-safe { to { opacity: 0; } }
 .ldr-in { display: grid; justify-items: center; gap: 26px; }
 .ldr-mark { width: 104px; height: auto; overflow: visible; color: var(--bone); transition: transform .9s cubic-bezier(.7, 0, .2, 1), opacity .6s ease .15s, color .3s ease; }
 .ldr .lp { fill: none; stroke: currentColor; stroke-width: 6; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
@@ -70,6 +71,9 @@ a { color: inherit; }
 }
 .skip:focus { transform: none; }
 .hdr { position: fixed; z-index: 20; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top, 0px); background: linear-gradient(180deg, rgba(5, 12, 11, .86), rgba(5, 12, 11, 0)); }
+/* Once the page moves, a denser band sits under the header so scrolling titles never collide with the nav. */
+.hdr::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; bottom: -28px; pointer-events: none; background: linear-gradient(180deg, rgba(5, 12, 11, .95) 0%, rgba(5, 12, 11, .9) 66%, rgba(5, 12, 11, 0) 100%); opacity: 0; transition: opacity .4s ease; }
+.hdr.solid::before { opacity: 1; }
 .hdr-in {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -94,7 +98,7 @@ main { position: relative; z-index: 2; }
 .panel { position: relative; isolation: isolate; max-width: 38rem; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
 .panel::before {
   content: ""; position: absolute; z-index: -1; inset: -120px -170px; pointer-events: none;
-  background: radial-gradient(closest-side, rgba(5, 12, 11, .76), rgba(5, 12, 11, .56) 46%, rgba(5, 12, 11, .22) 74%, rgba(5, 12, 11, 0) 100%);
+  background: radial-gradient(closest-side, rgba(5, 12, 11, .8), rgba(5, 12, 11, .62) 46%, rgba(5, 12, 11, .26) 74%, rgba(5, 12, 11, 0) 100%);
 }
 @media (min-width: 900px) {
   [data-side="left"] .panel, [data-side="right"] .panel { max-width: min(38rem, 47%); }
@@ -187,7 +191,7 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
   .s-hero { padding-top: 40svh; }
   [data-side] .panel { margin-left: 0; max-width: 34rem; }
   [data-side="center"] .panel { margin-inline: 0; align-items: flex-start; text-align: left; }
-  .panel::before { inset: -64px -16px -64px; background: linear-gradient(180deg, rgba(5, 12, 11, 0), rgba(5, 12, 11, .74) 26%, rgba(5, 12, 11, .82)); }
+  .panel::before { inset: -72px -48px -120px; background: linear-gradient(180deg, rgba(5, 12, 11, 0), rgba(5, 12, 11, .76) 22%, rgba(5, 12, 11, .84) 78%, rgba(5, 12, 11, 0)); }
   .track, .cue { display: none; }
   .make li { grid-template-columns: minmax(0, 1fr); }
   .foot-in { grid-template-columns: minmax(0, 1fr); }
@@ -219,11 +223,13 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050c0b'/%3E%3Cmask id='m' maskUnits='userSpaceOnUse' x='0' y='0' width='64' height='64'%3E%3Crect width='64' height='64' fill='%23fff'/%3E%3Cpath d='M30.45 40.5L41.48 17.89' stroke='%23000' stroke-width='11.6'/%3E%3C/mask%3E%3Cpath d='M20.42 26.45L47.34 31.2A8.7 8.7 0 1 0 41.03 18.82L29.05 43.39A11.9 11.9 0 1 1 20.42 26.45Z' fill='none' stroke='%23d89b6b' stroke-width='7.4' mask='url(%23m)'/%3E%3Cpath d='M30.19 41.04L41.75 17.35' stroke='%23d89b6b' stroke-width='7.4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght,SHRP@200..600,0..100&family=Martian+Mono:wdth,wght@75..112.5,300..500&display=swap">
+<link rel="stylesheet" id="gf" media="print" href="https://fonts.googleapis.com/css2?family=Geologica:wght,SHRP@200..600,0..100&family=Martian+Mono:wdth,wght@75..112.5,300..500&display=swap">
 <script>
 (function () {
   var R = document.documentElement; R.classList.add('js'); if (!R.getAttribute('lang')) R.setAttribute('lang', 'en');
   try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) R.classList.add('rm'); } catch (e) {}
+  // Fonts load without blocking: the link starts as media="print" and switches on once it arrives.
+  try { var l = document.getElementById('gf'); if (l) { var on = function () { l.media = 'all'; }; if (l.sheet) on(); else { l.addEventListener('load', on); l.addEventListener('error', on); } } } catch (e) {}
 })();
 </script>
 
@@ -305,7 +311,7 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
           <h2 class="h2" id="h-make" tabindex="-1">Apps, games and AI<span class="dot">.</span></h2>
           <ul class="make">
             <li><h3>Mobile and web apps</h3><p>For phones and for the browser.</p></li>
-            <li><h3>Games</h3><p>For all ages. Toppleton is our first.</p></li>
+            <li><h3>Games</h3><p>Toppleton is our first. It is for all ages.</p></li>
             <li><h3>AI</h3><p>AI applications, models and agents.</p></li>
           </ul>
         </div>
@@ -473,7 +479,7 @@ function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
 var HB = W.HB = W.HB || {};
 HB.rm = mq('(prefers-reduced-motion: reduce)');
-HB.phone = mq('(max-width: 700px)');
+HB.phone = mq('(max-width: 700px)') || (mq('(pointer: coarse)') && Math.min(W.screen && W.screen.width || 9999, W.screen && W.screen.height || 9999) <= 540);
 HB.fine = mq('(hover: hover) and (pointer: fine)');
 HB.nogl = /nogl/i.test(location.hash + location.search) || W.HB_NOGL === true;
 HB.view = 'home'; HB.stops = []; HB.names = []; HB.revealed = false;
@@ -585,7 +591,7 @@ HB.glFail = function (why) {
   HB.emit('gl-fail');
 };
 HB.glLost = function () { HB.gl.lost = true; if (glc) glc.classList.remove('on'); hudOff('3D paused'); showPoster(); };
-HB.glBack = function () { HB.gl.lost = false; R.classList.remove('no3d'); if (glc) glc.classList.add('on'); hidePoster(); };
+HB.glBack = function () { if (HB.gl.failed) return; HB.gl.lost = false; HB.gl.started = true; R.classList.remove('no3d'); if (glc) glc.classList.add('on'); hidePoster(); };
 if (HB.nogl) hudOff('3D off');
 
 /* ---------- Stops: where each station sits in the scroll ---------- */
@@ -623,10 +629,12 @@ try { if (W.ResizeObserver) new ResizeObserver(remeasure).observe(D.getElementBy
 try { if (D.fonts && D.fonts.ready) D.fonts.ready.then(remeasure, function () {}); } catch (e) {}
 
 var navLinks = [].slice.call(D.querySelectorAll('.nav a'));
-var sQueued = false;
+var sQueued = false, hdrEl = D.getElementById('hdr'), solid = false;
 function onScroll() {
   sQueued = false;
-  var y = W.scrollY, n = HB.stops.length; if (!n) return;
+  var y = W.scrollY, n = HB.stops.length;
+  if ((y > 24) !== solid && hdrEl) { solid = y > 24; hdrEl.classList.toggle('solid', solid); }
+  if (!n) return;
   HB.param(y, sp);
   var near = sp.t > 0.5 ? Math.min(n - 1, sp.i + 1) : sp.i;
   if (y >= HB.stops[n - 1] - 2) near = n - 1;
@@ -692,7 +700,7 @@ guard('loader', function () {
   var reveal = function () {
     if (HB.revealed) return; HB.revealed = true;
     if (ldr) { ldr.classList.remove('beat'); ldr.classList.add('out'); setTimeout(function () { ldr.hidden = true; }, 950); }
-    if (!HB.gl.started) { if (HB.rm && !HB.nogl) setTimeout(function () { if (!HB.gl.started) showPoster(); }, 900); else showPoster(); }
+    if (!HB.gl.started || HB.gl.failed) { if (HB.rm && !HB.nogl && !HB.gl.failed) setTimeout(function () { if (!HB.gl.started || HB.gl.failed) showPoster(); }, 900); else showPoster(); }
     HB.emit('reveal');
   };
   HB.reveal = reveal;
@@ -721,7 +729,7 @@ guard('loader', function () {
   HB.on('gl-ready', function () { if (stat) stat.textContent = 'Ready'; maybe(); });
   HB.on('gl-fail', function () { if (stat) stat.textContent = 'Still mode'; maybe(); });
   setTimeout(maybe, 1450); setTimeout(maybe, 1700);
-  setTimeout(reveal, 2050);
+  setTimeout(reveal, Math.max(900, 2200 - performance.now()));
   ldr.addEventListener('click', reveal);
 });
 
@@ -757,6 +765,7 @@ guard('menu', function () {
   btn.addEventListener('click', function () { set(!hdr.classList.contains('open')); });
   nav.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
   D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && hdr.classList.contains('open')) { set(false); btn.focus(); } });
+  hdr.addEventListener('focusout', function (e) { if (hdr.classList.contains('open') && e.relatedTarget && !hdr.contains(e.relatedTarget)) set(false); });
   W.addEventListener('resize', function () { if (W.innerWidth > 760 && hdr.classList.contains('open')) set(false); }, { passive: true });
 });
 
@@ -841,6 +850,7 @@ renderer.debug.onShaderError = function (gl, program, vs, fs) {
   try { console.warn('[hummingbolt] shader', gl.getShaderInfoLog(vs), gl.getShaderInfoLog(fs), gl.getProgramInfoLog(program)); } catch (e) {}
 };
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+const glx = renderer.getContext();
 renderer.setClearColor(0x050c0b, 1);
 
 const scene = new THREE.Scene();
@@ -1912,6 +1922,7 @@ function wake(now) {
 /* ---------------- Size, tiers, probe ---------------- */
 let cw = 0, ch = 0;
 function applySize(force) {
+  if (dead) return;
   const w = canvas.clientWidth || W.innerWidth, h = canvas.clientHeight || W.innerHeight;
   if (!force && w === cw && h === ch) return;
   cw = w; ch = h;
@@ -1936,16 +1947,23 @@ function setLevel(l) {
   applySize(true);
 }
 setLevel(level);
-const PROBE = new Float32Array(40); let pN = 0, pSkip = 24;
-function probe(dt) {
-  if (!HB.revealed) return;
-  if (pSkip > 0) { pSkip--; return; }
-  PROBE[pN++] = dt; if (pN < PROBE.length) return; pN = 0;
-  PROBE.sort(); const med = PROBE[PROBE.length >> 1];
-  if (med > 1 / 36) {
-    if (level > 0) { setLevel(level - 1); pSkip = 30; }
-    else if (prScale > 0.62) { prScale *= 0.8; applySize(true); pSkip = 30; }
-  }
+let pT0 = 0, pN = 0, pSlow = 0, pVery = 0, pHold = 0, pCrawl = 0;
+function probe(dt, now) {
+  if (!HB.revealed || still) return;
+  if (!pHold) pHold = now + 700;
+  if (now < pHold) return;
+  if (!pN) pT0 = now;
+  pN++; if (dt > 1 / 36) pSlow++; if (dt > 1 / 26) pVery++;
+  pCrawl = dt >= 0.099 ? pCrawl + 1 : 0;
+  if (pCrawl < 3 && (now - pT0 < 1100 || pN < 5)) return;
+  if (pCrawl >= 3) pVery = pN;
+  const slow = pSlow * 2 > pN, very = pVery * 2 > pN;
+  pN = 0; pSlow = 0; pVery = 0; pCrawl = 0;
+  if (!(very || (slow && level > 1))) return;
+  if (level > 0) setLevel(level - 1);
+  else if (prScale > 0.7) { prScale *= 0.8; applySize(true); }
+  else return;
+  pHold = now + 500;
 }
 
 /* ---------------- HUD (real values) ---------------- */
@@ -1971,15 +1989,19 @@ function updateGroups(Tn) { showGroups(false, Tn); }
 function frame(now) {
   raf = 0;
   if (!running || dead) return;
+  if (glx.isContextLost()) { stop(); return; }
   raf = requestAnimationFrame(frame);
   const dt = Math.min(0.1, Math.max(0.001, (now - (last || now)) / 1000)); last = now;
+  // Behind the loader only the first frame is drawn (it links every program). The world then waits, so the loader
+  // never competes with the GPU, and the fly-in starts when the page is revealed.
+  if (firstDone && !HB.revealed) return;
   try {
     T = Math.max(0, (now - t0) / 1000); U.uTime.value = T;
     const sy = W.scrollY;
     ys += (sy - ys) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(sy - ys) < 0.3) ys = sy;
     poseAt(ys);
     let k = 1;
-    if (tr.pending) { tr.pending = false; tr.t0 = now; drawT0 = now + 700; }
+    if (tr.pending && HB.revealed) { tr.pending = false; tr.t0 = now; drawT0 = now + 700; }
     if (tr.active) {
       k = clamp((now - tr.t0) / tr.dur, 0, 1);
       const ek = tr.entrance ? eOut(k) : eInOut(k);
@@ -2021,8 +2043,8 @@ function frame(now) {
     renderer.render(scene, camera);
     if (shaderBad) throw new Error('shader compile failed');
     if (!firstDone) { firstDone = true; HB.glReady(); }
-    probe(dt); hud(now); if (HB.view === 'values') readout(now);
-    prevU = curU;
+    probe(dt, now); hud(now); if (HB.view === 'values') readout(now);
+    prevU = curU; errs = 0;
   } catch (e) {
     errs++; try { console.warn('[hummingbolt] frame', e && e.message); } catch (_) {}
     if (errs > 2 || shaderBad) die(e);
@@ -2031,6 +2053,7 @@ function frame(now) {
 function requestStill() { if (stillQ || dead || lost) return; stillQ = requestAnimationFrame(renderStill); }
 function renderStill() {
   stillQ = 0;
+  if (dead || lost || glx.isContextLost()) return;
   try {
     T = 12; U.uTime.value = T;
     stillPose(); applyMood();
@@ -2069,7 +2092,7 @@ try {
   new IntersectionObserver((ents) => { onscreen = ents[ents.length - 1].isIntersecting; if (onscreen) start(); else stop(); }).observe(canvas);
 } catch (e) {}
 canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; stop(); if (HB.glLost) HB.glLost(); }, false);
-canvas.addEventListener('webglcontextrestored', () => { lost = false; firstDone = true; if (HB.glBack) HB.glBack(); if (still) requestStill(); else start(); }, false);
+canvas.addEventListener('webglcontextrestored', () => { if (dead) return; lost = false; errs = 0; firstDone = true; if (HB.glBack) HB.glBack(); if (still) requestStill(); else start(); }, false);
 let rT = 0;
 W.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => applySize(false), 120); }, { passive: true });
 W.addEventListener('scroll', () => { if (still) requestStill(); }, { passive: true });
