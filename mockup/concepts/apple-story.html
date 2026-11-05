@@ -1,0 +1,974 @@
+<title>Hummingbolt — One Line</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='11' fill='%23F2F3F0'/%3E%3Cpath d='M23.18 22.52C23.39 22.14 23.98 21.01 24.39 20.27C24.81 19.52 25.22 18.78 25.67 18.05C26.11 17.33 26.56 16.6 27.05 15.9C27.54 15.21 28.04 14.51 28.6 13.88C29.16 13.24 29.74 12.59 30.41 12.08C31.08 11.57 31.83 11.05 32.62 10.81C33.4 10.58 34.33 10.49 35.13 10.65C35.93 10.81 36.74 11.27 37.42 11.75C38.09 12.24 38.68 12.91 39.21 13.57C39.73 14.23 40.18 14.97 40.59 15.71C41 16.45 41.35 17.24 41.65 18.03C41.96 18.82 42.22 19.64 42.43 20.47C42.63 21.29 42.8 22.13 42.89 22.98C42.98 23.82 43.04 24.68 42.98 25.53C42.92 26.37 42.81 27.25 42.52 28.03C42.22 28.81 41.79 29.63 41.2 30.19C40.61 30.76 39.78 31.17 38.99 31.4C38.19 31.63 37.29 31.62 36.45 31.57C35.61 31.53 34.76 31.33 33.93 31.13C33.11 30.93 32.3 30.66 31.5 30.37C30.69 30.09 29.9 29.76 29.12 29.43C28.34 29.1 27.56 28.74 26.79 28.38C26.02 28.01 25.26 27.64 24.5 27.26C23.73 26.88 22.97 26.49 22.21 26.11C21.45 25.72 20.7 25.33 19.94 24.95C19.18 24.57 18.41 24.18 17.64 23.82C16.87 23.46 16.1 23.1 15.31 22.77C14.53 22.45 13.73 22.13 12.92 21.89C12.11 21.65 11.27 21.39 10.43 21.32C9.59 21.25 8.66 21.19 7.9 21.46C7.14 21.73 6.36 22.3 5.88 22.95C5.41 23.59 5.2 24.52 5.07 25.34C4.94 26.17 5 27.05 5.08 27.89C5.17 28.73 5.36 29.58 5.6 30.39C5.83 31.21 6.13 32.02 6.5 32.78C6.87 33.54 7.28 34.31 7.8 34.97C8.32 35.64 8.91 36.34 9.62 36.75C10.32 37.17 11.24 37.49 12.03 37.44C12.82 37.4 13.67 36.96 14.37 36.51C15.07 36.06 15.65 35.38 16.21 34.74C16.76 34.1 17.24 33.39 17.71 32.68C18.18 31.97 18.6 31.23 19.03 30.49C19.45 29.75 20.04 28.62 20.24 28.24' fill='none' stroke='%231F2422' stroke-width='3.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&display=swap">
+<style>
+@font-face{font-family:"Mona Fallback";src:local("Arial"),local("ArialMT");size-adjust:101%;ascent-override:92%;descent-override:24%;line-gap-override:0%}
+:root{
+  /* Layout: one 1240px column on soft mist. A fixed, transparent line stage floats over the hero story;
+     chapters sit on tonal plates (stone, celadon) with one deep graphite tile for Toppleton. */
+  color-scheme:light;
+  --mist:#F2F3F0; --stone:#E7E9E5; --celadon:#DCE5E0; --hairline:#D2D7D3;
+  --graphite:#1F2422; --graphite-2:#2C3331; --slate:#525A57; --ash:#7A827F;
+  --plumage:#2B5D50; --bronze:#94672F; --gorget:#9C3450;
+  --tile:#1F2422; --tile-ink:#F2F3F0; --tile-soft:#A9B2AE; --tile-rule:#3A4340; --tile-link:#8FC4B1;
+  --lit:#3F8069; --lit-edge:#7DB9A4; --btn-light-hover:#DCE1DD;
+  --font:"Mona Sans","Mona Fallback",ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --wrap:1240px; --hh:56px;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .12 0 0 0 0 .14 0 0 0 0 .13 0 0 0 1.1 -.3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E");
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--mist)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--mist) var(--noise);color:var(--graphite);font-family:var(--font);font-size:clamp(1.0625rem,.98rem + .35vw,1.1875rem);font-weight:420;font-stretch:100%;line-height:1.55;overflow-x:clip;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:70;background:var(--mist)}
+p,h1,h2,h3,h4,figure{margin:0}
+svg{max-width:100%}
+a{color:var(--plumage);text-decoration-thickness:1px;text-underline-offset:.2em}
+:focus-visible{outline:2px solid var(--plumage);outline-offset:3px;border-radius:6px}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+section[id],article[id]{scroll-margin-top:72px}
+.band{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{width:100%;max-width:var(--wrap);margin-inline:auto;padding-inline:clamp(0px,4vw - 16px,40px)}
+.plate-stone{background:var(--stone) var(--noise)}
+.plate-celadon{background:var(--celadon) var(--noise)}
+.eyebrow{font-size:13px;line-height:1.4;font-stretch:116%;font-weight:600;letter-spacing:.06em;color:var(--plumage)}
+.h2{font-size:clamp(2rem,1.3rem + 3vw,4rem);line-height:1.02;font-stretch:108%;font-weight:560;letter-spacing:-.025em;text-wrap:balance}
+
+/* skip links */
+.skip{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 6px);z-index:100;display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:999px;background:var(--graphite);color:var(--mist);font-weight:560;text-decoration:none;transform:translateY(-200%)}
+.skip:focus{transform:none}
+.skip-intro{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip-intro:focus{position:static;width:auto;height:auto;clip:auto;display:inline-flex;align-items:center;min-height:44px;margin-top:12px;padding:0 18px;border-radius:999px;border:1px solid var(--graphite);color:var(--graphite);text-decoration:none;font-size:15px;font-weight:560}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--mist) var(--noise);border-bottom:1px solid transparent;transition:border-color .4s}
+.top.scrolled{border-bottom-color:var(--hairline)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;height:var(--hh)}
+.brand{display:inline-flex;align-items:center;gap:10px;min-height:44px;min-width:44px;flex:none;color:var(--graphite);text-decoration:none}
+.brand .wm{font-size:18px;line-height:1;font-stretch:112%;font-weight:560;letter-spacing:-.01em}
+.mk{display:block;flex:none;width:48px;height:28px;overflow:visible;color:var(--graphite)}
+.mk-l{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mk-d{fill:currentColor}
+.mk-g{fill:none;stroke:url(#gl);stroke-width:2.3;stroke-linecap:round;stroke-dasharray:16 120;stroke-dashoffset:16;opacity:0}
+.glint .mk-g{animation:glint 1.3s var(--ease) both}
+@keyframes glint{0%{stroke-dashoffset:16;opacity:0}12%{opacity:1}84%{opacity:1}100%{stroke-dashoffset:-104;opacity:0}}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.brand:hover .mk-g{animation:glint 1.3s var(--ease) both}}
+.line-on .top .mk{opacity:var(--mo,1)}
+.nav ul{display:flex;align-items:center;gap:2px;margin:0;padding:0;list-style:none}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:999px;color:var(--graphite);text-decoration:none;font-size:15px;font-weight:500;font-stretch:106%;transition:background-color .2s}
+.nav a:hover{background:var(--stone)}
+@media (max-width:520px){.nav a{padding:0 8px;font-size:14px;font-stretch:100%}}
+@media (max-width:419px){.top .brand .wm{display:none}}
+@media (max-width:359px){.nav a{padding:0 5px;font-size:13.5px}.mk{width:40px;height:23.3px}}
+
+/* controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:999px;background:var(--graphite);color:var(--mist);text-decoration:none;font-size:16px;font-weight:560;font-stretch:104%;letter-spacing:-.005em;transition:background-color .2s}
+.btn:hover{background:var(--graphite-2)}
+.tlink{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:48px;color:var(--graphite);text-decoration:none;font-size:16px;font-weight:560;font-stretch:104%}
+.tlink::after{content:"";position:absolute;left:0;right:24px;bottom:11px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .24s var(--ease)}
+.tlink:hover::after,.tlink:focus-visible::after{transform:scaleX(1)}
+.tlink svg{width:16px;height:16px;flex:none;transition:transform .24s var(--ease)}
+.tlink:hover svg{transform:translateX(3px)}
+.ar{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* hero */
+.hero{padding-block:clamp(36px,7vh,104px) 0}
+.hero .eyebrow{margin-bottom:clamp(16px,2.6vh,28px)}
+h1{font-size:clamp(2.75rem,1rem + 7vw,7.5rem);line-height:.96;font-stretch:112%;font-weight:560;letter-spacing:-.035em}
+h1 span{display:block;text-wrap:balance}
+h1 .t2{color:var(--slate)}
+.lede{max-width:36ch;margin-top:clamp(20px,3vh,32px);color:var(--slate);font-size:clamp(1.0625rem,.95rem + .5vw,1.375rem);line-height:1.5;text-wrap:pretty}
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin-top:clamp(24px,3.6vh,36px)}
+.rule{position:relative;height:12px;margin-top:clamp(28px,5.5vh,60px)}
+.rule::before{content:"";position:absolute;left:0;right:2.5px;top:5px;height:1px;background:var(--graphite)}
+.rule i{position:absolute;right:0;top:3px;width:5px;height:5px;border-radius:50%;background:var(--graphite);box-shadow:0 0 0 2px var(--mist)}
+.hint{display:none;margin-top:16px;font-size:13px;font-stretch:116%;font-weight:600;letter-spacing:.06em;color:var(--slate)}
+.line-on .rule{visibility:hidden}
+.line-on .hint{display:block}
+
+/* the line story: static four frames by default */
+.reel{padding-block:clamp(48px,9vh,112px) clamp(56px,10vh,128px)}
+.reel-h{margin-bottom:24px}
+.caps{display:grid;gap:clamp(28px,4vw,48px) clamp(20px,3vw,40px);margin:0;padding:0;list-style:none}
+@media (min-width:760px){.caps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.frame{display:grid;place-items:center;aspect-ratio:8/5;max-width:100%;margin-bottom:16px;border-radius:20px;background:var(--stone)}
+.frame svg{width:80%;height:auto;overflow:visible}
+.frame .mkf{width:46%;--mk-sw:.62px;--mk-r:.95px}
+.cap p{max-width:22em;font-size:clamp(1.25rem,1.05rem + .9vw,1.75rem);line-height:1.2;font-stretch:104%;font-weight:500;letter-spacing:-.012em;text-wrap:balance}
+.ln{fill:none;stroke:var(--graphite);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.line-on .reel{padding-block:0}
+.line-on .reel-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.line-on .frame{display:none}
+.line-on .caps{display:block;padding-top:42vh;padding-top:42svh;padding-bottom:14vh;padding-bottom:14svh}
+.line-on .cap{display:flex;align-items:center;height:37.5vh;height:37.5svh}
+.line-on .cap p{max-width:12em;font-size:clamp(1.625rem,1.05rem + 2.1vw,3rem);line-height:1.12;color:var(--graphite);color:color-mix(in oklab,var(--slate),var(--graphite) calc(var(--a,1) * 100%))}
+@media (min-width:900px){
+  .line-on .caps{padding-top:0;padding-bottom:calc(50vh - 40px)}
+  .line-on .cap{height:55vh}
+  .line-on .cap p{max-width:min(10.5em,33vw)}
+}
+#line{position:fixed;left:0;top:0;z-index:60;display:none;width:100%;height:100vh;height:100lvh;pointer-events:none}
+.line-on #line{display:block}
+
+/* what we make */
+.work-head{padding-top:clamp(56px,10vh,120px)}
+.work-head .eyebrow{margin-top:20px}
+.chapter{padding-block:clamp(44px,8vw,120px)}
+.ch-grid{display:grid;gap:clamp(20px,3vw,36px) clamp(24px,5vw,72px);align-items:start}
+@media (min-width:900px){.ch-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}.ch-word{grid-column:1/-1}}
+.ch-word{--f:1;font-size:clamp(4.25rem,1.4rem + 12.4vw,13rem);line-height:.9;font-weight:calc(400 + 160 * var(--f));font-stretch:calc(118% - 10% * var(--f));letter-spacing:calc(-.03em - .015em * var(--f));white-space:nowrap;contain:layout}
+.ch-lede{max-width:20em;font-size:clamp(1.3rem,1.05rem + 1vw,1.875rem);line-height:1.22;font-stretch:104%;font-weight:480;letter-spacing:-.012em;text-wrap:pretty}
+.ch-lede a{color:var(--plumage)}
+.art{align-self:center}
+.art svg{display:block;width:100%;max-width:560px;height:auto;margin-inline:auto 0;overflow:visible}
+.a-bar{fill:none;stroke:var(--hairline);stroke-width:7;stroke-linecap:round}
+.ai-node{fill:var(--stone);stroke:var(--graphite);stroke-width:1.5}
+.orbit{transform:rotate(calc(var(--o,60) * 1deg));transform-origin:200px 120px}
+.orbit circle{fill:var(--plumage)}
+.g-b{transform:translateY(calc(var(--ty,0) * 1px)) rotate(calc(var(--rt,0) * 1deg));transform-box:fill-box;transform-origin:50% 100%}
+.fx .dr{stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--d,1))}
+.fx .a-chrome{opacity:var(--w,1)}
+.fx .a-home{opacity:calc(1 - var(--w,1))}
+.rows{margin:clamp(28px,4vw,44px) 0 0;padding:0;list-style:none;border-top:1px solid var(--hairline)}
+.rows li{display:grid;gap:4px 24px;padding-block:18px;border-bottom:1px solid var(--hairline)}
+@media (min-width:640px){.rows li{grid-template-columns:minmax(9em,2fr) 3fr;align-items:baseline}}
+.rows h4{font-size:1.0625rem;font-stretch:110%;font-weight:600;letter-spacing:-.005em}
+.rows p{color:var(--slate)}
+
+/* hairline sheen sweep */
+.sweep{position:relative;height:1px;overflow:hidden;background:var(--hairline)}
+.sweep::after{content:"";position:absolute;top:0;bottom:0;left:0;width:min(340px,45%);opacity:0;transform:translateX(-100%);background:linear-gradient(90deg,rgba(43,93,80,0),rgba(43,93,80,.55) 30%,rgba(148,103,47,.6) 56%,rgba(156,52,80,.7) 74%,rgba(156,52,80,0))}
+.fx .sweep::after{opacity:1;transform:translateX(calc(var(--sw,0) * (100vw + 100%) - 100%))}
+
+/* toppleton */
+.tp{padding-block:clamp(36px,6vw,88px)}
+.tile{position:relative;display:grid;gap:clamp(28px,4vw,48px);align-items:center;overflow:hidden;padding:clamp(28px,5.5vw,80px);border-radius:clamp(20px,2.4vw,32px);color:var(--tile-ink);background-color:var(--tile);background-image:radial-gradient(ellipse 52% 60% at 74% 56%,rgba(63,128,105,.2),rgba(63,128,105,0) 72%),var(--noise)}
+@media (min-width:860px){.tile{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.tile .eyebrow{color:var(--tile-link)}
+.tile h2{margin:14px 0 20px;font-size:clamp(2.75rem,1.3rem + 5.6vw,6.5rem);line-height:.94;font-stretch:110%;font-weight:560;letter-spacing:-.035em}
+.tile .body{max-width:30ch;color:var(--tile-soft);text-wrap:pretty}
+.tile .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:clamp(24px,3vw,36px)}
+.btn-light{background:var(--tile-ink);color:var(--graphite)}
+.btn-light:hover{background:var(--btn-light-hover)}
+.url{font-size:14px;font-stretch:108%;color:var(--tile-soft)}
+.tile :focus-visible{outline-color:var(--tile-link)}
+.stack-wrap{display:grid;justify-items:center;gap:10px}
+.stack{display:block;width:100%;max-width:380px;margin:0;padding:0;border:0;border-radius:16px;background:none;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.stack svg{display:block;width:100%;height:auto;overflow:visible}
+.ground{stroke:var(--tile-ink);stroke-opacity:.28;stroke-width:1.5;stroke-linecap:round}
+.blk{opacity:var(--op,1);transform:translateY(calc(var(--ty,0) * 1px)) rotate(calc(var(--rt,0) * 1deg));transform-box:fill-box;transform-origin:50% 100%}
+.blk rect{fill:rgba(242,243,240,.02);stroke:var(--tile-ink);stroke-opacity:.8;stroke-width:1.5}
+.blk.lit rect{fill:url(#litg);stroke:var(--lit-edge);stroke-opacity:1}
+.wb{transform-box:fill-box;transform-origin:50% 100%}
+.wob .wb{animation:wob .7s cubic-bezier(.3,.7,.4,1)}
+@keyframes wob{0%{transform:rotate(0deg)}18%{transform:rotate(calc(var(--amp) * 1deg))}40%{transform:rotate(calc(var(--amp) * -.7deg))}62%{transform:rotate(calc(var(--amp) * .4deg))}82%{transform:rotate(calc(var(--amp) * -.15deg))}100%{transform:rotate(0deg)}}
+.stack-hint{display:none;font-size:13px;font-stretch:116%;font-weight:600;letter-spacing:.06em;color:var(--tile-soft)}
+.fx .stack-hint{display:block}
+
+/* studio */
+.studio{padding-block:clamp(64px,11vw,160px)}
+.studio .sweep{margin-bottom:20px}
+.statement{max-width:21em;margin-top:clamp(20px,3vw,32px);font-size:clamp(1.75rem,1.1rem + 2.6vw,3.5rem);line-height:1.12;font-weight:480;letter-spacing:-.02em;text-wrap:pretty}
+.fx .statement .w{color:color-mix(in oklab,var(--ash),var(--graphite) calc(clamp(0,var(--lit,99) - var(--i),1) * 100%))}
+.principles{display:grid;gap:0 clamp(24px,4vw,56px);margin:clamp(48px,7vw,96px) 0 0;padding:0;list-style:none}
+@media (min-width:800px){.principles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pr{display:grid;gap:10px;align-content:start;padding-block:24px;border-top:1px solid var(--hairline)}
+.pr svg{width:64px;height:32px}
+.pr h3{font-size:1.375rem;line-height:1.2;font-stretch:110%;font-weight:600;letter-spacing:-.01em}
+.pr p{color:var(--slate);max-width:26ch}
+.gl{fill:none;stroke:var(--graphite);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* contact */
+.contact{padding-block:clamp(72px,12vw,176px) clamp(56px,8vw,112px)}
+.contact .sweep{margin-bottom:20px}
+.contact .lede{margin-top:16px}
+.mail{display:inline-flex;flex-direction:column;max-width:100%;margin-top:clamp(32px,5vw,64px)}
+.email{font-size:clamp(2rem,.9rem + 5.6vw,6rem);line-height:1.04;font-weight:500;font-stretch:100%;letter-spacing:-.03em;color:var(--graphite);text-decoration:none;overflow-wrap:anywhere;transition:color .2s}
+.email:hover{color:var(--plumage)}
+.ul{display:flex;align-items:flex-end;height:18px;margin-top:12px}
+.ul-line{flex:1;height:1.5px;margin-bottom:4px;background:var(--graphite);transform-origin:left}
+.ul svg{flex:none;width:40px;height:18px;margin-left:-1px}
+.fx .ul-line{transform:scaleX(clamp(0,var(--d,1) * 1.25,1))}
+.fx .ul .nt{stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,(var(--d,1) - .8) * 5,1))}
+.copy-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;min-height:44px;margin-top:28px}
+.copy{min-height:44px;padding:0 20px;border:1px solid var(--graphite);border-radius:999px;background:transparent;color:var(--graphite);font:inherit;font-size:15px;font-weight:560;font-stretch:104%;cursor:pointer;transition:background-color .2s,color .2s}
+.copy:hover{background:var(--graphite);color:var(--mist)}
+.copy-status{font-size:14px;color:var(--plumage)}
+
+/* footer */
+.foot .wrap{padding-block:28px 36px}
+.foot-grid{display:grid;gap:14px 32px;align-items:center;margin-top:28px;color:var(--slate);font-size:14px}
+@media (min-width:900px){.foot-grid{grid-template-columns:auto auto 1fr auto}}
+.foot .brand{gap:8px;color:var(--graphite)}
+.foot .brand .wm{font-size:15px}
+.foot .mk{width:36px;height:21px}
+.foot ul{display:flex;flex-wrap:wrap;gap:0 2px;margin:0 0 0 -10px;padding:0;list-style:none}
+@media (min-width:900px){.foot ul{margin:0 -10px 0 0;justify-content:flex-end}}
+.foot ul a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;color:var(--slate)}
+.foot ul a:hover{color:var(--graphite)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}.mk-g{display:none}}
+</style>
+
+<svg class="vh" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <linearGradient id="gl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2B5D50"/><stop offset=".55" stop-color="#94672F"/><stop offset="1" stop-color="#9C3450"/></linearGradient>
+    <linearGradient id="litg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4C9179"/><stop offset="1" stop-color="#2F6655"/></linearGradient>
+    <symbol id="mk" viewBox="0 0 48 28"><path d="M22.89 13.53C23.06 13.21 23.57 12.22 23.92 11.57C24.27 10.92 24.63 10.27 25 9.63C25.38 8.99 25.76 8.35 26.17 7.74C26.57 7.12 26.99 6.5 27.45 5.93C27.92 5.35 28.39 4.77 28.94 4.28C29.49 3.79 30.08 3.29 30.74 2.99C31.4 2.69 32.18 2.47 32.88 2.5C33.59 2.54 34.35 2.83 34.97 3.19C35.6 3.54 36.15 4.1 36.64 4.64C37.13 5.19 37.54 5.82 37.92 6.45C38.3 7.08 38.62 7.76 38.91 8.44C39.19 9.12 39.44 9.83 39.63 10.54C39.83 11.25 39.99 11.98 40.09 12.71C40.2 13.44 40.27 14.19 40.24 14.92C40.21 15.66 40.15 16.43 39.93 17.12C39.71 17.81 39.39 18.55 38.92 19.07C38.44 19.59 37.74 20.02 37.07 20.25C36.4 20.49 35.6 20.51 34.87 20.49C34.14 20.47 33.4 20.31 32.68 20.14C31.96 19.98 31.26 19.74 30.56 19.5C29.86 19.26 29.17 18.98 28.49 18.69C27.81 18.4 27.14 18.09 26.46 17.78C25.79 17.46 25.13 17.14 24.47 16.81C23.8 16.48 23.14 16.14 22.48 15.81C21.82 15.47 21.17 15.13 20.5 14.8C19.84 14.47 19.18 14.14 18.51 13.82C17.84 13.51 17.17 13.19 16.48 12.91C15.8 12.64 15.11 12.36 14.4 12.15C13.69 11.95 12.96 11.73 12.23 11.69C11.5 11.65 10.68 11.63 10.04 11.9C9.4 12.17 8.76 12.72 8.38 13.31C8.01 13.9 7.87 14.71 7.79 15.43C7.7 16.15 7.77 16.92 7.87 17.65C7.97 18.38 8.15 19.11 8.37 19.81C8.6 20.51 8.87 21.21 9.21 21.86C9.56 22.51 9.94 23.18 10.42 23.72C10.9 24.27 11.47 24.86 12.11 25.14C12.75 25.42 13.59 25.55 14.27 25.42C14.95 25.29 15.62 24.81 16.2 24.36C16.77 23.91 17.24 23.31 17.7 22.73C18.16 22.15 18.56 21.52 18.95 20.9C19.35 20.27 19.71 19.62 20.07 18.98C20.43 18.33 20.93 17.34 21.11 17.01" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width:var(--mk-sw,1.7px)"/><circle cx="39.41" cy="9.8" r="2.05" fill="currentColor" style="r:var(--mk-r,2.05px)"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top band" id="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Hummingbolt, home">
+      <svg class="mk" viewBox="0 0 48 28" aria-hidden="true" focusable="false"><path class="mk-l" d="M22.89 13.53C23.06 13.21 23.57 12.22 23.92 11.57C24.27 10.92 24.63 10.27 25 9.63C25.38 8.99 25.76 8.35 26.17 7.74C26.57 7.12 26.99 6.5 27.45 5.93C27.92 5.35 28.39 4.77 28.94 4.28C29.49 3.79 30.08 3.29 30.74 2.99C31.4 2.69 32.18 2.47 32.88 2.5C33.59 2.54 34.35 2.83 34.97 3.19C35.6 3.54 36.15 4.1 36.64 4.64C37.13 5.19 37.54 5.82 37.92 6.45C38.3 7.08 38.62 7.76 38.91 8.44C39.19 9.12 39.44 9.83 39.63 10.54C39.83 11.25 39.99 11.98 40.09 12.71C40.2 13.44 40.27 14.19 40.24 14.92C40.21 15.66 40.15 16.43 39.93 17.12C39.71 17.81 39.39 18.55 38.92 19.07C38.44 19.59 37.74 20.02 37.07 20.25C36.4 20.49 35.6 20.51 34.87 20.49C34.14 20.47 33.4 20.31 32.68 20.14C31.96 19.98 31.26 19.74 30.56 19.5C29.86 19.26 29.17 18.98 28.49 18.69C27.81 18.4 27.14 18.09 26.46 17.78C25.79 17.46 25.13 17.14 24.47 16.81C23.8 16.48 23.14 16.14 22.48 15.81C21.82 15.47 21.17 15.13 20.5 14.8C19.84 14.47 19.18 14.14 18.51 13.82C17.84 13.51 17.17 13.19 16.48 12.91C15.8 12.64 15.11 12.36 14.4 12.15C13.69 11.95 12.96 11.73 12.23 11.69C11.5 11.65 10.68 11.63 10.04 11.9C9.4 12.17 8.76 12.72 8.38 13.31C8.01 13.9 7.87 14.71 7.79 15.43C7.7 16.15 7.77 16.92 7.87 17.65C7.97 18.38 8.15 19.11 8.37 19.81C8.6 20.51 8.87 21.21 9.21 21.86C9.56 22.51 9.94 23.18 10.42 23.72C10.9 24.27 11.47 24.86 12.11 25.14C12.75 25.42 13.59 25.55 14.27 25.42C14.95 25.29 15.62 24.81 16.2 24.36C16.77 23.91 17.24 23.31 17.7 22.73C18.16 22.15 18.56 21.52 18.95 20.9C19.35 20.27 19.71 19.62 20.07 18.98C20.43 18.33 20.93 17.34 21.11 17.01"/><circle class="mk-d" cx="39.41" cy="9.8" r="2.05"/><path class="mk-g" d="M22.89 13.53C23.06 13.21 23.57 12.22 23.92 11.57C24.27 10.92 24.63 10.27 25 9.63C25.38 8.99 25.76 8.35 26.17 7.74C26.57 7.12 26.99 6.5 27.45 5.93C27.92 5.35 28.39 4.77 28.94 4.28C29.49 3.79 30.08 3.29 30.74 2.99C31.4 2.69 32.18 2.47 32.88 2.5C33.59 2.54 34.35 2.83 34.97 3.19C35.6 3.54 36.15 4.1 36.64 4.64C37.13 5.19 37.54 5.82 37.92 6.45C38.3 7.08 38.62 7.76 38.91 8.44C39.19 9.12 39.44 9.83 39.63 10.54C39.83 11.25 39.99 11.98 40.09 12.71C40.2 13.44 40.27 14.19 40.24 14.92C40.21 15.66 40.15 16.43 39.93 17.12C39.71 17.81 39.39 18.55 38.92 19.07C38.44 19.59 37.74 20.02 37.07 20.25C36.4 20.49 35.6 20.51 34.87 20.49C34.14 20.47 33.4 20.31 32.68 20.14C31.96 19.98 31.26 19.74 30.56 19.5C29.86 19.26 29.17 18.98 28.49 18.69C27.81 18.4 27.14 18.09 26.46 17.78C25.79 17.46 25.13 17.14 24.47 16.81C23.8 16.48 23.14 16.14 22.48 15.81C21.82 15.47 21.17 15.13 20.5 14.8C19.84 14.47 19.18 14.14 18.51 13.82C17.84 13.51 17.17 13.19 16.48 12.91C15.8 12.64 15.11 12.36 14.4 12.15C13.69 11.95 12.96 11.73 12.23 11.69C11.5 11.65 10.68 11.63 10.04 11.9C9.4 12.17 8.76 12.72 8.38 13.31C8.01 13.9 7.87 14.71 7.79 15.43C7.7 16.15 7.77 16.92 7.87 17.65C7.97 18.38 8.15 19.11 8.37 19.81C8.6 20.51 8.87 21.21 9.21 21.86C9.56 22.51 9.94 23.18 10.42 23.72C10.9 24.27 11.47 24.86 12.11 25.14C12.75 25.42 13.59 25.55 14.27 25.42C14.95 25.29 15.62 24.81 16.2 24.36C16.77 23.91 17.24 23.31 17.7 22.73C18.16 22.15 18.56 21.52 18.95 20.9C19.35 20.27 19.71 19.62 20.07 18.98C20.43 18.33 20.93 17.34 21.11 17.01" pathLength="100"/></svg>
+      <span class="wm">Hummingbolt</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#toppleton">Toppleton</a></li>
+        <li><a href="#studio">Studio</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<canvas id="line" aria-hidden="true"></canvas>
+
+<main id="main">
+  <section id="story" class="story" aria-labelledby="h1">
+    <div class="band hero">
+      <div class="wrap">
+        <p class="eyebrow">Hummingbolt, a software studio</p>
+        <h1 id="h1"><span class="t1">Apps, games and AI.</span> <span class="t2">Made with care.</span></h1>
+        <p class="lede">Mobile and web apps, games, and AI applications, models and agents. A small studio in the San Francisco Bay Area.</p>
+        <div class="ctas">
+          <a class="btn" href="#work">See what we make</a>
+          <a class="tlink" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="vh"> (opens in a new tab)</span><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path class="ar" d="M2.5 8h10.5M9 3.8 13.2 8 9 12.2"/></svg></a>
+        </div>
+        <div class="rule" aria-hidden="true"><i></i></div>
+        <p class="hint" aria-hidden="true">Scroll, and follow the line.</p>
+        <a class="skip-intro" href="#work">Skip the intro</a>
+      </div>
+    </div>
+    <div class="band reel">
+      <div class="wrap">
+        <h2 class="eyebrow reel-h">One line</h2>
+        <ol class="caps">
+          <li class="cap">
+            <div class="frame" aria-hidden="true"><svg viewBox="0 0 240 150"><path class="ln" d="M30 75H204"/><circle cx="207" cy="75" r="5.2" fill="#E7E9E5"/><circle cx="207" cy="75" r="3.1" fill="#1F2422"/></svg></div>
+            <p>It starts with a line.</p>
+          </li>
+          <li class="cap">
+            <div class="frame" aria-hidden="true"><svg viewBox="0 0 240 150"><path class="ln" d="M120 75C121.2 73.81 124.76 70.23 127.17 67.86C129.58 65.5 131.98 63.14 134.44 60.83C136.89 58.52 139.36 56.21 141.9 54C144.45 51.79 147.02 49.59 149.7 47.57C152.39 45.54 155.12 43.51 158.03 41.83C160.93 40.15 163.96 38.44 167.14 37.49C170.31 36.54 173.89 35.72 177.07 36.15C180.25 36.58 183.67 38.09 186.21 40.06C188.76 42.04 190.73 45.12 192.34 48.02C193.95 50.92 194.98 54.24 195.86 57.48C196.74 60.71 197.27 64.08 197.62 67.43C197.96 70.77 198.05 74.17 197.93 77.53C197.82 80.89 197.53 84.28 196.94 87.58C196.34 90.89 195.58 94.24 194.37 97.36C193.17 100.47 191.76 103.74 189.69 106.28C187.61 108.82 184.88 111.34 181.94 112.59C179 113.83 175.28 114.08 172.03 113.75C168.78 113.42 165.49 112 162.45 110.61C159.41 109.22 156.57 107.31 153.79 105.42C151 103.53 148.36 101.41 145.75 99.28C143.14 97.15 140.63 94.89 138.14 92.62C135.64 90.35 133.21 88.01 130.79 85.67C128.36 83.33 125.97 80.95 123.58 78.57C121.18 76.2 118.82 73.8 116.42 71.43C114.03 69.05 111.64 66.67 109.21 64.33C106.79 61.99 104.36 59.65 101.86 57.38C99.37 55.11 96.86 52.85 94.25 50.72C91.64 48.59 89 46.47 86.21 44.58C83.43 42.69 80.59 40.78 77.55 39.39C74.51 38 71.22 36.58 67.97 36.25C64.72 35.92 61 36.17 58.06 37.41C55.12 38.66 52.39 41.18 50.31 43.72C48.24 46.26 46.83 49.53 45.63 52.64C44.42 55.76 43.66 59.11 43.06 62.42C42.47 65.72 42.18 69.11 42.07 72.47C41.95 75.83 42.04 79.23 42.38 82.57C42.73 85.92 43.26 89.29 44.14 92.52C45.02 95.76 46.05 99.08 47.66 101.98C49.27 104.88 51.24 107.96 53.79 109.94C56.33 111.91 59.75 113.42 62.93 113.85C66.11 114.28 69.69 113.46 72.86 112.51C76.04 111.56 79.07 109.85 81.97 108.17C84.88 106.49 87.61 104.46 90.3 102.43C92.98 100.41 95.55 98.21 98.1 96C100.64 93.79 103.11 91.48 105.56 89.17C108.02 86.86 110.42 84.5 112.83 82.14C115.24 79.77 118.8 76.19 120 75Z" opacity=".12" transform="rotate(-6 120 75)"/><path class="ln" d="M120 75C121.2 73.81 124.76 70.23 127.17 67.86C129.58 65.5 131.98 63.14 134.44 60.83C136.89 58.52 139.36 56.21 141.9 54C144.45 51.79 147.02 49.59 149.7 47.57C152.39 45.54 155.12 43.51 158.03 41.83C160.93 40.15 163.96 38.44 167.14 37.49C170.31 36.54 173.89 35.72 177.07 36.15C180.25 36.58 183.67 38.09 186.21 40.06C188.76 42.04 190.73 45.12 192.34 48.02C193.95 50.92 194.98 54.24 195.86 57.48C196.74 60.71 197.27 64.08 197.62 67.43C197.96 70.77 198.05 74.17 197.93 77.53C197.82 80.89 197.53 84.28 196.94 87.58C196.34 90.89 195.58 94.24 194.37 97.36C193.17 100.47 191.76 103.74 189.69 106.28C187.61 108.82 184.88 111.34 181.94 112.59C179 113.83 175.28 114.08 172.03 113.75C168.78 113.42 165.49 112 162.45 110.61C159.41 109.22 156.57 107.31 153.79 105.42C151 103.53 148.36 101.41 145.75 99.28C143.14 97.15 140.63 94.89 138.14 92.62C135.64 90.35 133.21 88.01 130.79 85.67C128.36 83.33 125.97 80.95 123.58 78.57C121.18 76.2 118.82 73.8 116.42 71.43C114.03 69.05 111.64 66.67 109.21 64.33C106.79 61.99 104.36 59.65 101.86 57.38C99.37 55.11 96.86 52.85 94.25 50.72C91.64 48.59 89 46.47 86.21 44.58C83.43 42.69 80.59 40.78 77.55 39.39C74.51 38 71.22 36.58 67.97 36.25C64.72 35.92 61 36.17 58.06 37.41C55.12 38.66 52.39 41.18 50.31 43.72C48.24 46.26 46.83 49.53 45.63 52.64C44.42 55.76 43.66 59.11 43.06 62.42C42.47 65.72 42.18 69.11 42.07 72.47C41.95 75.83 42.04 79.23 42.38 82.57C42.73 85.92 43.26 89.29 44.14 92.52C45.02 95.76 46.05 99.08 47.66 101.98C49.27 104.88 51.24 107.96 53.79 109.94C56.33 111.91 59.75 113.42 62.93 113.85C66.11 114.28 69.69 113.46 72.86 112.51C76.04 111.56 79.07 109.85 81.97 108.17C84.88 106.49 87.61 104.46 90.3 102.43C92.98 100.41 95.55 98.21 98.1 96C100.64 93.79 103.11 91.48 105.56 89.17C108.02 86.86 110.42 84.5 112.83 82.14C115.24 79.77 118.8 76.19 120 75Z" opacity=".12" transform="rotate(5 120 75) scale(1 1.08) translate(0 -5.5)"/><path class="ln" d="M120 75C121.2 73.81 124.76 70.23 127.17 67.86C129.58 65.5 131.98 63.14 134.44 60.83C136.89 58.52 139.36 56.21 141.9 54C144.45 51.79 147.02 49.59 149.7 47.57C152.39 45.54 155.12 43.51 158.03 41.83C160.93 40.15 163.96 38.44 167.14 37.49C170.31 36.54 173.89 35.72 177.07 36.15C180.25 36.58 183.67 38.09 186.21 40.06C188.76 42.04 190.73 45.12 192.34 48.02C193.95 50.92 194.98 54.24 195.86 57.48C196.74 60.71 197.27 64.08 197.62 67.43C197.96 70.77 198.05 74.17 197.93 77.53C197.82 80.89 197.53 84.28 196.94 87.58C196.34 90.89 195.58 94.24 194.37 97.36C193.17 100.47 191.76 103.74 189.69 106.28C187.61 108.82 184.88 111.34 181.94 112.59C179 113.83 175.28 114.08 172.03 113.75C168.78 113.42 165.49 112 162.45 110.61C159.41 109.22 156.57 107.31 153.79 105.42C151 103.53 148.36 101.41 145.75 99.28C143.14 97.15 140.63 94.89 138.14 92.62C135.64 90.35 133.21 88.01 130.79 85.67C128.36 83.33 125.97 80.95 123.58 78.57C121.18 76.2 118.82 73.8 116.42 71.43C114.03 69.05 111.64 66.67 109.21 64.33C106.79 61.99 104.36 59.65 101.86 57.38C99.37 55.11 96.86 52.85 94.25 50.72C91.64 48.59 89 46.47 86.21 44.58C83.43 42.69 80.59 40.78 77.55 39.39C74.51 38 71.22 36.58 67.97 36.25C64.72 35.92 61 36.17 58.06 37.41C55.12 38.66 52.39 41.18 50.31 43.72C48.24 46.26 46.83 49.53 45.63 52.64C44.42 55.76 43.66 59.11 43.06 62.42C42.47 65.72 42.18 69.11 42.07 72.47C41.95 75.83 42.04 79.23 42.38 82.57C42.73 85.92 43.26 89.29 44.14 92.52C45.02 95.76 46.05 99.08 47.66 101.98C49.27 104.88 51.24 107.96 53.79 109.94C56.33 111.91 59.75 113.42 62.93 113.85C66.11 114.28 69.69 113.46 72.86 112.51C76.04 111.56 79.07 109.85 81.97 108.17C84.88 106.49 87.61 104.46 90.3 102.43C92.98 100.41 95.55 98.21 98.1 96C100.64 93.79 103.11 91.48 105.56 89.17C108.02 86.86 110.42 84.5 112.83 82.14C115.24 79.77 118.8 76.19 120 75Z"/><circle cx="182" cy="44.6" r="5.2" fill="#E7E9E5"/><circle cx="182" cy="44.6" r="3.1" fill="#1F2422"/></svg></div>
+            <p>It hovers, tracing a figure-eight, like a hummingbird’s wing.</p>
+          </li>
+          <li class="cap">
+            <div class="frame" aria-hidden="true"><svg viewBox="0 0 240 150"><path class="ln" d="M99.84 131L134.56 68.28L105.44 81.72L140.16 19"/><circle cx="99.84" cy="131" r="5.2" fill="#E7E9E5"/><circle cx="99.84" cy="131" r="3.1" fill="#1F2422"/></svg></div>
+            <p>Then it darts. A spark of speed.</p>
+          </li>
+          <li class="cap">
+            <div class="frame" aria-hidden="true"><svg class="mkf" viewBox="0 0 48 28"><use href="#mk"/></svg></div>
+            <p>One line, start to finish. That is how we like to build.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" aria-labelledby="work-h">
+    <div class="band">
+      <div class="wrap work-head"><div class="sweep" aria-hidden="true"></div><h2 id="work-h" class="eyebrow">What we make</h2></div>
+    </div>
+
+    <article id="apps" class="band chapter" aria-labelledby="apps-h">
+      <div class="wrap ch-grid">
+        <h3 id="apps-h" class="ch-word">Apps.</h3>
+        <div class="ch-body"><p class="ch-lede">Mobile and web apps. Quick to open. Clear to use.</p></div>
+        <figure class="art" aria-hidden="true">
+          <svg viewBox="0 0 400 240">
+            <rect class="ln dr a-frame" x="20" y="20" width="360" height="200" rx="12" pathLength="1"/>
+            <line class="ln a-pill" x1="110" y1="36" x2="290" y2="36"/>
+            <line class="ln a-chrome a-div" x1="20" y1="52" x2="380" y2="52"/>
+            <g class="a-chrome"><circle cx="38" cy="36" r="3.2" fill="#1F2422"/><circle cx="51" cy="36" r="3.2" fill="#1F2422"/><circle cx="64" cy="36" r="3.2" fill="#1F2422"/></g>
+            <line class="ln a-home" x1="186" y1="214" x2="214" y2="214" opacity="0"/>
+            <line class="a-bar" x1="52" y1="86" x2="292" y2="86"/>
+            <line class="a-bar" x1="52" y1="108" x2="340" y2="108"/>
+            <line class="a-bar" x1="52" y1="130" x2="242" y2="130"/>
+          </svg>
+        </figure>
+      </div>
+    </article>
+
+    <article id="games" class="band chapter" aria-labelledby="games-h">
+      <div class="wrap ch-grid">
+        <h3 id="games-h" class="ch-word">Games.</h3>
+        <div class="ch-body"><p class="ch-lede">Games for all ages. Our first is <a href="#toppleton">Toppleton</a>.</p></div>
+        <figure class="art" aria-hidden="true">
+          <svg viewBox="0 0 400 240">
+            <line class="ln" x1="70" y1="226" x2="330" y2="226"/>
+            <g class="g-b"><rect class="ln dr" x="112" y="166" width="176" height="60" rx="10" pathLength="1"/></g>
+            <g class="g-b"><rect class="ln dr" x="140" y="106" width="124" height="60" rx="10" pathLength="1"/></g>
+            <g class="g-b"><rect class="ln dr" x="164" y="46" width="84" height="60" rx="10" pathLength="1"/></g>
+          </svg>
+        </figure>
+      </div>
+    </article>
+
+    <article id="ai" class="band chapter plate-stone" aria-labelledby="ai-h">
+      <div class="wrap ch-grid">
+        <h3 id="ai-h" class="ch-word">AI.</h3>
+        <div class="ch-body">
+          <p class="ch-lede">AI applications, models and agents.</p>
+          <ul class="rows">
+            <li><h4>AI applications</h4><p>Apps that use AI to help people get a task done.</p></li>
+            <li><h4>Models</h4><p>Models trained or tuned for one specific job.</p></li>
+            <li><h4>Agents</h4><p>Software that plans the steps of a task and carries them out.</p></li>
+          </ul>
+        </div>
+        <figure class="art" aria-hidden="true">
+          <svg viewBox="0 0 400 240">
+            <circle class="ln dr ai-loop" cx="200" cy="120" r="92" pathLength="1" transform="rotate(-90 200 120)"/>
+            <circle class="ai-node" cx="200" cy="28" r="8"/>
+            <circle class="ai-node" cx="279.7" cy="166" r="8"/>
+            <circle class="ai-node" cx="120.3" cy="166" r="8"/>
+            <g class="orbit"><circle cx="200" cy="28" r="4.5"/></g>
+          </svg>
+        </figure>
+      </div>
+    </article>
+  </section>
+
+  <section id="toppleton" class="band tp plate-celadon" aria-labelledby="tp-h">
+    <div class="wrap">
+      <div class="tile">
+        <div class="tile-text">
+          <p class="eyebrow">Our first game</p>
+          <h2 id="tp-h">Toppleton</h2>
+          <p class="body">A stacking game for all ages, children included. Free to play on the web. Mobile versions are coming later.</p>
+          <div class="actions">
+            <a class="btn btn-light" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="vh"> (opens in a new tab)</span></a>
+            <span class="url">play.toppleton.app</span>
+          </div>
+        </div>
+        <div class="stack-wrap">
+          <div class="stack" aria-hidden="true">
+            <svg viewBox="0 0 360 380">
+              <line class="ground" x1="36" y1="357" x2="324" y2="357"/>
+              <g class="blk"><g class="wb" style="--amp:.15"><rect x="70" y="301" width="220" height="56" rx="12"/></g></g>
+              <g class="blk"><g class="wb" style="--amp:.35"><rect x="98" y="245" width="168" height="56" rx="12"/></g></g>
+              <g class="blk"><g class="wb" style="--amp:.6"><rect x="86" y="189" width="190" height="56" rx="12"/></g></g>
+              <g class="blk lit"><g class="wb" style="--amp:.9"><rect x="122" y="133" width="128" height="56" rx="12"/></g></g>
+              <g class="blk"><g class="wb" style="--amp:1.3"><rect x="106" y="77" width="156" height="56" rx="12"/></g></g>
+              <g class="blk"><g class="wb" style="--amp:1.9"><rect x="143" y="21" width="96" height="56" rx="12"/></g></g>
+            </svg>
+          </div>
+          <p class="stack-hint" aria-hidden="true">Tap the stack.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="studio" class="band studio plate-stone" aria-labelledby="st-h">
+    <div class="wrap">
+      <div class="sweep" aria-hidden="true"></div>
+      <h2 id="st-h" class="eyebrow">How we work</h2>
+      <p class="statement"><span class="w" style="--i:0">We</span> <span class="w" style="--i:1">are</span> <span class="w" style="--i:2">a</span> <span class="w" style="--i:3">small</span> <span class="w" style="--i:4">studio.</span> <span class="w" style="--i:5">We</span> <span class="w" style="--i:6">stay</span> <span class="w" style="--i:7">on</span> <span class="w" style="--i:8">a</span> <span class="w" style="--i:9">detail</span> <span class="w" style="--i:10">until</span> <span class="w" style="--i:11">it</span> <span class="w" style="--i:12">is</span> <span class="w" style="--i:13">right.</span> <span class="w" style="--i:14">Then</span> <span class="w" style="--i:15">we</span> <span class="w" style="--i:16">move</span> <span class="w" style="--i:17">fast.</span> <span class="w" style="--i:18">And</span> <span class="w" style="--i:19">we</span> <span class="w" style="--i:20">go</span> <span class="w" style="--i:21">back</span> <span class="w" style="--i:22">to</span> <span class="w" style="--i:23">fix</span> <span class="w" style="--i:24">what</span> <span class="w" style="--i:25">we</span> <span class="w" style="--i:26">learn.</span></p>
+      <ul class="principles">
+        <li class="pr">
+          <svg viewBox="0 0 64 32" aria-hidden="true" focusable="false"><path class="gl dr" d="M4 22H44" pathLength="1"/><circle cx="53" cy="15" r="3.1" fill="#1F2422"/></svg>
+          <h3>Hover</h3><p>We stay on the detail until it is right.</p>
+        </li>
+        <li class="pr">
+          <svg viewBox="0 0 64 32" aria-hidden="true" focusable="false"><path class="gl dr" d="M40 3 24 17.5 37 14 21 29" pathLength="1"/></svg>
+          <h3>Dart</h3><p>When it is right, we ship it quickly.</p>
+        </li>
+        <li class="pr">
+          <svg viewBox="0 0 64 32" aria-hidden="true" focusable="false"><path class="gl dr" d="M58 23H40C33 23 28 18.5 28 13S32 4.5 37 4.5 45 8 45 13 40 23 31 23H8M14 17 8 23 14 29" pathLength="1"/></svg>
+          <h3>Reverse</h3><p>We go back and improve what we learn.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact" class="band contact" aria-labelledby="ct-h">
+    <div class="wrap">
+      <div class="sweep" aria-hidden="true"></div>
+      <h2 id="ct-h" class="h2">Say hello.</h2>
+      <p class="lede">Write to us about an app, a game or an AI project.</p>
+      <div class="mail">
+        <a class="email" href="mailto:admin@hummingbolt.com">admin@<wbr>hummingbolt.com</a>
+        <div class="ul" aria-hidden="true"><span class="ul-line"></span><svg viewBox="0 0 40 18"><path class="gl nt" d="M0 13.25H17L24.5 5.5 25.5 13.25 34 5" pathLength="1"/></svg></div>
+      </div>
+      <div class="copy-row"><button class="copy" type="button" hidden>Copy address</button><span class="copy-status" role="status" aria-live="polite"></span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="band foot">
+  <div class="wrap">
+    <div class="sweep" aria-hidden="true"></div>
+    <div class="foot-grid">
+      <a class="brand" href="#top" aria-label="Hummingbolt, back to top"><svg class="mk" viewBox="0 0 48 28" aria-hidden="true" focusable="false"><use href="#mk"/></svg><span class="wm">Hummingbolt</span></a>
+      <p>© 2026 Hummingbolt LLC</p>
+      <p>2108 N St #18140, Sacramento, CA 95816</p>
+      <ul>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Legal notice</a></li>
+        <li><a href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="vh"> (opens in a new tab)</span></a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+// One Line. A single Canvas 2D line driven by native scroll, plus scroll-linked section effects.
+// Every story frame is a pure function of scroll progress. No libraries, no WebGL.
+const D = document, H = D.documentElement, W = window;
+const mq = (q) => W.matchMedia(q);
+const RM = mq('(prefers-reduced-motion: reduce)'), WIDE = mq('(min-width: 900px)'), SMALL = mq('(max-width: 700px)'), COARSE = mq('(pointer: coarse)');
+const FLAGS = (location.hash + location.search).toLowerCase();
+const NOLINE = /nowebgl|nocanvas|static/.test(FLAGS);
+const STILL = /still/.test(FLAGS);
+const LOW = (navigator.hardwareConcurrency || 8) <= 4 || !!(navigator.connection && navigator.connection.saveData);
+const TAU = Math.PI * 2;
+const clamp = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+const ss = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
+const eio = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const eout = (t) => 1 - Math.pow(1 - t, 3);
+const back = (t) => { const c = 1.25, u = t - 1; return 1 + (c + 1) * u * u * u + c * u * u; };
+const $ = (s, r = D) => r.querySelector(s), $$ = (s, r = D) => Array.prototype.slice.call(r.querySelectorAll(s));
+const LH=1,LR=1.3,LT=-18,LG=0.085,LSC=14.18,LOX=21.88,LOY=15.5;
+
+let vw = 1, vh = 1, sy = 0, maxS = 1, raf = 0, last = 0, dirty = true, fx = false, fails = 0;
+const hdr = $('.top'), story = $('#story'), mk = $('.top .mk');
+
+function setv(el, k, v) {
+  v = Math.round(v * 1000) / 1000;
+  const c = el.__v || (el.__v = {});
+  if (c[k] !== v) { c[k] = v; el.style.setProperty(k, v); }
+}
+function seta(el, k, v) {
+  v = Math.round(v * 100) / 100;
+  const c = el.__a || (el.__a = {});
+  if (c[k] !== v) { c[k] = v; el.setAttribute(k, v); }
+}
+
+/* ---------------- section effects (scroll-linked, complete at rest) ---------------- */
+const T = [];
+function track(el, a, b, fn) { if (el) T.push({ el, a, b, fn, top: 0, h: 0, pm: 1 }); }
+const prog = (top, a, b) => clamp((vh * a - top) / (vh * (a - b)));
+
+function setupSections() {
+  const apps = $('#apps .art svg');
+  if (apps) {
+    const fr = $('.a-frame', apps), pill = $('.a-pill', apps), dv = $('.a-div', apps), home = $('.a-home', apps), bars = $$('.a-bar', apps);
+    const PB = [[166, 58, 230], [166, 76, 224], [166, 94, 206]], BB = [[52, 86, 292], [52, 108, 340], [52, 130, 242]];
+    track(apps, 0.95, 0.3, (el, p) => {
+      const d = clamp(p / 0.42), w = eio(clamp((p - 0.48) / 0.46));
+      const x = lerp(148, 20, w), y = lerp(12, 20, w), ww = lerp(104, 360, w), hh = lerp(216, 200, w);
+      seta(fr, 'x', x); seta(fr, 'y', y); seta(fr, 'width', ww); seta(fr, 'height', hh); seta(fr, 'rx', lerp(20, 12, w));
+      seta(pill, 'x1', lerp(186, 110, w)); seta(pill, 'x2', lerp(214, 290, w)); seta(pill, 'y1', lerp(26, 36, w)); seta(pill, 'y2', lerp(26, 36, w));
+      seta(dv, 'x1', x); seta(dv, 'x2', x + ww);
+      seta(home, 'opacity', (1 - w) * d);
+      for (let i = 0; i < 3; i++) { const a = PB[i], b = BB[i]; seta(bars[i], 'x1', lerp(a[0], b[0], w)); seta(bars[i], 'y1', lerp(a[1], b[1], w)); seta(bars[i], 'y2', lerp(a[1], b[1], w)); seta(bars[i], 'x2', lerp(a[0], b[0], w) + (lerp(a[2], b[2], w) - lerp(a[0], b[0], w)) * clamp((p - 0.2 - i * 0.06) / 0.25)); }
+      setv(apps, '--d', d); setv(apps, '--w', w);
+    });
+  }
+  const games = $('#games .art svg');
+  if (games) {
+    const bl = $$('.g-b', games);
+    track(games, 0.95, 0.3, (el, p) => {
+      for (let k = 0; k < 3; k++) { const t = clamp((p - k * 0.2) / 0.32); setv(bl[k], '--d', clamp(t * 1.6)); setv(bl[k], '--ty', -34 * (1 - eout(t))); }
+      setv(bl[2], '--rt', 2 * (1 - eout(clamp((p - 0.72) / 0.28))));
+    });
+  }
+  const ai = $('#ai .art svg');
+  if (ai) track(ai, 0.95, 0.3, (el, p) => { setv(ai, '--d', clamp(p / 0.55)); setv(ai, '--o', 60 + 600 * p); });
+  $$('.ch-word').forEach((w) => track(w, 1, 0, (el, p, top, h) => { setv(el, '--f', ss(0, 1, 1 - clamp(Math.abs(top + h / 2 - vh * 0.45) / (vh * 0.5)))); }));
+  const stack = $('.stack');
+  if (stack) {
+    const bk = $$('.blk', stack);
+    track(stack, 0.92, 0.3, (el, p) => {
+      for (let k = 0; k < bk.length; k++) { const t = clamp((p - k * 0.092) / 0.14); setv(bk[k], '--ty', -40 * (1 - back(t))); setv(bk[k], '--op', clamp(t * 2.5)); }
+      const u = clamp((p - 0.6) / 0.2);
+      setv(bk[bk.length - 1], '--rt', 2.8 * (1 - u) * (1 - u) * Math.sin(u * Math.PI * 3));
+    });
+  }
+  const st = $('.statement');
+  if (st) { const n = $$('.w', st).length; track(st, 0.85, 0.35, (el, p) => setv(st, '--lit', p * (n + 1))); }
+  $$('.pr').forEach((r) => track(r, 0.94, 0.66, (el, p) => setv(el, '--d', p)));
+  track($('.ul'), 0.98, 0.62, (el, p) => setv(el, '--d', p));
+  $$('.sweep').forEach((s) => track(s, 1.02, -0.05, (el, p) => setv(el, '--sw', p)));
+}
+
+function measureSections() {
+  for (let i = 0; i < T.length; i++) {
+    const it = T[i], r = it.el.getBoundingClientRect();
+    it.top = r.top + sy; it.h = r.height;
+    it.pm = Math.max(0.05, prog(it.top - maxS, it.a, it.b));
+  }
+}
+function runSections() {
+  if (!fx) return;
+  for (let i = 0; i < T.length; i++) {
+    const it = T[i], top = it.top - sy;
+    if (top > vh * 1.25 || top + it.h < -vh * 0.25) continue;
+    let p = STILL ? 1 : prog(top, it.a, it.b);
+    if (it.pm < 1) p = clamp(p / it.pm);
+    it.fn(it.el, p, top, it.h);
+  }
+}
+
+/* ---------------- line engine ---------------- */
+const cv = $('#line'), rule = $('.rule'), capEls = $$('.cap');
+const DM = 1200, NKF = 9, NB = 12;
+const KL = new Float64Array(NKF), KX = new Float64Array(NKF), KY = new Float64Array(NKF);
+const QA = new Float64Array(6), TA = new Float64Array(6), CAPY = new Float64Array(4);
+const GRAPHITE = '#1F2422', MIST = '#F2F3F0';
+let ctx = null, lineOn = false, storyVis = true, N = 0, dpr = 1, cw = 1, ch = 1;
+let KT, PX, PY, CO, SI, NX, NY, WD, BK, BC, JN, DX, DY, DL, noisePat = null;
+let wide = false, cx = 0, cy = 0, stBot = 0, headBot = 56, hairY = 0, hairL = 0, hairR = 0, s0 = 1, E = 2, readY = 0;
+let sTip = 0.25, markW = 1.7, markR = 2.05, logoUW = 1, tauNow = 0, glinted = false;
+let Lx = 0, Ly = 0, Tx = 0, Ty = 0, ptr = false, vel = 0, lastSy = 0, lastSt = 0;
+let introT0 = -1, dartT0 = -1, MX = 0, MY = 0, bdGrad = null, bx0 = 0, by0 = 0, bx1 = 0, by1 = 0;
+const LUT = [];
+
+function alloc(n) {
+  N = n; const m = n - 1;
+  KT = new Float32Array(NKF * m); PX = new Float32Array(n); PY = new Float32Array(n);
+  CO = new Float32Array(m); SI = new Float32Array(m); NX = new Float32Array(n); NY = new Float32Array(n); WD = new Float32Array(n);
+  BK = new Int16Array(NB * n); BC = new Int16Array(NB); JN = new Int16Array(n);
+  if (!DX) { DX = new Float64Array(DM + 1); DY = new Float64Array(DM + 1); DL = new Float64Array(DM + 1); }
+}
+
+// dense shape generators (write DX/DY), viewport coordinates
+function dLine(x0, y0, x1, y1) { for (let i = 0; i <= DM; i++) { const u = i / DM; DX[i] = lerp(x0, x1, u); DY[i] = lerp(y0, y1, u); } }
+function dSine(x, y, w, a) { for (let i = 0; i <= DM; i++) { const u = 1 - 2 * i / DM; DX[i] = x + w * 0.5 * u; DY[i] = y + a * Math.sin(1.5 * Math.PI * u); } }
+function dEight(x, y, a, h, sx) { for (let i = 0; i <= DM; i++) { const t = 1.5 * Math.PI + TAU * i / DM; DX[i] = x + a * sx * Math.cos(t); DY[i] = y + a * h * Math.sin(t) * Math.cos(t); } }
+const BV = [-0.36, 1, 0.26, -0.12, -0.26, 0.12, 0.36, -1];
+function dBolt(x, y, hb) {
+  const L1 = Math.hypot(BV[2] - BV[0], BV[3] - BV[1]), L2 = Math.hypot(BV[4] - BV[2], BV[5] - BV[3]), tot = 2 * L1 + L2;
+  for (let i = 0; i <= DM; i++) {
+    let d = tot * i / DM, k = 0;
+    if (d > L1 + L2) { k = 2; d -= L1 + L2; } else if (d > L1) { k = 1; d -= L1; }
+    const sl = k === 1 ? L2 : L1, f = d / sl, j = k * 2;
+    DX[i] = x + hb * lerp(BV[j], BV[j + 2], f); DY[i] = y + hb * lerp(BV[j + 1], BV[j + 3], f);
+  }
+}
+function dLogo(x, y, sc) {
+  const a = LT * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), t0 = 1.5 * Math.PI + LG, t1 = 3.5 * Math.PI - LG;
+  for (let i = 0; i <= DM; i++) {
+    const t = lerp(t0, t1, i / DM);
+    let ux = Math.cos(t), uy = LH * Math.sin(t) * Math.cos(t);
+    if (ux > 0) { ux *= LR; uy *= LR; }
+    DX[i] = x + (ux * c - uy * s) * sc; DY[i] = y + (ux * s + uy * c) * sc;
+  }
+  return Math.round((2 * Math.PI - t0) / (t1 - t0) * DM);
+}
+function cum() { DL[0] = 0; for (let i = 1; i <= DM; i++) DL[i] = DL[i - 1] + Math.hypot(DX[i] - DX[i - 1], DY[i] - DY[i - 1]); return DL[DM]; }
+// resample to N points by arc length, store tangent angles (unwrapped), length and centroid
+function store(k) {
+  const tot = cum(); let j = 0;
+  for (let i = 0; i < N; i++) {
+    const d = tot * i / (N - 1);
+    while (j < DM - 1 && DL[j + 1] < d) j++;
+    const f = (d - DL[j]) / ((DL[j + 1] - DL[j]) || 1);
+    PX[i] = DX[j] + (DX[j + 1] - DX[j]) * f; PY[i] = DY[j] + (DY[j + 1] - DY[j]) * f;
+  }
+  const o = k * (N - 1); let prev = 0, sx = 0, syy = 0;
+  for (let i = 0; i < N - 1; i++) {
+    let a = Math.atan2(PY[i + 1] - PY[i], PX[i + 1] - PX[i]);
+    if (i) { while (a - prev > Math.PI) a -= TAU; while (a - prev < -Math.PI) a += TAU; }
+    KT[o + i] = a; prev = a;
+  }
+  for (let i = 0; i < N; i++) { sx += PX[i]; syy += PY[i]; }
+  KX[k] = sx / N; KY[k] = syy / N; KL[k] = tot;
+}
+function align(k, ref) {
+  const m = N - 1, o = k * m, r = ref * m; let s = 0;
+  for (let i = 0; i < m; i++) s += KT[r + i] - KT[o + i];
+  const n = Math.round(s / m / TAU);
+  if (n) for (let i = 0; i < m; i++) KT[o + i] += n * TAU;
+}
+// angle-space morph: lerp tangent angles + length, integrate, place by centroid
+function morph(a, b, t, soft, su, pinch) {
+  const m = N - 1, oa = a * m, ob = b * m, os = soft * m, seg = lerp(KL[a], KL[b], t) * (1 - pinch * Math.sin(Math.PI * t)) / m;
+  let x = 0, y = 0, sx = 0, syy = 0; PX[0] = 0; PY[0] = 0;
+  for (let i = 0; i < m; i++) {
+    let ta = KT[oa + i]; if (soft > 0) ta += (KT[os + i] - ta) * su;
+    const th = ta + (KT[ob + i] - ta) * t, c = Math.cos(th), s = Math.sin(th);
+    CO[i] = c; SI[i] = s; x += seg * c; y += seg * s; PX[i + 1] = x; PY[i + 1] = y; sx += x; syy += y;
+  }
+  MX = lerp(KX[a], KX[b], t); MY = lerp(KY[a], KY[b], t);
+  const dx = MX - sx / N, dy = MY - syy / N;
+  for (let i = 0; i < N; i++) { PX[i] += dx; PY[i] += dy; }
+}
+
+// colour LUT: Plumage -> Bronze -> Gorget, mixed (in OKLab) at most ~35% into Graphite
+function okl(h) {
+  const n = parseInt(h.slice(1), 16), f = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+  const r = f(n >> 16 & 255), g = f(n >> 8 & 255), b = f(n & 255);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b), m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b), s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s];
+}
+function rgbs(o) {
+  const L = o[0], A = o[1], B = o[2];
+  const l = Math.pow(L + 0.3963377774 * A + 0.2158037573 * B, 3), m = Math.pow(L - 0.1055613458 * A - 0.0638541728 * B, 3), s = Math.pow(L - 0.0894841775 * A - 1.291485548 * B, 3);
+  const g = (c) => Math.round(clamp(c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055) * 255);
+  return 'rgb(' + g(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s) + ',' + g(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s) + ',' + g(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s) + ')';
+}
+function buildLUT() {
+  const G = okl(GRAPHITE), P = okl('#2B5D50'), B = okl('#94672F'), R = okl('#9C3450');
+  const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+  for (let i = 0; i < NB; i++) {
+    const u = (i + 0.5) / NB, hue = u < 0.55 ? mix(P, B, u / 0.55) : mix(B, R, (u - 0.55) / 0.45);
+    LUT[i] = rgbs(mix(G, hue, 0.44 * u));
+  }
+}
+
+function measureLine() {
+  wide = WIDE.matches;
+  const n = SMALL.matches || LOW ? 120 : 200;
+  if (n !== N) alloc(n);
+  cw = cv.clientWidth || vw; ch = cv.clientHeight || vh;
+  dpr = Math.min(W.devicePixelRatio || 1, SMALL.matches ? 1.25 : 1.75);
+  cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  bx0 = 0; by0 = 0; bx1 = cw; by1 = ch;
+  headBot = hdr.getBoundingClientRect().bottom;
+  const r = rule.getBoundingClientRect();
+  hairY = r.top + sy + 5.5; hairL = r.left; hairR = r.right - 2.5;
+  const m = mk.getBoundingClientRect(), ms = m.width / 48;
+  let sh, sw;
+  if (wide) { cx = vw * 0.64; cy = (headBot + vh) / 2; stBot = vh; sw = vw * 0.56; sh = vh - headBot; readY = cy; }
+  else { stBot = Math.max(headBot + 220, vh * 0.56); cx = vw / 2; cy = (headBot + stBot) / 2; sw = vw; sh = stBot - headBot; readY = (stBot + vh) / 2; }
+  s0 = Math.max(1, hairY - cy);
+  const sr = story.getBoundingClientRect();
+  E = Math.max(s0 + 50, sr.bottom + sy - vh);
+  // caption anchors: caption k is read at story time (k + .5) / 4
+  QA[0] = 0; TA[0] = 0; QA[5] = 1; TA[5] = 1; let ok = true;
+  for (let k = 0; k < 4; k++) {
+    const c = capEls[k].getBoundingClientRect(); CAPY[k] = c.top + sy + c.height / 2;
+    QA[k + 1] = clamp((CAPY[k] - readY - s0) / (E - s0)); TA[k + 1] = (k + 0.5) / 4;
+    if (QA[k + 1] <= QA[k] + 0.02) ok = false;
+  }
+  if (!ok || QA[4] >= 0.99) for (let k = 1; k < 5; k++) QA[k] = TA[k];
+  // keyframes
+  dLine(hairR, hairY, hairL, hairY); store(0);
+  const w1 = wide ? Math.min(vw * 0.4, 760) : Math.min(vw * 0.8, sh * 2.2);
+  dLine(cx + w1 / 2, cy, cx - w1 / 2, cy); store(1);
+  dSine(cx, cy, w1, w1 * 0.075); store(2);
+  const a2 = wide ? Math.min(vw * 0.17, sh * 0.42, 360) : Math.min(vw * 0.38, sh * 0.62);
+  dEight(cx, cy, a2, 1, 1); store(3);
+  dEight(cx, cy, a2, 0.3, 1.1); store(4);
+  const hb = wide ? Math.min(sh * 0.3, vw * 0.16) : Math.min(sh * 0.36, vw * 0.42);
+  dBolt(cx, cy, hb); store(5);
+  dLogo(0, 0, 1); let mn = 1e9, mxx = -1e9; for (let i = 0; i <= DM; i++) { if (DX[i] < mn) mn = DX[i]; if (DX[i] > mxx) mxx = DX[i]; } logoUW = mxx - mn;
+  const lw = wide ? Math.min(vw * 0.28, sh * 0.95) : Math.min(vw * 0.62, sh * 1.1);
+  dLogo(0, 0, lw / logoUW); store(6); KX[6] = cx; KY[6] = cy;
+  const it = dLogo(m.left + LOX * ms, m.top + LOY * ms, LSC * ms); store(7); sTip = DL[it] / DL[DM];
+  for (let k = 1; k < 7; k++) align(k, k - 1);
+  // a softened copy of the bolt: its corners relax first when it turns into the mark
+  { const m1 = N - 1, o5 = 5 * m1, o8 = 8 * m1, rr = Math.max(2, Math.round(N * 0.025));
+    for (let i = 0; i < m1; i++) KT[o8 + i] = KT[o5 + i];
+    for (let pass = 0; pass < 3; pass++) { for (let i = 0; i < m1; i++) { let acc = 0, n = 0; for (let j = i - rr; j <= i + rr; j++) { if (j >= 0 && j < m1) { acc += KT[o8 + j]; n++; } } CO[i] = acc / n; } for (let i = 0; i < m1; i++) KT[o8 + i] = CO[i]; } }
+  const o6 = 6 * (N - 1), o7 = 7 * (N - 1); for (let i = 0; i < N - 1; i++) KT[o7 + i] = KT[o6 + i];
+  markW = 1.7 * ms; markR = 2.05 * ms;
+  bdGrad = ctx.createLinearGradient(0, stBot, 0, stBot + 28);
+  bdGrad.addColorStop(0, 'rgba(242,243,240,1)'); bdGrad.addColorStop(1, 'rgba(242,243,240,0)');
+  if (!Lx) { Lx = Tx = cx + vw * 0.1; Ly = Ty = cy - vh * 0.3; }
+}
+
+function tauOf(q) {
+  for (let k = 0; k < 5; k++) if (q <= QA[k + 1]) return lerp(TA[k], TA[k + 1], (q - QA[k]) / ((QA[k + 1] - QA[k]) || 1));
+  return 1;
+}
+
+function storyUpdate() {
+  if (!lineOn) return;
+  const q = clamp((sy - s0) / (E - s0)), tau = sy <= s0 ? 0 : tauOf(q);
+  tauNow = tau;
+  const mo = tau < 0.965 ? lerp(1, 0.2, ss(0, 0.07, tau)) : lerp(0.2, 1, ss(0.965, 1, tau));
+  setv(mk, '--mo', mo);
+  if (tau >= 0.985 && !glinted) { glinted = true; mk.classList.remove('glint'); void mk.getBoundingClientRect(); mk.classList.add('glint'); }
+  else if (tau < 0.9 && glinted) { glinted = false; mk.classList.remove('glint'); }
+  for (let k = 0; k < 4; k++) setv(capEls[k], '--a', ss(0, 1, 1 - clamp(Math.abs(CAPY[k] - sy - readY) / (vh * 0.24))));
+}
+
+function draw(t, dt) {
+  const tau = tauNow;
+  const d0 = hairY - sy - cy, kk = 40;
+  KY[0] = cy + (d0 >= kk ? d0 : d0 <= -kk ? 0 : (d0 + kk) * (d0 + kk) / (4 * kk));
+  let a = 0, b = 0, m = 0, w0 = 1, c = 0, sd = 0, soft = -1, su = 0, pinch = 0;
+  if (tau < 0.1) { m = eio(tau / 0.1); a = 0; b = 1; w0 = lerp(1, 1.25, m); }
+  else if (tau < 0.2) { m = eio((tau - 0.1) / 0.1); a = 1; b = 2; w0 = lerp(1.25, 1.5, m); c = 0.3 * m; }
+  else if (tau < 0.34) { m = eio((tau - 0.2) / 0.14); a = 2; b = 3; w0 = lerp(1.5, 2, m); c = lerp(0.3, 1, m); }
+  else if (tau < 0.48) { a = b = 3; w0 = 2; c = 1; }
+  else if (tau < 0.55) { m = eio((tau - 0.48) / 0.07); a = 3; b = 4; w0 = 2; c = 1; }
+  else if (tau < 0.62) { m = ss(0, 1, ss(0, 1, ss(0, 1, (tau - 0.55) / 0.07))); a = 4; b = 5; pinch = 0.22; w0 = lerp(2, 2.3, m); c = 1; }
+  else if (tau < 0.72) { a = b = 5; w0 = 2.3; c = 1; }
+  else if (tau < 0.84) { const r0 = (tau - 0.72) / 0.12; m = eio(r0); a = 5; b = 6; soft = 8; su = ss(0, 0.3, r0); pinch = 0.3; w0 = lerp(2.3, 2.2, m); c = 1 - m; }
+  else if (tau < 0.97) { m = eio((tau - 0.84) / 0.13); a = 6; b = 7; w0 = lerp(2.2, markW, m); }
+  else { a = b = 7; w0 = markW; }
+  const fade = 1 - ss(0.965, 1, tau), dock = ss(0.84, 0.97, tau);
+  if (tau >= 0.27 && tau < 0.48) { const v = 3 * eio((tau - 0.27) / 0.21); sd = v - Math.floor(v); }
+  else if (tau >= 0.72) sd = sTip * eio(clamp((tau - 0.72) / 0.12));
+  const closed = tau > 0.3 && tau < 0.56;
+  const gh = ss(0.27, 0.33, tau) * (1 - ss(0.44, 0.49, tau));
+  const sweep = tau > 0.6 && tau < 0.71 ? (tau - 0.6) / 0.11 : -1;
+  // tap: the dot darts backwards along the path
+  let ds = 0, dart = -1;
+  if (dartT0 > 0) {
+    dart = (t - dartT0) / 1000;
+    if (dart > 1.5 || dart < 0) { dartT0 = -1; dart = -1; }
+    else { const dir = closed || sd > 0.5 ? -1 : 1; ds = dir * 0.26 * (dart < 0.5 ? eout(dart / 0.5) : 1 - eio(clamp((dart - 0.5) / 0.95))) * (1 - dock); }
+  }
+  let s = sd + ds; s = closed ? s - Math.floor(s) : clamp(s);
+
+  morph(a, b, m, soft, su, pinch);
+
+  // intro: one standing wave runs along the hairline, then settles flat
+  if (introT0 > 0) {
+    const it = (t - introT0) / 760;
+    if (it >= 1 || tau > 0) introT0 = -1;
+    else if (it > 0) {
+      const hx = lerp(hairL - 90, hairR + 30, eout(it)), amp = 2.2 * (1 - it * 0.5);
+      for (let i = 0; i < N; i++) { const dx = PX[i] - hx; PY[i] += amp * Math.exp(-dx * dx / 7200) * Math.sin(dx / 11); }
+    }
+  }
+
+  // light: pointer (springed), or a slow drift plus scroll velocity on touch
+  if (!ptr) {
+    const span = wide ? vw * 0.22 : vw * 0.42;
+    Tx = cx + span * Math.sin(TAU * t / 9000) + clamp(vel * 0.14, -vw * 0.35, vw * 0.35);
+    Ty = cy - (wide ? vh * 0.24 : (stBot - headBot) * 0.42) + 30 * Math.sin(TAU * t / 13000);
+  }
+  const ke = 1 - Math.exp(-dt / 0.1);
+  Lx += (Tx - Lx) * ke; Ly += (Ty - Ly) * ke;
+  vel *= Math.exp(-dt / 0.3);
+  const amp = (0.84 + Math.min(0.16, Math.abs(vel) / 5000)) * (1 - dock * 0.6), ia2 = 1 / ((wide ? 760 : 520) * (wide ? 760 : 520));
+
+  // widths: monoline -> calligraphic nib, tapered ends, a pressure trail behind the dot in the beat
+  const NIBC = Math.cos(0.62), NIBS = Math.sin(0.62), m1 = N - 1; let nj = 0;
+  for (let i = 0; i < N; i++) {
+    const ia = i ? i - 1 : 0, ib = i < m1 ? i : m1 - 1;
+    let tx = CO[ia] + CO[ib], ty = SI[ia] + SI[ib], l = Math.sqrt(tx * tx + ty * ty), mit = 1;
+    if (l < 1e-3) { tx = CO[ib]; ty = SI[ib]; l = 1; JN[nj++] = i; } else if (l < 1.6) JN[nj++] = i; else mit = 2 / l;
+    tx /= l; ty /= l; NX[i] = -ty; NY[i] = tx;
+    const u = i / m1, nib = Math.abs(ty * NIBC - tx * NIBS);
+    let w = w0 * (1 - c + c * (0.42 + 1.16 * nib));
+    const tp = Math.min(1, u / 0.09, (1 - u) / 0.09); w *= 1 - c * 0.55 * (1 - tp * tp * (3 - 2 * tp));
+    if (gh > 0) { let dd = s - u; if (dd < 0) dd += 1; if (dd < 0.2) w *= 1 + 0.55 * gh * Math.exp(-dd / 0.05); }
+    WD[i] = w * 0.5 * mit;
+  }
+
+  // dirty rect: clear only what the last frame drew
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (bx1 > bx0) ctx.clearRect(bx0, by0, bx1 - bx0, by1 - by0);
+  let nx0 = 1e9, ny0 = 1e9, nx1 = -1e9, ny1 = -1e9;
+  for (let i = 0; i < N; i++) { const x = PX[i], y = PY[i]; if (x < nx0) nx0 = x; if (x > nx1) nx1 = x; if (y < ny0) ny0 = y; if (y > ny1) ny1 = y; }
+  const mg = gh > 0.01 ? 14 + 0.08 * (nx1 - nx0) + 0.14 * (ny1 - ny0) : dart >= 0 ? 34 : 14;
+  nx0 = Math.max(0, Math.floor(nx0 - mg)); ny0 = Math.max(0, Math.floor(ny0 - mg)); nx1 = Math.min(cw, Math.ceil(nx1 + mg)); ny1 = Math.min(ch, Math.ceil(ny1 + mg));
+  if (fade <= 0.002) { nx0 = ny0 = nx1 = ny1 = 0; }
+  // phones: a mist plate behind the stage so captions slip under it
+  if (!wide) {
+    const ba = ss(s0 - vh * 0.16, s0 + vh * 0.02, sy) * ss(stBot - 20, stBot + 90, E + vh - sy);
+    if (ba > 0.002) {
+      ctx.globalAlpha = ba; ctx.fillStyle = MIST; ctx.fillRect(0, headBot, cw, stBot - headBot);
+      if (noisePat) { ctx.fillStyle = noisePat; ctx.fillRect(0, headBot, cw, stBot - headBot); }
+      ctx.fillStyle = bdGrad; ctx.fillRect(0, stBot, cw, 28);
+      if (nx1 <= nx0) { nx0 = 0; nx1 = cw; ny0 = headBot; ny1 = stBot + 28; }
+      else { nx0 = 0; nx1 = cw; ny0 = Math.min(ny0, headBot); ny1 = Math.max(ny1, stBot + 28); }
+    }
+  }
+  bx0 = nx0; by0 = ny0; bx1 = nx1; by1 = ny1;
+  if (fade <= 0.002) { ctx.globalAlpha = 1; return; }
+  ctx.globalAlpha = fade;
+
+  // ghosts: wing blur, beat phase only, desktop tier
+  if (gh > 0.01 && !LOW && !SMALL.matches) {
+    const ph = TAU * 3 * clamp((tau - 0.27) / 0.21);
+    ctx.globalAlpha = fade * 0.08 * gh * 1.4; ctx.strokeStyle = GRAPHITE; ctx.lineWidth = 1;
+    for (let k = 1; k <= 3; k++) {
+      const an = 0.045 * k * Math.sin(ph + k * 0.9), ca = Math.cos(an), sa = Math.sin(an), sc = 1 + 0.07 * k * Math.sin(ph * 0.5 + k);
+      ctx.beginPath();
+      for (let i = 0; i < N; i++) { const x = PX[i] - MX, y = (PY[i] - MY) * sc; const X = MX + x * ca - y * sa, Y = MY + x * sa + y * ca; if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y); }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = fade;
+  }
+
+  // base ribbon: one filled polygon offset along the normals
+  ctx.fillStyle = GRAPHITE;
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) { const x = PX[i] + NX[i] * WD[i], y = PY[i] + NY[i] * WD[i]; if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+  for (let i = m1; i >= 0; i--) ctx.lineTo(PX[i] - NX[i] * WD[i], PY[i] - NY[i] * WD[i]);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.arc(PX[0], PY[0], WD[0], 0, TAU); ctx.moveTo(PX[m1] + WD[m1], PY[m1]); ctx.arc(PX[m1], PY[m1], WD[m1], 0, TAU);
+  for (let j = 0; j < nj; j++) { const i = JN[j]; ctx.moveTo(PX[i] + WD[i], PY[i]); ctx.arc(PX[i], PY[i], WD[i], 0, TAU); }
+  ctx.fill();
+
+  // sheen: segments whose normal faces the light catch an iridescent glint
+  for (let k = 0; k < NB; k++) BC[k] = 0;
+  for (let i = 0; i < m1; i++) {
+    const mx = (PX[i] + PX[i + 1]) * 0.5, my = (PY[i] + PY[i + 1]) * 0.5, dx = Lx - mx, dy = Ly - my, d2 = dx * dx + dy * dy;
+    let f = Math.abs(-SI[i] * dx + CO[i] * dy) / Math.sqrt(d2 + 1); f *= f; f *= f; f *= f;
+    let u = f * amp / (1 + d2 * ia2);
+    if (sweep >= 0) { const e = (i / m1 - sweep) / 0.07; u = Math.max(u, Math.exp(-e * e)); }
+    if (u > 0.06) { const q = Math.min(NB - 1, (u * NB) | 0); BK[q * N + BC[q]++] = i; }
+  }
+  ctx.globalCompositeOperation = 'source-atop';
+  for (let k = 0; k < NB; k++) {
+    const n = BC[k]; if (!n) continue;
+    ctx.fillStyle = LUT[k]; ctx.beginPath();
+    for (let j = 0; j < n; j++) {
+      const i = BK[k * N + j], i2 = i + 1;
+      ctx.moveTo(PX[i] + NX[i] * WD[i], PY[i] + NY[i] * WD[i]); ctx.lineTo(PX[i2] + NX[i2] * WD[i2], PY[i2] + NY[i2] * WD[i2]);
+      ctx.lineTo(PX[i2] - NX[i2] * WD[i2], PY[i2] - NY[i2] * WD[i2]); ctx.lineTo(PX[i] - NX[i] * WD[i], PY[i] - NY[i] * WD[i]); ctx.closePath();
+    }
+    ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+
+  // the spark: a dot that hovers (and darts backwards on tap)
+  const fi = s * m1, i0 = Math.min(m1 - 1, fi | 0), fr = fi - i0;
+  const x = lerp(PX[i0], PX[i0 + 1], fr);
+  let y = lerp(PY[i0], PY[i0 + 1], fr);
+  if (!RM.matches) y += 1.5 * Math.sin(TAU * 0.6 * t / 1000) * (1 - dock);
+  const r = lerp(2.5, markR, dock), halo = 2 * (1 - dock);
+  if (halo > 0.05) { ctx.fillStyle = MIST; ctx.beginPath(); ctx.arc(x, y, r + halo, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = GRAPHITE; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  // the bolt as a behaviour: a 120ms zig-zag spark trail behind a dart
+  if (dart >= 0 && dart < 0.24) {
+    const dir = (closed || sd > 0.5 ? -1 : 1), tx = CO[i0] * -dir, ty = SI[i0] * -dir, nx = -ty, ny = tx;
+    ctx.globalAlpha = fade * (1 - dart / 0.24); ctx.strokeStyle = LUT[NB - 2]; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(x + tx * 6, y + ty * 6);
+    ctx.lineTo(x + tx * 12 + nx * 4, y + ty * 12 + ny * 4); ctx.lineTo(x + tx * 16 - nx * 3, y + ty * 16 - ny * 3); ctx.lineTo(x + tx * 24 + nx * 2, y + ty * 24 + ny * 2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ---------------- scheduler ---------------- */
+function frame(t) {
+  raf = 0;
+  try {
+    const dt = last ? Math.min(0.05, (t - last) / 1000) : 1 / 60; last = t;
+    if (dirty) { dirty = false; sy = W.scrollY; hdr.classList.toggle('scrolled', sy > 8); runSections(); storyUpdate(); }
+    if (lineOn && storyVis) { draw(t, dt); raf = W.requestAnimationFrame(frame); }
+    else last = 0;
+  } catch (e) { fail(e); }
+}
+function kick() { if (!raf && !D.hidden) raf = W.requestAnimationFrame(frame); }
+
+function fail(e) {
+  fails++;
+  if (lineOn) { lineOn = false; H.classList.remove('line-on'); try { ctx && ctx.clearRect(0, 0, cv.width, cv.height); } catch (_) { /* ignore */ } setv(mk, '--mo', 1); }
+  if (fails > 1) { fx = false; H.classList.remove('fx'); }
+  if (raf) W.cancelAnimationFrame(raf);
+  raf = 0;
+  if (W.console && e) console.warn('One Line fell back to the still version.', e);
+  if (fails < 3) { try { measureAll(); } catch (_) { /* ignore */ } dirty = true; kick(); }
+}
+
+let mPend = false, lastW = 0, lastH = 0;
+function measureAll() {
+  vw = H.clientWidth || W.innerWidth; vh = W.innerHeight; lastW = W.innerWidth; lastH = vh;
+  sy = W.scrollY; maxS = Math.max(1, H.scrollHeight - vh);
+  if (lineOn) measureLine();
+  measureSections();
+}
+function schedMeasure() {
+  if (mPend) return; mPend = true;
+  W.requestAnimationFrame(() => { mPend = false; try { measureAll(); } catch (e) { fail(e); } dirty = true; kick(); });
+}
+
+function init() {
+  fx = !RM.matches;
+  if (fx) H.classList.add('fx');
+  setupSections();
+  if (fx && !NOLINE && cv && rule && story && mk && capEls.length === 4) {
+    try {
+      ctx = cv.getContext('2d');
+      if (!ctx) throw new Error('Canvas 2D is not available');
+      H.classList.add('line-on'); lineOn = true;
+      buildLUT(); measureAll(); storyUpdate();
+      try {
+        const nu = getComputedStyle(H).getPropertyValue('--noise').trim().replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        const img = new Image();
+        img.onload = () => { try { noisePat = ctx.createPattern(img, 'repeat'); } catch (_) { noisePat = null; } };
+        if (nu) img.src = nu;
+      } catch (_) { noisePat = null; }
+      if (!STILL && sy < s0 * 0.5) introT0 = W.performance.now() + 150;
+      draw(W.performance.now(), 1 / 60);
+      cv.addEventListener('contextlost', () => fail(new Error('Canvas context lost')));
+    } catch (e) { fail(e); }
+  } else measureAll();
+
+  W.addEventListener('scroll', () => {
+    const s = W.scrollY, now = W.performance.now(), dtt = now - lastSt;
+    if (dtt > 0 && dtt < 250) vel = lerp(vel, (s - lastSy) / dtt * 1000, 0.35);
+    lastSy = s; lastSt = now; dirty = true; kick();
+  }, { passive: true });
+  W.addEventListener('pointermove', (e) => { if (e.pointerType === 'touch') return; Tx = e.clientX; Ty = e.clientY; ptr = true; }, { passive: true });
+  D.addEventListener('mouseout', (e) => { if (!e.relatedTarget) ptr = false; }, { passive: true });
+  W.addEventListener('resize', () => {
+    if (W.innerWidth === lastW && COARSE.matches && Math.abs(W.innerHeight - lastH) < 120) return;
+    schedMeasure();
+  }, { passive: true });
+  W.addEventListener('orientationchange', schedMeasure, { passive: true });
+  if (D.fonts && D.fonts.ready) D.fonts.ready.then(schedMeasure, () => {});
+  if ('ResizeObserver' in W) new ResizeObserver(schedMeasure).observe(D.body);
+  D.addEventListener('visibilitychange', () => { if (D.hidden) { if (raf) W.cancelAnimationFrame(raf); raf = 0; last = 0; } else { dirty = true; kick(); } });
+  if ('IntersectionObserver' in W) {
+    new IntersectionObserver((en) => { storyVis = en[en.length - 1].isIntersecting; if (cv) cv.style.visibility = storyVis ? '' : 'hidden'; if (storyVis) kick(); }).observe(story);
+  }
+  RM.addEventListener && RM.addEventListener('change', () => { if (RM.matches) { fails = 1; fail(null); } });
+  story.addEventListener('click', (e) => { if (!lineOn || (e.target.closest && e.target.closest('a,button'))) return; dartT0 = W.performance.now(); kick(); });
+
+  // Toppleton: a tap replays one wobble that never topples
+  const stack = $('.stack');
+  if (stack && fx) {
+    const btn = D.createElement('button');
+    btn.type = 'button'; btn.className = 'stack'; btn.setAttribute('aria-label', 'Wobble the stack');
+    stack.className = ''; stack.removeAttribute('aria-hidden');
+    stack.parentNode.insertBefore(btn, stack); btn.appendChild(stack);
+    btn.addEventListener('click', () => { btn.classList.remove('wob'); void btn.offsetWidth; btn.classList.add('wob'); });
+    btn.addEventListener('animationend', () => btn.classList.remove('wob'));
+    T.forEach((it) => { if (it.el === stack) it.el = btn; });
+  }
+
+  // contact: copy the address
+  const copy = $('.copy'), status = $('.copy-status'), email = $('.email');
+  if (copy && navigator.clipboard && navigator.clipboard.writeText) {
+    copy.hidden = false;
+    let tm = 0;
+    const say = (msg) => { status.textContent = msg; clearTimeout(tm); tm = setTimeout(() => { status.textContent = ''; }, 2800); };
+    copy.addEventListener('click', () => {
+      let p;
+      try { p = navigator.clipboard.writeText('admin@hummingbolt.com'); } catch (e) { p = Promise.reject(e); }
+      Promise.resolve(p).then(() => say('Copied'), () => {
+        try { const sel = W.getSelection(), rg = D.createRange(); rg.selectNodeContents(email); sel.removeAllRanges(); sel.addRange(rg); } catch (_) { /* ignore */ }
+        say('Selected. Copy it with your keyboard.');
+      });
+    });
+  }
+  dirty = true; kick();
+}
+
+try { init(); } catch (e) { fail(e); }
+
+</script>
