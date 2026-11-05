@@ -131,7 +131,7 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
 .make p { margin: 0; color: var(--mist); }
 .vlist { list-style: none; margin: 0; padding: 0; width: 100%; border-top: 1px solid var(--hair); }
 .vlist li { padding: 13px 0; border-bottom: 1px solid var(--hair); font-family: var(--f-display); font-weight: 300; font-size: clamp(1.15rem, 1.7vw, 1.5rem); letter-spacing: -.015em; line-height: 1.2; font-variation-settings: "SHRP" 100; }
-.mail { margin: 0; font-family: var(--f-display); font-weight: 280; font-size: clamp(1.5rem, 3.9vw, 3.4rem); letter-spacing: -.025em; line-height: 1.1; color: var(--bone); -webkit-user-select: all; user-select: all; overflow-wrap: anywhere; font-variation-settings: "SHRP" 100; }
+.mail { margin: 0; font-family: var(--f-display); font-weight: 280; font-size: clamp(1.45rem, 3.1vw, 2.9rem); letter-spacing: -.025em; line-height: 1.1; color: var(--bone); -webkit-user-select: all; user-select: all; overflow-wrap: anywhere; font-variation-settings: "SHRP" 100; }
 .copy-st { margin: 0; min-height: 1.5em; font: 400 11px/1.5 var(--f-mono); font-stretch: 87.5%; letter-spacing: .06em; color: var(--copper-hi); }
 .cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; font: 400 10px/1 var(--f-mono); font-stretch: 87.5%; letter-spacing: .2em; text-transform: uppercase; color: var(--mist); }
 .cue::after { content: ""; width: 1px; height: 40px; background: linear-gradient(var(--copper), rgba(216, 155, 107, 0)); transform-origin: top; animation: cue 2.4s var(--ease) infinite; }
@@ -202,7 +202,7 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
   .menu-btn i::before { top: 0; } .menu-btn i::after { bottom: 0; }
   .open .menu-btn i::before { transform: translateY(4.5px) rotate(45deg); }
   .open .menu-btn i::after { transform: translateY(-4.5px) rotate(-45deg); }
-  .nav { display: none; position: fixed; inset: 0; z-index: -1; background: rgba(5, 12, 11, .97); padding-top: calc(env(safe-area-inset-top, 0px) + 104px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow-y: auto; }
+  .nav { display: none; position: fixed; inset: 0; z-index: -1; background: var(--ink); padding-top: calc(env(safe-area-inset-top, 0px) + 104px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow-y: auto; }
   .open .nav { display: block; }
   .nav ul { flex-direction: column; gap: 0; }
   .nav a { width: 100%; min-height: 64px; padding: 0; font-family: var(--f-display); font-weight: 280; font-size: 34px; letter-spacing: -.02em; border-bottom: 1px solid var(--hair); font-variation-settings: "SHRP" 100; }
@@ -1824,7 +1824,7 @@ const prevPos = new THREE.Vector3(), vel = new THREE.Vector3(), curLook = new TH
 let ys = W.scrollY, baseFov = 40, tgtSX = 0, tgtSY = 0, tgtFov = 40, curSX = 0, curSY = 0, curFov = 40, curU = 0;
 let yaw = 0, pitch = 0, roll = 0, T = 0, last = 0, t0 = performance.now();
 let dartiness = 0;
-const tr = { active: false, t0: 0, dur: 1, curve: null, mode: 'ahead', fromLook: new THREE.Vector3(), fromSX: 0, fromSY: 0, fromFov: 40, end: new THREE.Vector3(), entrance: false };
+const tr = { active: false, pending: false, t0: 0, dur: 1, curve: null, mode: 'ahead', fromLook: new THREE.Vector3(), fromSX: 0, fromSY: 0, fromFov: 40, end: new THREE.Vector3(), entrance: false };
 let drawT0 = -1;
 const MOODS = { fog: 0.026, sh: 1, glow: 1 };
 
@@ -1890,10 +1890,9 @@ function startEntrance() {
   const start = tgtPos.clone().add(new THREE.Vector3(1.5, 3.6, 30));
   const mid = tgtPos.clone().add(new THREE.Vector3(-1.2, 1.4, 13));
   tr.curve = new THREE.CatmullRomCurve3([start, mid, tgtPos.clone()], false, 'centripetal');
-  tr.dur = 2600; tr.t0 = performance.now(); tr.active = true; tr.mode = 'focus'; tr.entrance = true;
+  tr.dur = 2600; tr.t0 = performance.now(); tr.active = true; tr.pending = true; tr.mode = 'focus'; tr.entrance = true;
   tr.fromLook.copy(tgtLook); tr.fromSX = tgtSX * 0.4; tr.fromSY = tgtSY * 0.4; tr.fromFov = baseFov + 6; tr.end.copy(tgtPos);
   camera.position.copy(start); prevPos.copy(start);
-  drawT0 = performance.now() + 700;
 }
 let prevU = 0;
 
@@ -1980,6 +1979,7 @@ function frame(now) {
     ys += (sy - ys) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(sy - ys) < 0.3) ys = sy;
     poseAt(ys);
     let k = 1;
+    if (tr.pending) { tr.pending = false; tr.t0 = now; drawT0 = now + 700; }
     if (tr.active) {
       k = clamp((now - tr.t0) / tr.dur, 0, 1);
       const ek = tr.entrance ? eOut(k) : eInOut(k);
@@ -2024,7 +2024,7 @@ function frame(now) {
     probe(dt); hud(now); if (HB.view === 'values') readout(now);
     prevU = curU;
   } catch (e) {
-    errs++; try { console.warn('[hummingbolt] frame', e && e.message, e && e.stack); } catch (_) {}
+    errs++; try { console.warn('[hummingbolt] frame', e && e.message); } catch (_) {}
     if (errs > 2 || shaderBad) die(e);
   }
 }
@@ -2089,9 +2089,19 @@ try {
 /* ---------------- Go ---------------- */
 applySize(true);
 poseAt(W.scrollY); camera.position.copy(tgtPos); camera.lookAt(tgtLook); applyShift(tgtSX, tgtSY); camera.updateMatrixWorld();
-try { renderer.compile(scene, camera); } catch (e) { die(e); return; }
-if (shaderBad) { die(new Error('shader compile failed')); return; }
-if (still) { requestStill(); }
-else { startEntrance(); start(); }
+// Compile every program (in parallel where the browser can), then draw once with everything visible so no shader
+// links mid-flight. The entrance clock starts on the first real frame after that.
+let compiling;
+try {
+  const par = !!(renderer.compileAsync && renderer.extensions && renderer.extensions.has && renderer.extensions.has('KHR_parallel_shader_compile'));
+  compiling = par ? renderer.compileAsync(scene, camera) : Promise.resolve(renderer.compile(scene, camera));
+} catch (e) { die(e); return; }
+Promise.resolve(compiling).then(() => {
+  if (dead) return;
+  if (shaderBad) { die(new Error('shader compile failed')); return; }
+  try { renderer.render(scene, camera); } catch (e) { die(e); return; }
+  if (shaderBad) { die(new Error('shader compile failed')); return; }
+  if (still) requestStill(); else { startEntrance(); start(); }
+}, (e) => die(e));
 }
 </script>

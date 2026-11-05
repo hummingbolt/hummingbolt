@@ -45,7 +45,7 @@ main{position:relative;z-index:2;display:block}
 main:focus{outline:none}
 
 /* ---------- skip + header ---------- */
-.skip{position:fixed;left:max(16px, env(safe-area-inset-left, 0px));top:calc(env(safe-area-inset-top,0px) + 8px);z-index:300;background:var(--bone);color:var(--ink);font:500 15px/1 var(--sans);padding:14px 18px;text-decoration:none;transform:translateY(-220%)}
+.skip{position:fixed;left:max(16px, env(safe-area-inset-left, 0px));top:calc(env(safe-area-inset-top,0px) + 8px);z-index:300;background:var(--bone);color:var(--ink);font:500 15px/1 var(--sans);padding:15px 18px;text-decoration:none;transform:translateY(-220%)}
 .skip:focus{transform:none}
 .hdr{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:40;height:var(--hdr);background:linear-gradient(to bottom,rgba(var(--ink-rgb),.95) 0%,rgba(var(--ink-rgb),.86) 62%,rgba(var(--ink-rgb),0) 100%)}
 .hdr-in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1480px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
@@ -88,7 +88,9 @@ main:focus{outline:none}
 
 /* scrim behind running text: a soft dark field that never touches the specimen side */
 .slab{position:relative;isolation:isolate;max-width:640px}
-.slab::before{content:"";position:absolute;inset:-12px -20px;z-index:-1;background:rgba(var(--ink-rgb),.84);box-shadow:0 0 70px 46px rgba(var(--ink-rgb),.84);border-radius:48px;pointer-events:none}
+.slab::before{content:"";position:absolute;inset:-64px -80px;z-index:-1;background:rgba(var(--ink-rgb),.85);pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 76px,#000 calc(100% - 76px),transparent),linear-gradient(180deg,transparent,#000 60px,#000 calc(100% - 60px),transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent,#000 76px,#000 calc(100% - 76px),transparent),linear-gradient(180deg,transparent,#000 60px,#000 calc(100% - 60px),transparent);mask-composite:intersect}
 [data-align="left"] .slab{margin-left:auto}
 [data-align="center"] .slab{margin:0 auto;text-align:center}
 [data-align="center"] .stack{align-items:center}
@@ -101,7 +103,7 @@ main:focus{outline:none}
 .hero-copy{position:relative}
 .h1{color:var(--bone);font-weight:400}
 .h1-a,.h1-c{display:block;font:500 clamp(16px,1.45vw,21px)/1.3 var(--sans);color:var(--bone);letter-spacing:-.003em}
-.h1-b{display:block;font:400 clamp(54px,11.6vw,184px)/.86 var(--display);letter-spacing:-.032em;margin:.12em 0 .16em -.035em}
+.h1-b{display:block;font:400 clamp(58px,11.6vw,184px)/.86 var(--display);letter-spacing:-.032em;margin:.12em 0 .16em -.035em}
 .h1-b .ln{display:block}
 .h1-b em{font-style:italic;color:var(--sodium);padding-right:.04em}
 .hero .lede{margin-top:22px;font:400 clamp(17px,1.3vw,20px)/1.5 var(--sans);color:var(--soft);max-width:40ch}
@@ -115,9 +117,9 @@ main:focus{outline:none}
 .stir{position:absolute;z-index:3;right:max(16px, env(safe-area-inset-right, 0px));bottom:44px;font:500 11.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--soft);display:flex;align-items:center;gap:10px;background:rgba(var(--ink-rgb),.84);padding:8px 10px;pointer-events:none}
 .stir i{display:block;width:9px;height:9px;border:1px solid var(--sodium);border-radius:50%}
 @media (min-width:900px){
-  .hud-tl{left:max(48px, env(safe-area-inset-left, 0px))}
-  .hud-tr{right:max(48px, env(safe-area-inset-right, 0px))}
-  .stir{right:max(48px, env(safe-area-inset-right, 0px));bottom:52px}
+  .hud-tl{left:max(48px, env(safe-area-inset-left, 0px), calc(50% - 692px))}
+  .hud-tr{right:max(48px, env(safe-area-inset-right, 0px), calc(50% - 692px))}
+  .stir{right:max(48px, env(safe-area-inset-right, 0px), calc(50% - 692px));bottom:52px}
   .hero{padding-bottom:52px}
 }
 @media (max-width:899px){.stir{display:none}}
@@ -143,6 +145,7 @@ main:focus{outline:none}
 @media (max-width:899px){
   .beat{align-items:flex-end;min-height:90svh;padding-block:46svh 56px}
   [data-align="left"] .slab{margin-left:0}
+  .slab::before{inset:-56px -16px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 52px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(180deg,transparent,#000 52px,#000 calc(100% - 40px),transparent)}
 }
 
 /* ---------- values view ---------- */
@@ -165,7 +168,8 @@ main:focus{outline:none}
 }
 .v-rail{position:fixed;right:max(20px, env(safe-area-inset-right, 0px));top:50%;transform:translateY(-50%);z-index:30}
 .v-rail ol{list-style:none;padding:0;display:grid;gap:2px}
-.v-rail a{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:44px;padding:0 4px 0 12px;text-decoration:none;font:500 11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+.v-rail a{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-height:44px;padding:0 4px 0 12px;text-decoration:none;font:500 11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+.v-rail a > span:not(.t){background:rgba(var(--ink-rgb),.86);padding:5px 6px}
 .v-rail a .t{opacity:0;transform:translateX(6px);transition:opacity .3s,transform .4s var(--ease);background:rgba(var(--ink-rgb),.86);padding:5px 7px;color:var(--soft)}
 .v-rail a i{display:block;width:18px;height:1px;background:var(--rule-2);transition:width .4s var(--ease),background-color .3s}
 .v-rail a:hover .t,.v-rail a:focus-visible .t,.v-rail a[aria-current="true"] .t{opacity:1;transform:none}
@@ -185,7 +189,7 @@ main:focus{outline:none}
 @media (min-width:900px){.foot-in{grid-template-columns:auto 1fr auto auto;align-items:center;gap:32px}}
 
 /* ---------- specimen tag (desktop) ---------- */
-.tag{position:fixed;left:max(48px, env(safe-area-inset-left, 0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:16px;align-items:center;font:400 11px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--soft);background:rgba(var(--ink-rgb),.9);border:1px solid var(--rule);padding:9px 12px;pointer-events:none;font-variant-numeric:tabular-nums;transition:opacity .4s}
+.tag{position:fixed;left:max(48px, env(safe-area-inset-left, 0px), calc(50% - 692px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:16px;align-items:center;font:400 11px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--soft);background:rgba(var(--ink-rgb),.9);border:1px solid var(--rule);padding:9px 12px;pointer-events:none;font-variant-numeric:tabular-nums;transition:opacity .4s}
 .tag b{font-weight:500;color:var(--sodium)}
 .tag.off,.tag.hero{opacity:0}
 @media (max-width:899px){.tag{display:none}}
@@ -334,7 +338,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
       <h1 class="h1" id="home-h1" tabindex="-1"><span class="h1-a">Hummingbolt is</span> <span class="h1-b"><span class="ln">a software</span> <span class="ln">and AI <em>lab</em></span></span> <span class="h1-c">in the San Francisco Bay Area.</span></h1>
       <p class="lede">We make mobile and web apps, games, and AI: AI applications, models and agents.</p>
       <div class="ctas">
-        <a class="btn btn-primary" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="arrow" aria-hidden="true"></span></a>
+        <a class="btn btn-primary" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="arrow" aria-hidden="true"></span><span class="vh"> (opens in a new tab)</span></a>
         <a class="btn" href="#values">Our values</a>
       </div>
     </div>
@@ -375,7 +379,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
       <h2 class="giant" id="topp-h">Toppleton</h2>
       <p class="line">A stacking game for all ages, children included.</p>
       <p class="body">Free to play on the web. Mobile versions are coming later.</p>
-      <div class="ctas"><a class="btn btn-primary" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="url">play.toppleton.app</span></a></div>
+      <div class="ctas"><a class="btn btn-primary" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="url">play.toppleton.app</span><span class="vh"> (opens in a new tab)</span></a></div>
       <p class="exp"><b>Exp. 04 — Strata</b><span>Seven stacked layers, sheared</span></p>
     </div></div>
   </section>
@@ -415,7 +419,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
         <button class="btn" type="button" id="copy-btn">Copy address</button>
       </div>
       <p class="status" id="copy-status" role="status" aria-live="polite"></p>
-      <p class="exp"><b>Exp. 07 — Drift</b><span>Slow curl noise</span></p>
+      <p class="exp"><b>Exp. 07 — Rest</b><span>The wing path, slowed down</span></p>
     </div></div>
   </section>
 </div>
@@ -474,7 +478,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
     </div></div>
   </section>
 
-  <section class="v-outro" id="values-end" data-exp="rest" data-no="07" data-align="center" aria-labelledby="vo-h">
+  <section class="v-outro" id="values-end" data-exp="rest" data-no="07" data-align="right" aria-labelledby="vo-h">
     <div class="wrap"><div class="slab stack">
       <p class="eyebrow">Hummingbolt</p>
       <h2 class="statement" id="vo-h">A software and AI lab.</h2>
@@ -537,17 +541,17 @@ const smooth = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
    cam: [azimuth, elevation, distance, fov, target x, y, z, roll, aperture].
    sheet: light sheet [nx, ny, nz, sweep amplitude, sweep speed, width, offset]. */
 const PRESETS = {
-  wing:   { name: 'Wingpath',        f: 0, a: [0.12, 0.62, 1.32, 6.0],  q: [4, 9, 6, 0.035],   cam: [0.30, 0.16, 5.5, 34, 0, 0, 0, -0.05, 9],  sheet: [0, 0, 1, 0.36, 0.33, 0.13, 0],      exp: 0.07, ref: 1.3, br: 1.0 },
+  wing:   { name: 'Wingpath',        f: 0, a: [0.12, 0.62, 1.32, 6.0],  q: [4, 9, 6, 0.035],   cam: [0.30, 0.16, 5.9, 34, 0, 0, 0, -0.05, 9],  sheet: [0, 0, 1, 0.36, 0.33, 0.13, 0],      exp: 0.07, ref: 1.3, br: 0.85 },
   lattice:{ name: 'Lattice',         f: 1, a: [0.75, 0.6, 0.12, 1.5],  q: [5, 10, 4, 0.0],     cam: [0.62, 0.92, 6.3, 34, 0, 0, 0, 0.06, 8],   sheet: [1, 0, 0, 1.2, 0.21, 0.13, 0],       exp: 0.08, ref: 0.7, br: 0.9 },
   ring:   { name: 'Ring',            f: 2, a: [0.74, 0.1, 0.24, 0.5],  q: [6, 12, 5, 0.02],    cam: [-0.42, 0.5, 6.0, 34, 0, 0, 0, 0.04, 9],  sheet: [0, 0, 1, 0.22, 0.26, 0.12, 0],      exp: 0.06, ref: 1.5, br: 1.0 },
-  aizawa: { name: 'Attractor',       f: 3, a: [0.86, 0.5, 0.7, 0],     q: [3, 7, 14, 0.0],     cam: [0.95, 0.28, 5.3, 34, 0, 0.05, 0, -0.03, 9],sheet: [0, 1, 0, 0.72, 0.24, 0.13, 0.05],   exp: 0.07, ref: 1.3, br: 1.0 },
+  aizawa: { name: 'Attractor',       f: 3, a: [0.86, 0.5, 0.7, 0],     q: [3, 7, 14, 0.0],     cam: [0.95, 0.28, 6.3, 34, 0, 0.05, 0, -0.03, 9],sheet: [0, 1, 0, 0.72, 0.24, 0.13, 0.05],   exp: 0.07, ref: 1.3, br: 1.0 },
   strata: { name: 'Strata',          f: 4, a: [7, 0.36, 0.55, 0.09],   q: [5, 11, 5, 0.02],    cam: [0.58, 0.30, 6.5, 34, 0, -0.05, 0, 0.0, 7],    sheet: [0, 1, 0, 1.15, 0.30, 0.09, 0],      exp: 0.07, ref: 0.8, br: 0.95 },
   curl:   { name: 'Turbulence',      f: 5, a: [0.7, 0.26, 1.5, 0.05],  q: [4, 9, 3, 0.0],      cam: [0.35, 0.42, 5.0, 34, 0, 0, 0, -0.08, 9],   sheet: [1, 0.15, 0, 0.9, 0.22, 0.16, 0],    exp: 0.14, ref: 0.9, br: 0.9 },
-  sphere: { name: 'Boundary',        f: 9, a: [0.5, 0.8, 0.18, -1.9], q: [4, 7, 6, 0.0],      cam: [-0.3, 0.24, 5.6, 34, 0.1, 0, 0, 0.0, 7],  sheet: [0, 0, 1, 0.06, 0.2, 0.08, 0],       exp: 0.12, ref: 1.25, br: 1.0 },
-  rest:   { name: 'Drift',           f: 5, a: [0.5, 0.12, 1.5, 0.025], q: [6, 12, 2, 0.0],     cam: [-0.3, 0.62, 5.2, 34, 0, 0, 0, 0.05, 8],   sheet: [0.3, 1, 0, 0.7, 0.12, 0.12, 0],     exp: 0.22, ref: 0.35, br: 0.8 },
+  sphere: { name: 'Boundary',        f: 9, a: [0.5, 0.8, 0.18, -1.9], q: [4, 7, 6, 0.0],      cam: [-0.08, 0.2, 5.8, 34, 0.2, 0, 0, 0.0, 7],  sheet: [0, 0, 1, 0.06, 0.2, 0.1, 0],        exp: 0.1, ref: 1.25, br: 1.0 },
+  rest:   { name: 'Rest',            f: 0, a: [0.16, 0.28, 1.32, 4.0], q: [5, 10, 4, 0.02],    cam: [-0.55, 0.48, 6.0, 34, 0, 0, 0, 0.06, 8],  sheet: [0.4, 0, 1, 0.5, 0.15, 0.12, 0],     exp: 0.16, ref: 0.9, br: 0.9 },
   jet:    { name: 'Jet',             f: 6, a: [3.0, 0.22, 0.32, -1.45],q: [2.5, 4, 5, 0.0],    cam: [-0.38, 0.14, 5.4, 34, 0.25, 0, 0, 0.03, 7], sheet: [0, 0, 1, 0.04, 0.4, 0.1, 0],        exp: 0.05, ref: 2.4, br: 1.1 },
-  knot:   { name: 'Knot',            f: 7, a: [0.13, 0.45, 0.95, 5.0], q: [4, 9, 6, 0.04],     cam: [0.3, 0.62, 5.7, 34, 0, 0, 0, 0.0, 9],     sheet: [0, 1, 0, 0.32, 0.3, 0.12, 0],       exp: 0.07, ref: 1.6, br: 1.0 },
-  burst:  { name: 'Bursts',          f: 8, a: [1.1, 2.6, 0.12, 0],     q: [0.5, 1.1, 2.6, 0.0],cam: [0.2, 0.22, 4.3, 34, 0, 0, 0, 0.0, 9],     sheet: [0, 0, 1, 0.45, 0.5, 0.26, 0],       exp: 0.05, ref: 1.8, br: 1.15 },
+  knot:   { name: 'Knot',            f: 7, a: [0.13, 0.45, 0.95, 5.0], q: [4, 9, 6, 0.04],     cam: [0.3, 0.62, 6.4, 34, 0, 0, 0, 0.0, 9],     sheet: [0, 1, 0, 0.32, 0.3, 0.12, 0],       exp: 0.07, ref: 1.6, br: 1.0 },
+  burst:  { name: 'Bursts',          f: 8, a: [1.1, 1.7, 0.08, 0],     q: [0.5, 1.1, 3.2, 0.0],cam: [0.1, 0.18, 5.4, 34, 0, 0, 0, 0.0, 7],     sheet: [0, 0, 1, 0.12, 0.5, 0.14, 0],       exp: 0.06, ref: 1.8, br: 1.15 },
   macro:  { name: 'Wingpath, close', f: 0, a: [0.05, 0.9, 1.45, 9.0],  q: [4, 9, 8, 0.012],    cam: [0.08, 0.06, 2.4, 30, 0.42, 0.12, 0, -0.04, 22], sheet: [0, 0, 1, 0.12, 0.4, 0.07, 0],   exp: 0.05, ref: 1.6, br: 1.0 }
 };
 for (const k in PRESETS) { const p = PRESETS[k]; p.a = new Float32Array(p.a); p.q = new Float32Array(p.q); }
@@ -575,7 +579,7 @@ function ldStep(name, text, done) {
   if (done && !li.classList.contains('done')) { li.classList.add('done'); stepsDone++; const bar = $('.ld-bar i', loader); if (bar) bar.style.setProperty('--p', String(stepsDone / 4)); }
 }
 function reveal() {
-  if (revealed) return; revealed = true; DBG.revealed = true;
+  if (revealed) return; revealed = true; DBG.revealed = true; DBG.tReveal = Math.round(performance.now() - t0);
   clearTimeout(hardCap);
   loader.classList.add(reduce ? 'fade' : 'out');
   setTimeout(() => { loader.hidden = true; const r = $('.ld-ring'); if (r) r.hidden = true; }, reduce ? 320 : 1050);
@@ -709,7 +713,7 @@ function shiftFor(align, out) {
   if (wide) {
     if (align === 'right') { out.sx = 0.36; out.sy = 0.02; }
     else if (align === 'left') { out.sx = -0.36; out.sy = 0.02; }
-    else if (align === 'hero') { out.sx = 0.31; out.sy = 0.1; }
+    else if (align === 'hero') { out.sx = 0.3; out.sy = 0.05; }
     else { out.sx = 0; out.sy = 0.12; }
   } else if (portrait) { out.sx = 0; out.sy = align === 'center' ? 0.3 : 0.4; }
   else { out.sx = align === 'left' ? -0.3 : align === 'center' ? 0 : 0.3; out.sy = 0.06; }
@@ -1030,7 +1034,7 @@ vec3 fSphere(vec3 p,vec4 P){
   vec3 v=P.y*(vec3(1.0+a3/(2.0*r3),0.0,0.0)-(1.5*a3*p.x/r5)*p);
   float wake=smoothstep(0.0,0.7,p.x)*exp(-dot(p.yz,p.yz)*2.2);
   v+=curl(p*2.2-vec3(uT*0.9,0.0,0.0))*P.z*wake;
-  v+=p/rl*smoothstep(a*1.1,a*0.92,rl)*2.5;
+  v+=p/rl*(1.0-smoothstep(a*0.92,a*1.1,rl))*2.5;
   return v;
 }
 vec3 field(int f,vec3 p,vec4 r,vec4 P){
@@ -1057,7 +1061,7 @@ void spawn(int f,uint id,vec4 r,vec4 P,vec4 Q,out vec3 p,out vec3 v,out float li
   else if(f==4){float N=P.x;float k=floor(h4*N);float base=-0.5*(N-1.0)*P.y;float ang=h1*TAU;float rr=0.3+0.66*r.w;p=vec3(0.14*sin(k*2.3+0.7)+cos(ang)*rr*(1.0-0.05*k),base+k*P.y+(r.z-0.5)*P.y*0.38,sin(ang)*rr*0.42);}
   else if(f==5){float rr=P.z*0.95*sqrt(h4),an=h1*TAU;p=vec3(rr*cos(an),rr*sin(an),(h2-0.5)*0.14);}
   else if(f==6){if(h5<0.88){p=vec3(P.w+h4*0.05,(h1-0.5)*0.06,(h2-0.5)*0.06);v=vec3(P.x,0.0,0.0);}else{p=vec3(mix(-1.4,1.9,h4),(h1-0.5)*1.4,(h2-0.5)*1.4);}}
-  else if(f==8){float g=float(id%7u);float e=floor((uT+g*P.x/7.0)/P.x);uint cs=hu(uint(g)*7919u+uint(max(e,0.0))*104729u+17u);vec3 c=(vec3(hf(cs+1u),hf(cs+2u),hf(cs+3u))*2.0-1.0)*vec3(1.35,0.8,0.6);p=c+dir*0.02;v=dir*P.y*(0.3+0.7*h4);life=P.x*(0.55+0.43*h3);}
+  else if(f==8){float g=float(id%7u);float e=floor((uT+g*P.x/7.0)/P.x);uint cs=hu(uint(g)*7919u+uint(max(e,0.0))*104729u+17u);vec3 c=(vec3(hf(cs+1u),hf(cs+2u),hf(cs+3u))*2.0-1.0)*vec3(1.5,0.9,0.35);p=c+dir*0.015;v=dir*P.y*(0.92+0.08*h4);life=P.x*(0.45+0.4*h3);}
   else{float rr=1.05*sqrt(h1),an=h2*TAU;p=vec3(P.w+h4*0.25,rr*cos(an),rr*sin(an));v=vec3(P.y,0.0,0.0);}
 }
 void main(){
@@ -1146,7 +1150,7 @@ void main(){
   float age=aP.w,life=aV.w-floor(aV.w/1024.0)*1024.0;
   float fade=smoothstep(0.0,0.4,age)*(1.0-smoothstep(life-0.5,life,age));
   float e=(uSize*uSize)/(rad*rad);
-  e*=(2.0*rad)/(2.0*rad+L*0.55);
+  e*=sqrt((2.0*rad)/(2.0*rad+L*0.55));
   vec3 cool=vec3(0.46,0.53,0.60);
   vec3 amb=vec3(1.0,0.60,0.22);
   vec3 hot=vec3(1.0,0.84,0.62);
@@ -1324,12 +1328,12 @@ function renderGL(intro) {
   gl.uniform2f(u.uRes, W, H);
   gl.uniform1f(u.uExp, expC);
   gl.uniform1f(u.uFocus, cam.dist + rack);
-  gl.uniform1f(u.uAper, (C.aper + intro * 70) * (H / 1000) * (isPhone ? 0.8 : 1));
+  gl.uniform1f(u.uAper, (C.aper + intro * 46) * (H / 1000) * (isPhone ? 0.8 : 1));
   const size = 0.75 * dpr + 0.3;
   gl.uniform1f(u.uSize, size);
-  gl.uniform1f(u.uMaxR, (isPhone ? 6 : 10) * dpr);
-  gl.uniform1f(u.uMaxPt, Math.min(G.maxPt, Math.round(H * 0.07) + 20));
-  gl.uniform1f(u.uBright, 0.44 * brC * clamp(Math.sqrt(131072 / active), 1, 2.6) * (1 - intro * 0.35));
+  gl.uniform1f(u.uMaxR, (isPhone ? 5 : 8) * dpr);
+  gl.uniform1f(u.uMaxPt, Math.min(G.maxPt, Math.round(14 * dpr + 16)));
+  gl.uniform1f(u.uBright, 0.3 * brC * clamp(Math.sqrt(131072 / active), 1, 2.6) * (1 - intro * 0.35));
   gl.uniform4f(u.uSheet, sheetC[0], sheetC[1], sheetC[2], sheetC[3]);
   gl.uniform1f(u.uSheetW, sheetW);
   gl.uniform1f(u.uRef, refC);
@@ -1389,7 +1393,7 @@ function hud(now) {
   if (ptr.fine && ptr.has) curL.textContent = ptrText();
   DBG.active = active; DBG.steps = steps; DBG.ema = Math.round(ema * 10) / 10; DBG.dpr = dpr;
 }
-function shouldRun() { return !DBG.pause && mode === 'gl' && !doc.hidden && canvasVisible && !menuOpen; }
+function shouldRun() { return mode === 'gl' && !doc.hidden && canvasVisible && !menuOpen; }
 function syncLoop() {
   if (shouldRun()) { if (!raf) { lastNow = performance.now(); raf = requestAnimationFrame(loop); } }
   else if (raf) { cancelAnimationFrame(raf); raf = 0; }
@@ -1438,32 +1442,6 @@ function warmup(done) {
   };
   requestAnimationFrame(tick);
 }
-DBG.read = (n) => { // TEMP-BENCH
-  const out = new Float32Array(n * 8); gl.bindBuffer(gl.ARRAY_BUFFER, G.buf[G.src]); gl.getBufferSubData(gl.ARRAY_BUFFER, 0, out); gl.bindBuffer(gl.ARRAY_BUFFER, null);
-  return { vals: Array.from(out).map(v => Math.round(v * 1000) / 1000), VP: Array.from(VPm).map(v => Math.round(v * 1000) / 1000), err: gl.getError(), W, H, active, maxPt: G.maxPt };
-}; // TEMP-BENCH
-DBG.px = () => { // TEMP-BENCH
-  DBG.pause = true; if (raf) { cancelAnimationFrame(raf); raf = 0; }
-  renderGL(0); const a = new Uint8Array(W * H * 4); gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, a);
-  let mx = 0, cnt = 0; for (let i = 0; i < a.length; i += 4) { const v = a[i] + a[i + 1] + a[i + 2]; if (v > mx) mx = v; if (v > 60) cnt++; }
-  return { mx, cnt, W, H, err: gl.getError(), bright: 0, size: 0.85 * dpr + 0.35 };
-}; // TEMP-BENCH
-DBG.hq = (n, d, k) => { // TEMP-BENCH
-  DBG.pause = true; if (raf) { cancelAnimationFrame(raf); raf = 0; }
-  active = n; dpr = d; resizeGL(true); introStart = -9999;
-  for (let i = 0; i < (k || 80); i++) { simT += 1 / 60; updateKnot(simT); updateActive(); advanceBlend(1 / 60); updateSmoothing(1 / 60, 0); updatePointer(1 / 60); stepSim(1 / 60); }
-  renderGL(0); uiFrame(); hud(performance.now()); return { active, W, H };
-}; // TEMP-BENCH
-DBG.bench = (n) => { // TEMP-BENCH
-  const px = new Uint8Array(4), o = {};
-  DBG.pause = true; if (raf) { cancelAnimationFrame(raf); raf = 0; } gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-  if (n) active = n;
-  let a = performance.now(); for (let i = 0; i < 3; i++) stepSim(1 / 60); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); o.step = (performance.now() - a) / 3;
-  a = performance.now(); for (let i = 0; i < 3; i++) renderGL(0); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); o.render = (performance.now() - a) / 3;
-  gl.useProgram(G.pO); a = performance.now(); for (let i = 0; i < 3; i++) { gl.bindVertexArray(G.vaoO); gl.drawArrays(gl.TRIANGLES, 0, 3); } gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); o.post = (performance.now() - a) / 3;
-  a = performance.now(); for (let i = 0; i < 3; i++) renderGL(0); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); o.render = (performance.now() - a) / 3;
-  o.active = active; o.W = W; o.H = H; return o;
-}; // TEMP-BENCH
 function fallBack() {
   if (raf) { cancelAnimationFrame(raf); raf = 0; }
   teardownGL();
@@ -1560,7 +1538,7 @@ function fieldJS(f, x, y, z, r0, r1, r2, r3, P, t, o) {
   if (wake > 0.001) { curlJS(x * 2.2 - t * 0.9, y * 2.2, z * 2.2, t, CU); o[0] += CU[0] * P[2] * wake; o[1] += CU[1] * P[2] * wake; o[2] += CU[2] * P[2] * wake; }
   const push = smooth((a * 1.1 - rl) / (a * 0.18)) * 2.5 / rl; o[0] += x * push; o[1] += y * push; o[2] += z * push;
 }
-let posterTimer = 0, posterKey = '', posterAlign = '', posterW = 0, posterInfo = '';
+let posterTimer = 0, posterKey = '', posterAlign = '', posterW = 0, posterInfo = '', posterAcc = null;
 function schedulePoster(force) { clearTimeout(posterTimer); posterTimer = setTimeout(() => drawPoster(force), 90); }
 function enterPoster() {
   mode = 'poster'; DBG.mode = 'poster';
@@ -1578,10 +1556,14 @@ function drawPoster(force) {
   posterKey = key; posterAlign = align; posterW = window.innerWidth;
   const t0p = performance.now();
   cssW = window.innerWidth; cssH = posterCanvas.clientHeight || window.innerHeight;
-  const pd = Math.min(window.devicePixelRatio || 1, 1.5);
-  posterCanvas.width = Math.round(cssW * pd); posterCanvas.height = Math.round(cssH * pd);
+  // A CPU long exposure: segments are splatted into a float buffer, tone-mapped once, then put on the canvas.
+  const sc = Math.min(isPhone ? 1.5 : 1, 1600 / cssW);
+  const pw = Math.max(1, Math.round(cssW * sc)), ph = Math.max(1, Math.round(cssH * sc));
+  posterCanvas.width = pw; posterCanvas.height = ph;
   let ctx = null; try { ctx = posterCanvas.getContext('2d'); } catch (e) {}
   if (!ctx) return;
+  if (!posterAcc || posterAcc.length !== pw * ph * 3) posterAcc = new Float32Array(pw * ph * 3); else posterAcc.fill(0);
+  const acc = posterAcc;
   const pr = PRESETS[key];
   ptrSX = 0; ptrSY = 0;
   camTarget(key, align, 0.5, 0, T); for (let i = 0; i < KEYS.length; i++) C[KEYS[i]] = T[KEYS[i]];
@@ -1589,9 +1571,6 @@ function drawPoster(force) {
   buildCamera(C, cssW, cssH, 1, 0, 0);
   pointerRay();
   if (key === 'knot') { knotPQ[0] = 2; knotPQ[1] = 3; setT(R.knot, 'p 2.00 · q 3.00'); }
-  ctx.setTransform(pd, 0, 0, pd, 0, 0);
-  ctx.globalCompositeOperation = 'source-over';
-  ctx.fillStyle = '#0B0C0E'; ctx.fillRect(0, 0, cssW, cssH);
   const N = isPhone ? 1500 : 2600, WARM = 80, REC = 34, dt = 1 / 30, f = pr.f, P = pr.a, Q = pr.q;
   let seed = 9001;
   const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
@@ -1611,12 +1590,28 @@ function drawPoster(force) {
     else if (f === 4) { const k = Math.floor(h4 * P[0]), base = -0.5 * (P[0] - 1) * P[1], ang = h1 * TAU, rad = 0.3 + 0.66 * r3; px[i] = 0.14 * Math.sin(k * 2.3 + 0.7) + Math.cos(ang) * rad * (1 - 0.05 * k); py[i] = base + k * P[1] + (r2 - 0.5) * P[1] * 0.38; pz[i] = Math.sin(ang) * rad * 0.42; }
     else if (f === 5) { const rad = P[2] * 0.95 * Math.sqrt(h4), an = h1 * TAU; px[i] = rad * Math.cos(an); py[i] = rad * Math.sin(an); pz[i] = (h2 - 0.5) * 0.14; }
     else if (f === 6) { if (h5 < 0.88) { px[i] = P[3] + h4 * 0.05; py[i] = (h1 - 0.5) * 0.06; pz[i] = (h2 - 0.5) * 0.06; vx[i] = P[0]; } else { px[i] = -1.4 + 3.3 * h4; py[i] = (h1 - 0.5) * 1.4; pz[i] = (h2 - 0.5) * 1.4; } }
-    else if (f === 8) { const g = i % 7, e = Math.floor((t + g * P[0] / 7) / P[0]); let cs = (g * 7919 + e * 104729 + 17) >>> 0; const cr = () => { cs = (cs * 1664525 + 1013904223) >>> 0; return cs / 4294967296; }; px[i] = (cr() * 2 - 1) * 1.35 + dx * 0.02; py[i] = (cr() * 2 - 1) * 0.8 + dy * 0.02; pz[i] = (cr() * 2 - 1) * 0.6 + dz * 0.02; const sp = P[1] * (0.3 + 0.7 * h4); vx[i] = dx * sp; vy[i] = dy * sp; vz[i] = dz * sp; life[i] = P[0] * (0.55 + 0.43 * h3); }
+    else if (f === 8) { const g = i % 7, e = Math.floor((t + g * P[0] / 7) / P[0]); let cs = (g * 7919 + e * 104729 + 17) >>> 0; const cr = () => { cs = (cs * 1664525 + 1013904223) >>> 0; return cs / 4294967296; }; px[i] = (cr() * 2 - 1) * 1.5 + dx * 0.015; py[i] = (cr() * 2 - 1) * 0.9 + dy * 0.015; pz[i] = (cr() * 2 - 1) * 0.35 + dz * 0.015; const sp = P[1] * (0.92 + 0.08 * h4); vx[i] = dx * sp; vy[i] = dy * sp; vz[i] = dz * sp; life[i] = P[0] * (0.45 + 0.4 * h3); }
     else { const rad = 1.05 * Math.sqrt(h1), an = h2 * TAU; px[i] = P[3] + h4 * 0.25; py[i] = rad * Math.cos(an); pz[i] = rad * Math.sin(an); vx[i] = P[1]; }
     age[i] = 0;
   };
   for (let i = 0; i < N; i++) { rr[i * 4] = rnd(); rr[i * 4 + 1] = rnd(); rr[i * 4 + 2] = rnd(); rr[i * 4 + 3] = rnd(); spawnJS(i); age[i] = rnd() * life[i]; }
-  const paths = [new Path2D(), new Path2D(), new Path2D()];
+  const gain = (isPhone ? 0.55 : 0.42) * Math.sqrt(2600 / N);
+  const splat = (x0, y0, x1, y1, r, g, b) => {
+    x0 *= sc; y0 *= sc; x1 *= sc; y1 *= sc;
+    const L = Math.hypot(x1 - x0, y1 - y0); if (L > 120) return;
+    const n = Math.max(1, Math.ceil(L / 0.75)), w = 1 / n;
+    for (let k = 0; k < n; k++) {
+      const u = (k + 0.5) / n, x = x0 + (x1 - x0) * u - 0.5, y = y0 + (y1 - y0) * u - 0.5;
+      const ix = Math.floor(x), iy = Math.floor(y);
+      if (ix < 0 || iy < 0 || ix >= pw - 1 || iy >= ph - 1) continue;
+      const fx = x - ix, fy = y - iy, o = (iy * pw + ix) * 3, o2 = o + pw * 3;
+      const a00 = (1 - fx) * (1 - fy) * w, a10 = fx * (1 - fy) * w, a01 = (1 - fx) * fy * w, a11 = fx * fy * w;
+      acc[o] += r * a00; acc[o + 1] += g * a00; acc[o + 2] += b * a00;
+      acc[o + 3] += r * a10; acc[o + 4] += g * a10; acc[o + 5] += b * a10;
+      acc[o2] += r * a01; acc[o2 + 1] += g * a01; acc[o2 + 2] += b * a01;
+      acc[o2 + 3] += r * a11; acc[o2 + 4] += g * a11; acc[o2 + 5] += b * a11;
+    }
+  };
   const resp = 1 - Math.exp(-dt * Q[2]);
   for (let st = 0; st < WARM + REC; st++) {
     t += dt;
@@ -1637,22 +1632,33 @@ function drawPoster(force) {
         if (P3[2] < 0.2) { ok[i] = 0; continue; }
         if (ok[i] && (f !== 8 || age[i] < life[i])) {
           const lit = Math.exp(-Math.pow(((px[i] * nx + py[i] * ny + pz[i] * nz) / nl - sd) / sw, 2));
-          const bin = lit < 0.3 ? 0 : (Math.hypot(vx[i], vy[i], vz[i]) / pr.ref > 0.95 ? 2 : 1);
-          paths[bin].moveTo(sxp[i], syp[i]); paths[bin].lineTo(P3[0], P3[1]);
+          const hot = lit * smooth((Math.hypot(vx[i], vy[i], vz[i]) / pr.ref - 0.75) / 0.85);
+          let r = 0.13 + (1.05 - 0.13) * lit, g = 0.15 + (0.63 - 0.15) * lit, b = 0.17 + (0.231 - 0.17) * lit;
+          r += (1.25 - r) * hot; g += (1.05 - g) * hot; b += (0.775 - b) * hot;
+          splat(sxp[i], syp[i], P3[0], P3[1], r, g, b);
         }
         sxp[i] = P3[0]; syp[i] = P3[1]; ok[i] = 1;
       }
     }
   }
-  ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
-  ctx.strokeStyle = 'rgba(118,136,152,0.2)'; ctx.lineWidth = 1; ctx.stroke(paths[0]);
-  ctx.strokeStyle = 'rgba(239,164,67,0.42)'; ctx.lineWidth = 1.1; ctx.stroke(paths[1]);
-  ctx.strokeStyle = 'rgba(255,216,170,0.5)'; ctx.lineWidth = 1.1; ctx.stroke(paths[2]);
-  ctx.globalCompositeOperation = 'source-over';
+  // tone map (soft shoulder), lay over the ink ground, vignette around the specimen, dither
   project(C.tx, C.ty, C.tz, P3);
-  const g = ctx.createRadialGradient(P3[0], P3[1], Math.min(cssW, cssH) * 0.25, P3[0], P3[1], Math.max(cssW, cssH) * 0.95);
-  g.addColorStop(0, 'rgba(11,12,14,0)'); g.addColorStop(1, 'rgba(11,12,14,0.78)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, cssW, cssH);
+  const cx = P3[0] * sc, cy = P3[1] * sc, rn = 1 / Math.max(pw, ph);
+  const img = ctx.createImageData(pw, ph), d = img.data;
+  const bg0 = 11, bg1 = 12, bg2 = 14; let dz = 12345;
+  for (let y = 0, o = 0, q = 0; y < ph; y++) {
+    const dy2 = (y - cy) * rn;
+    for (let x = 0; x < pw; x++, o += 3, q += 4) {
+      const dxv = (x - cx) * rn, dist = Math.sqrt(dxv * dxv + dy2 * dy2) * 1.6;
+      const vg = 1 - 0.72 * smooth((dist - 0.3) / 0.95);
+      dz = (dz * 1103515245 + 12345) >>> 0; const n = ((dz >>> 16) / 65536 - 0.5) * 2.2;
+      d[q] = bg0 + (255 - bg0) * (1 - Math.exp(-acc[o] * gain)) * vg + n;
+      d[q + 1] = bg1 + (255 - bg1) * (1 - Math.exp(-acc[o + 1] * gain)) * vg + n;
+      d[q + 2] = bg2 + (255 - bg2) * (1 - Math.exp(-acc[o + 2] * gain)) * vg + n;
+      d[q + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
   const ms = performance.now() - t0p;
   steps = WARM + REC;
   setT(R.ms, 'still'); setT(R.hz, '—'); setT(R.n, fmt(N) + ' paths'); setT(R.step, fmt(steps)); setT(R.res, posterCanvas.width + ' × ' + posterCanvas.height);
