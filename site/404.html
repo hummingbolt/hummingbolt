@@ -3,8 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page not found — Hummingbolt LLC</title>
+  <title>Page not found — Hummingbolt</title>
   <meta name="description" content="Page not found.">
+  <meta name="theme-color" content="#070a14">
+  <meta property="og:title" content="Page not found — Hummingbolt">
+  <meta property="og:description" content="Page not found.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hummingbolt">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -12,26 +17,47 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="#0f5f63"/><path d="M18.5 5 9 18h6l-1.5 9L23 14h-6z" fill="#fff"/></svg><span>Hummingbolt</span></a>
+      <a class="brand" href="/"><img src="/logo.svg" alt="" width="34" height="34"><span>Hummingbolt</span></a>
       <nav class="site-nav" aria-label="Main">
         <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/privacy/">Privacy</a></li>
-        <li><a href="/legal/">Legal notice</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/legal/">Legal</a></li>
         </ul>
       </nav>
     </div>
   </header>
-  <main id="main" class="wrap">
-    <h1>Page not found</h1>
-    <p>Sorry, we can&rsquo;t find that page.</p>
-    <p><a href="/">Go to the home page</a></p>
+  <main id="main">
+    <section class="page-hero">
+      <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="gridlines" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="kicker">Error 404</p>
+        <h1>Page not found</h1>
+        <p class="lead">Sorry, we can&rsquo;t find that page.</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <div class="prose">
+        <p><a class="btn btn-primary" href="/">Go to the home page</a></p>
+      </div>
+    </div>
   </main>
   <footer class="site-footer">
     <div class="wrap">
-      <p>&copy; 2026 Hummingbolt LLC</p>
-      <p>2108 N St, Ste N, Sacramento, CA 95816</p>
-      <p><a href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a></p>
+      <div>
+        <a class="brand" href="/"><img src="/logo.svg" alt="" width="28" height="28"><span>Hummingbolt</span></a>
+        <p>&copy; 2026 Hummingbolt LLC</p>
+        <p>2108 N St, Ste N, Sacramento, CA 95816</p>
+        <p><a href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a></p>
+      </div>
+      <nav aria-label="Footer">
+        <ul class="footer-links">
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/legal/">Legal notice</a></li>
+          <li><a href="https://play.toppleton.app">Play Toppleton</a></li>
+        </ul>
+      </nav>
     </div>
   </footer>
 </body>
