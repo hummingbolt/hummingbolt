@@ -55,8 +55,16 @@ a { color: inherit; }
 .js .ldr { display: grid; animation: ldr-safe .45s ease 2.45s forwards; }
 .ldr.out { opacity: 0; visibility: hidden; pointer-events: none; animation: none; transition: opacity .7s ease .1s, visibility 0s linear .85s; }
 @keyframes ldr-safe { to { opacity: 0; } }
-.ldr-in { display: grid; justify-items: center; gap: 26px; }
-.ldr-mark { width: 104px; height: auto; overflow: visible; color: var(--bone); transition: transform .9s cubic-bezier(.7, 0, .2, 1), opacity .6s ease .15s, color .3s ease; }
+.ldr-in { position: relative; display: grid; justify-items: center; gap: 26px; }
+/* A low copper bloom gathers behind the mark while it beats, then opens as the camera flies through. */
+.ldr-in::before {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 42%; width: min(72vmin, 560px); height: min(72vmin, 560px); margin: calc(min(72vmin, 560px) / -2) 0 0 calc(min(72vmin, 560px) / -2);
+  border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(216, 155, 107, .16), rgba(216, 155, 107, .05) 55%, rgba(216, 155, 107, 0));
+  opacity: 0; transform: scale(.7); transition: opacity 1s ease, transform 1.4s cubic-bezier(.2, .7, .1, 1);
+}
+.ldr.beat .ldr-in::before { opacity: 1; transform: scale(1); }
+.ldr.out .ldr-in::before { opacity: 0; transform: scale(2.4); transition: opacity .8s ease, transform .9s cubic-bezier(.7, 0, .2, 1); }
+.ldr-mark { width: clamp(96px, 12vmin, 136px); height: auto; overflow: visible; color: var(--bone); transition: transform .9s cubic-bezier(.7, 0, .2, 1), opacity .6s ease .15s, color .3s ease; }
 .ldr .lp { fill: none; stroke: currentColor; stroke-width: 6; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
 .ldr.beat .ldr-mark { color: var(--copper-hi); animation: wingbeat .4s cubic-bezier(.3, .6, .3, 1) 2; }
 @keyframes wingbeat { 0% { transform: scale(1); } 30% { transform: scale(1.08, .92) rotate(-2deg); } 65% { transform: scale(.97, 1.04) rotate(1deg); } 100% { transform: scale(1); } }
@@ -134,7 +142,11 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
 .make h3 { font-weight: 300; font-size: clamp(1.3rem, 2vw, 1.8rem); letter-spacing: -.02em; line-height: 1.15; }
 .make p { margin: 0; color: var(--mist); }
 .vlist { list-style: none; margin: 0; padding: 0; width: 100%; border-top: 1px solid var(--hair); }
-.vlist li { padding: 13px 0; border-bottom: 1px solid var(--hair); font-family: var(--f-display); font-weight: 300; font-size: clamp(1.15rem, 1.7vw, 1.5rem); letter-spacing: -.015em; line-height: 1.2; font-variation-settings: "SHRP" 100; }
+.vlist li { border-bottom: 1px solid var(--hair); font-family: var(--f-display); font-weight: 300; font-size: clamp(1.15rem, 1.7vw, 1.5rem); letter-spacing: -.015em; line-height: 1.2; font-variation-settings: "SHRP" 100; }
+.vlist a { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 50px; padding: 8px 0; color: var(--bone); text-decoration: none; transition: color .25s ease, padding-left .45s var(--ease); }
+.vlist a::after { content: "\2192"; font: 400 12px/1 var(--f-mono); color: var(--mist); opacity: .7; transition: transform .45s var(--ease), color .25s ease, opacity .25s ease; }
+.vlist a:hover { color: var(--copper-hi); padding-left: 6px; }
+.vlist a:hover::after { color: var(--copper-hi); opacity: 1; transform: translateX(4px); }
 .mail { margin: 0; font-family: var(--f-display); font-weight: 280; font-size: clamp(1.45rem, 3.1vw, 2.9rem); letter-spacing: -.025em; line-height: 1.1; color: var(--bone); -webkit-user-select: all; user-select: all; overflow-wrap: anywhere; font-variation-settings: "SHRP" 100; }
 .copy-st { margin: 0; min-height: 1.5em; font: 400 11px/1.5 var(--f-mono); font-stretch: 87.5%; letter-spacing: .06em; color: var(--copper-hi); }
 .cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; font: 400 10px/1 var(--f-mono); font-stretch: 87.5%; letter-spacing: .2em; text-transform: uppercase; color: var(--mist); }
@@ -146,6 +158,16 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
 .beat-t { font-weight: 220; font-size: clamp(3.3rem, 7.4vw, 7.2rem); line-height: .94; letter-spacing: -.04em; transition: letter-spacing 1.6s var(--ease); }
 .is-here .beat-t { letter-spacing: -.048em; }
 .beat-p { margin: 0; font-size: clamp(1.15rem, 1.7vw, 1.55rem); line-height: 1.42; max-width: 27ch; color: var(--bone); text-wrap: pretty; }
+/* Chapter index on the values title card */
+.vidx { list-style: none; margin: 4px 0 0; padding: 0; width: 100%; max-width: 30rem; border-top: 1px solid var(--hair); }
+.vidx a {
+  display: flex; align-items: center; gap: 18px; min-height: 46px; padding-right: 4px; border-bottom: 1px solid var(--hair);
+  color: var(--bone); text-decoration: none; font-size: 15px; letter-spacing: .005em; transition: color .25s ease, padding-left .45s var(--ease);
+}
+.vidx a::after { content: "\2193"; margin-left: auto; font: 400 12px/1 var(--f-mono); color: var(--mist); transition: transform .45s var(--ease), color .25s ease; }
+.vidx .n { min-width: 2.4em; font: 400 10.5px/1 var(--f-mono); font-stretch: 87.5%; letter-spacing: .14em; color: var(--copper); }
+.vidx a:hover { color: var(--copper-hi); padding-left: 6px; }
+.vidx a:hover::after { color: var(--copper-hi); transform: translateY(3px); }
 .readout { margin: 0; font: 400 11px/1.5 var(--f-mono); font-stretch: 87.5%; letter-spacing: .12em; text-transform: uppercase; color: var(--mist); font-variant-numeric: tabular-nums; }
 .readout b { font-weight: 400; color: var(--copper-hi); }
 .no3d .readout { display: none; }
@@ -256,7 +278,7 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
       <path class="lp lp-main" pathLength="1" mask="url(#ldr-m)" d="M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z"/>
       <path class="lp lp-over" pathLength="1" d="M41.2 19.14 L31.73 38.55"/>
     </svg>
-    <p class="ldr-cap"><span>Hummingbolt</span><span class="ldr-stat" id="ldr-stat">Building the world</span></p>
+    <p class="ldr-cap"><span>Hummingbolt</span><span class="ldr-stat" id="ldr-stat">Loading 3D engine</span></p>
   </div>
 </div>
 
@@ -292,7 +314,7 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
     <section class="stop s-hero" id="top" data-stop data-name="Hover" data-side="left" aria-labelledby="h-top">
       <div class="wrap"><div class="inner">
         <div class="panel">
-          <p class="eyebrow">Software and AI lab · San Francisco Bay Area</p>
+          <p class="eyebrow">San Francisco Bay Area</p>
           <h1 class="h1" id="h-top" tabindex="-1">Hummingbolt is a software and AI lab<span class="dot">.</span></h1>
           <p class="lead">We make mobile and web apps, games, and AI applications, models and agents.</p>
           <div class="ctas">
@@ -348,11 +370,11 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
           <p class="eyebrow">Values</p>
           <h2 class="h2" id="h-teaser" tabindex="-1">Five values we build by<span class="dot">.</span></h2>
           <ul class="vlist">
-            <li>Be bold.</li>
-            <li>Tinker.</li>
-            <li>Fail fast. Learn faster.</li>
-            <li>Forgiveness over permission.</li>
-            <li>Sweat the small stuff.</li>
+            <li><a href="#v-1">Be bold.</a></li>
+            <li><a href="#v-2">Tinker.</a></li>
+            <li><a href="#v-3">Fail fast. Learn faster.</a></li>
+            <li><a href="#v-4">Forgiveness over permission.</a></li>
+            <li><a href="#v-5">Sweat the small stuff.</a></li>
           </ul>
           <div class="ctas"><a class="btn ghost" href="#values">Fly through our values <span class="ar" aria-hidden="true">→</span></a></div>
         </div>
@@ -383,47 +405,54 @@ h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-
           <p class="eyebrow">Values</p>
           <h1 class="h1" id="h-values" tabindex="-1">How we work<span class="dot">.</span></h1>
           <p class="lead">Five values. Each one is a stop on the flight.</p>
+          <ol class="vidx" aria-label="Jump to a value">
+            <li><a href="#v-1" data-beat="1"><span class="n" aria-hidden="true">01</span>Be bold</a></li>
+            <li><a href="#v-2" data-beat="2"><span class="n" aria-hidden="true">02</span>Tinker</a></li>
+            <li><a href="#v-3" data-beat="3"><span class="n" aria-hidden="true">03</span>Fail fast. Learn faster.</a></li>
+            <li><a href="#v-4" data-beat="4"><span class="n" aria-hidden="true">04</span>Forgiveness over permission</a></li>
+            <li><a href="#v-5" data-beat="5"><span class="n" aria-hidden="true">05</span>Sweat the small stuff</a></li>
+          </ol>
         </div>
       </div></div>
       <p class="cue" aria-hidden="true">Scroll to fly</p>
     </section>
 
-    <section class="stop beat" data-stop data-name="Be bold" data-side="left" aria-labelledby="h-v1">
+    <section class="stop beat" id="v-1" data-stop data-name="Be bold" data-side="left" aria-labelledby="h-v1">
       <div class="wrap"><div class="inner"><div class="panel">
         <p class="eyebrow">Value 1 of 5</p>
-        <h2 class="beat-t" id="h-v1">Be bold<span class="dot">.</span></h2>
+        <h2 class="beat-t" id="h-v1" tabindex="-1">Be bold<span class="dot">.</span></h2>
         <p class="beat-p">Pick the hard problem. Go after it.</p>
       </div></div></div>
     </section>
 
-    <section class="stop beat" data-stop data-name="Tinker" data-side="right" aria-labelledby="h-v2">
+    <section class="stop beat" id="v-2" data-stop data-name="Tinker" data-side="right" aria-labelledby="h-v2">
       <div class="wrap"><div class="inner"><div class="panel">
         <p class="eyebrow">Value 2 of 5</p>
-        <h2 class="beat-t" id="h-v2">Tinker<span class="dot">.</span></h2>
+        <h2 class="beat-t" id="h-v2" tabindex="-1">Tinker<span class="dot">.</span></h2>
         <p class="beat-p">We learn by building. Prototype first, debate later.</p>
       </div></div></div>
     </section>
 
-    <section class="stop beat" data-stop data-name="Fail fast" data-side="left" aria-labelledby="h-v3">
+    <section class="stop beat" id="v-3" data-stop data-name="Fail fast" data-side="left" aria-labelledby="h-v3">
       <div class="wrap"><div class="inner"><div class="panel">
         <p class="eyebrow">Value 3 of 5</p>
-        <h2 class="beat-t" id="h-v3">Fail fast. Learn faster<span class="dot">.</span></h2>
+        <h2 class="beat-t" id="h-v3" tabindex="-1">Fail fast. Learn faster<span class="dot">.</span></h2>
         <p class="beat-p">Small bets. Quick tests. Honest results.</p>
       </div></div></div>
     </section>
 
-    <section class="stop beat" data-stop data-name="Forgiveness" data-side="right" aria-labelledby="h-v4">
+    <section class="stop beat" id="v-4" data-stop data-name="Forgiveness" data-side="right" aria-labelledby="h-v4">
       <div class="wrap"><div class="inner"><div class="panel">
         <p class="eyebrow">Value 4 of 5</p>
-        <h2 class="beat-t" id="h-v4">Forgiveness over permission<span class="dot">.</span></h2>
+        <h2 class="beat-t" id="h-v4" tabindex="-1">Forgiveness over permission<span class="dot">.</span></h2>
         <p class="beat-p">On small calls, we act and own the outcome. On safety and privacy, we always ask first.</p>
       </div></div></div>
     </section>
 
-    <section class="stop beat" data-stop data-name="Small stuff" data-side="left" aria-labelledby="h-v5">
+    <section class="stop beat" id="v-5" data-stop data-name="Small stuff" data-side="left" aria-labelledby="h-v5">
       <div class="wrap"><div class="inner"><div class="panel">
         <p class="eyebrow">Value 5 of 5</p>
-        <h2 class="beat-t" id="h-v5">Sweat the small stuff<span class="dot">.</span></h2>
+        <h2 class="beat-t" id="h-v5" tabindex="-1">Sweat the small stuff<span class="dot">.</span></h2>
         <p class="beat-p">Hummingbirds are tiny and exact. Good software is too.</p>
         <p class="readout" aria-hidden="true">Ring alignment, live: <b id="ro">--</b></p>
       </div></div></div>
@@ -658,7 +687,8 @@ function onScroll() {
 W.addEventListener('scroll', function () { if (!sQueued) { sQueued = true; requestAnimationFrame(onScroll); } }, { passive: true });
 
 /* ---------- Routing: #values is its own view; every home section hash shows home ---------- */
-function viewFor(h) { if (h === 'values') return 'values'; if (!h || homeIds[h]) return 'home'; return null; }
+var beatIds = { 'v-1': 1, 'v-2': 1, 'v-3': 1, 'v-4': 1, 'v-5': 1 };
+function viewFor(h) { if (h === 'values' || beatIds[h]) return 'values'; if (!h || homeIds[h]) return 'home'; return null; }
 function jump(y) { try { W.scrollTo({ top: y, left: 0, behavior: 'instant' }); } catch (e) { W.scrollTo(0, y); } }
 function applyRoute(initial) {
   var h = (location.hash || '').replace(/^#/, '');
@@ -667,7 +697,7 @@ function applyRoute(initial) {
   views.home.hidden = v !== 'home'; views.values.hidden = v !== 'values';
   R.setAttribute('data-view', v);
   if (changed || initial) {
-    var target = (v === 'home' && homeIds[h] && h !== 'top') ? D.getElementById(h) : null;
+    var target = ((v === 'home' && homeIds[h] && h !== 'top') || (v === 'values' && beatIds[h])) ? D.getElementById(h) : null;
     if (changed) jump(target ? target.getBoundingClientRect().top + W.scrollY : 0);
     if (changed && !initial) {
       var head = target ? target.querySelector('h1, h2') : views[v].querySelector('h1');
@@ -684,6 +714,13 @@ D.addEventListener('click', function (e) {
   var h = a.getAttribute('href').slice(1);
   if (h === 'values' && HB.view === 'values' && location.hash === '#values') { e.preventDefault(); W.scrollTo({ top: 0, behavior: HB.rm ? 'auto' : 'smooth' }); }
   if (h === 'top' && HB.view === 'home' && location.hash === '#top') { e.preventDefault(); W.scrollTo({ top: 0, behavior: HB.rm ? 'auto' : 'smooth' }); }
+  // Chapter index: fly to that value's stop without changing the route, then hand focus to its title.
+  var k = +a.getAttribute('data-beat');
+  if (k && HB.view === 'values' && HB.stops[k] != null) {
+    e.preventDefault();
+    try { W.scrollTo({ top: HB.stops[k], left: 0, behavior: HB.rm ? 'auto' : 'smooth' }); } catch (x) { W.scrollTo(0, HB.stops[k]); }
+    var t = D.getElementById('h-v' + k); if (t) { try { t.focus({ preventScroll: true }); } catch (x) {} }
+  }
 });
 guard('skip', function () {
   D.getElementById('skip').addEventListener('click', function (e) {
@@ -771,7 +808,8 @@ guard('menu', function () {
 
 /* ---------- Pointer and touch (for the 3D wake). Passive: native scrolling is never blocked. ---------- */
 function pmove(x, y, kind) { var P = HB.pointer; P.x = x; P.y = y; P.nx = x / W.innerWidth * 2 - 1; P.ny = -(y / W.innerHeight * 2 - 1); P.has = true; P.moved++; P.kind = kind; }
-W.addEventListener('pointermove', function (e) { pmove(e.clientX, e.clientY, e.pointerType || 'mouse'); }, { passive: true });
+// Browsers can send one synthetic move at (0, 0) on load; ignore it until a real one arrives.
+W.addEventListener('pointermove', function (e) { if (!HB.pointer.has && e.clientX === 0 && e.clientY === 0) return; pmove(e.clientX, e.clientY, e.pointerType || 'mouse'); }, { passive: true });
 W.addEventListener('touchstart', function (e) { var t = e.touches && e.touches[0]; if (t) pmove(t.clientX, t.clientY, 'touch'); }, { passive: true });
 W.addEventListener('touchmove', function (e) { var t = e.touches && e.touches[0]; if (t) pmove(t.clientX, t.clientY, 'touch'); }, { passive: true });
 
@@ -779,8 +817,9 @@ W.addEventListener('touchmove', function (e) { var t = e.touches && e.touches[0]
 guard('cursor', function () {
   if (!HB.fine || HB.rm) return;
   var c = D.getElementById('cur'), ring = c.firstElementChild, pt = c.lastElementChild;
-  var x = -100, y = -100, rx = -100, ry = -100, raf = 0, last = 0;
+  var x = -100, y = -100, rx = -100, ry = -100, raf = 0, last = 0, seen = false;
   R.classList.add('cc');
+  ring.style.transform = pt.style.transform = 'translate3d(-100px,-100px,0)';
   function loop(t) {
     raf = 0; var dt = last ? Math.min(0.05, (t - last) / 1000) : 0.016; last = t;
     var k = 1 - Math.exp(-dt * 16); rx += (x - rx) * k; ry += (y - ry) * k;
@@ -790,6 +829,8 @@ guard('cursor', function () {
   }
   W.addEventListener('pointermove', function (e) {
     if (e.pointerType && e.pointerType !== 'mouse') return;
+    if (!seen && e.clientX === 0 && e.clientY === 0) return;
+    if (!seen) { seen = true; rx = e.clientX; ry = e.clientY; }
     x = e.clientX; y = e.clientY; c.classList.remove('away');
     var t = e.target, link = t && t.closest && t.closest('a, button');
     c.classList.toggle('link', !!link); c.classList.toggle('text', !!(t && t.closest && t.closest('.mail')));
@@ -872,10 +913,14 @@ const eOut = (t) => 1 - Math.pow(1 - t, 3);
 /* ---------------- Shared uniforms ---------------- */
 const NS = 16, NW = 16;
 const SUN = new THREE.Vector3(0.2, 0.62, -0.76).normalize();
-const GLOW_BASE = V3(0x6e4a2b);
+const GLOW_BASE = V3(0x6e4a2b), GLOW_WARM = V3(0x9a5f2c), GLOW_COOL = V3(0x3b5a52);
+// Each stop has its own light: warm amber for the bold beats, cool sage for the calm ones. Tonal, never neon.
+const SKY_MID = V3(0x0e2724), SKY_MID_W = V3(0x1a2a21), SKY_MID_C = V3(0x0b2427);
+const SKY_HIGH = V3(0x091a18), SKY_HIGH_W = V3(0x14201a), SKY_HIGH_C = V3(0x08191b);
+const SH_COL = V3(0xe6c49a), SH_COL_W = V3(0xf0b77e), SH_COL_C = V3(0xcfd9c8);
 const U = {
   uTime: { value: 0 },
-  uSkyLow: { value: V3(0x020707) }, uSkyMid: { value: V3(0x0e2724) }, uSkyHigh: { value: V3(0x091a18) },
+  uSkyLow: { value: V3(0x05100e) }, uSkyMid: { value: V3(0x0e2724) }, uSkyHigh: { value: V3(0x091a18) },
   uGlow: { value: GLOW_BASE.clone() }, uSunDir: { value: SUN.clone() }, uFog: { value: 0.026 },
   uShA: { value: Array.from({ length: NS }, () => new THREE.Vector4(0, 0, 0, 0)) },
   uShB: { value: Array.from({ length: NS }, () => new THREE.Vector4(0, 0, 0, 0)) },
@@ -898,7 +943,7 @@ uniform vec3 uDeep; uniform vec3 uTeal; uniform vec3 uCopper; uniform vec3 uCopp
 uniform float uPx;
 vec3 skyCol(vec3 d){
   vec3 c = mix(uSkyMid, uSkyHigh, smoothstep(0.02, 0.75, d.y));
-  c = mix(uSkyLow, c, smoothstep(-0.5, 0.03, d.y));
+  c = mix(uSkyLow, c, smoothstep(-0.62, 0.04, d.y));
   float g = max(dot(d, uSunDir), 0.0);
   c += uGlow * (0.5 * pow(g, 5.0) + 0.55 * pow(g, 32.0));
   return c;
@@ -959,22 +1004,23 @@ const ADD = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlen
 
 /* ---------------- Stations ---------------- */
 // F = what the camera looks at, C = where it hovers (landscape), s = lens shift [x,y] landscape, p = portrait, k = portrait pull-back
+// mood = [fog density, shaft strength, sky glow, warmth: -1 cool sage .. 0 base .. +1 low amber sun]
 const HOME = [
-  { F: [0.8, 2.7, 0], C: [0, 2.4, 9.6], s: [0.3, 0.02], p: [0, 0.48], k: 1.32, mood: [0.025, 1.0, 1.0] },
-  { F: [-9, 3.8, -40], C: [-4.8, 3.3, -31.5], s: [-0.36, 0.04], p: [0, 0.42], k: 1.15, mood: [0.03, 0.95, 0.85] },
-  { F: [7, 1.4, -66], C: [3.2, 2.1, -58.4], s: [0.3, 0.0], p: [0, 0.44], k: 1.3, mood: [0.027, 1.0, 1.0] },
-  { F: [0, 11, -108], C: [0, 4.5, -92], s: [0.16, -0.04], p: [0, 0.3], k: 1.08, mood: [0.02, 1.2, 1.15] },
-  { F: [-30, 3.2, -150], C: [-6, 6.4, -124], s: [-0.3, 0.02], p: [0, 0.4], k: 1.0, mood: [0.029, 0.85, 0.85] },
-  { F: [4, 0.9, -158], C: [1.6, 1.6, -149.5], s: [0.3, 0.06], p: [0, 0.44], k: 1.3, mood: [0.034, 0.75, 0.65] }
+  { F: [0.8, 2.7, 0], C: [0, 2.4, 9.6], s: [0.3, 0.02], p: [0, 0.48], k: 1.32, mood: [0.025, 1.0, 1.0, 0.2] },
+  { F: [-9, 3.8, -40], C: [-4.8, 3.3, -31.5], s: [-0.36, 0.04], p: [0, 0.42], k: 1.15, mood: [0.03, 0.95, 0.85, -0.25] },
+  { F: [7, 1.4, -66], C: [3.2, 2.1, -58.4], s: [0.3, 0.0], p: [0, 0.44], k: 1.3, mood: [0.027, 1.0, 1.0, 0.3] },
+  { F: [0, 11, -108], C: [0, 4.5, -92], s: [0.16, -0.04], p: [0, 0.3], k: 1.08, mood: [0.02, 1.2, 1.15, 0.7] },
+  { F: [-30, 3.2, -150], C: [-6, 6.4, -124], s: [-0.3, 0.02], p: [0, 0.4], k: 1.0, mood: [0.029, 0.85, 0.85, -0.2] },
+  { F: [4, 0.9, -158], C: [1.6, 1.6, -149.5], s: [0.3, 0.06], p: [0, 0.44], k: 1.3, mood: [0.034, 0.75, 0.65, 0.35] }
 ];
 const VAL = [
-  { F: [-34, 5, -146], C: [-16, 4.2, -127], s: [0.22, -0.04], p: [0, 0.36], k: 1.0, mood: [0.026, 0.9, 1.0] },
-  { F: [-42, 4.2, -160], C: [-34.5, 3.8, -152.5], s: [0.3, 0.02], p: [0, 0.44], k: 1.3, mood: [0.026, 1.0, 1.0] },
-  { F: [-62, 3.2, -172], C: [-55.8, 3.0, -165], s: [-0.34, 0.02], p: [0, 0.44], k: 1.3, mood: [0.027, 1.0, 0.95] },
-  { F: [-80, 1.6, -190], C: [-73.6, 2.5, -183.6], s: [0.3, 0.0], p: [0, 0.42], k: 1.35, mood: [0.027, 1.0, 1.0] },
-  { F: [-98, 3.2, -206], C: [-91.4, 3.2, -199.4], s: [-0.3, 0.02], p: [0, 0.44], k: 1.3, mood: [0.029, 0.95, 0.9] },
-  { F: [-112, 2.8, -222], C: [-109.3, 2.9, -219.3], s: [0.28, 0.02], p: [0, 0.44], k: 1.55, mood: [0.023, 1.1, 1.0] },
-  { F: [-114, 17, -252], C: [-104, 6, -231], s: [0.18, -0.04], p: [0, 0.3], k: 1.0, mood: [0.021, 1.2, 1.22] }
+  { F: [-34, 5, -146], C: [-16, 4.2, -127], s: [0.22, -0.04], p: [0, 0.36], k: 1.0, mood: [0.026, 0.9, 1.0, 0.0] },
+  { F: [-42, 4.2, -160], C: [-34.5, 3.8, -152.5], s: [0.3, 0.02], p: [0, 0.44], k: 1.3, mood: [0.026, 1.1, 1.1, 0.85] },
+  { F: [-62, 3.2, -172], C: [-55.8, 3.0, -165], s: [-0.34, 0.02], p: [0, 0.44], k: 1.3, mood: [0.027, 1.0, 0.95, -0.45] },
+  { F: [-80, 1.6, -190], C: [-73.6, 2.5, -183.6], s: [0.3, 0.0], p: [0, 0.42], k: 1.35, mood: [0.027, 1.0, 1.0, 0.4] },
+  { F: [-98, 3.2, -206], C: [-91.4, 3.2, -199.4], s: [-0.3, 0.02], p: [0, 0.44], k: 1.3, mood: [0.029, 0.95, 0.9, -0.7] },
+  { F: [-112, 2.8, -222], C: [-109.3, 2.9, -219.3], s: [0.28, 0.02], p: [0, 0.44], k: 1.55, mood: [0.023, 1.1, 1.0, 0.1] },
+  { F: [-114, 17, -252], C: [-104, 6, -231], s: [0.4, 0.13], p: [0, 0.32], k: 1.0, mood: [0.021, 1.2, 1.22, 0.9] }
 ];
 const FOCI = [
   { p: vec(HOME[0].F), r: 2.6 }, { p: vec(HOME[1].F), r: 3.0 }, { p: vec(HOME[2].F), r: 1.9 }, { p: vec(HOME[5].F), r: 1.0 },
@@ -1374,10 +1420,10 @@ const ribbon = (() => {
   });
   const curve = new THREE.CatmullRomCurve3(v3, true, 'centripetal');
   const geo = track(new THREE.TubeGeometry(curve, 420, 0.048, 8, true));
-  const m = mat({
+  const mk = () => mat({
     vs: `varying vec3 vN; varying vec3 vW; varying float vU;
       void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix) * normal); vU = uv.x; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fs: `uniform float uDraw; uniform float uHead; varying vec3 vN; varying vec3 vW; varying float vU;
+    fs: `uniform float uDraw; uniform float uHead; uniform float uLift; varying vec3 vN; varying vec3 vW; varying float vU;
       void main(){
         if (vU > uDraw) discard;
         vec3 N = normalize(vN); vec3 V = normalize(cameraPosition - vW);
@@ -1386,6 +1432,7 @@ const ribbon = (() => {
         vec3 H = normalize(uSunDir + V); float sp = pow(max(dot(N, H), 0.0), 60.0);
         float sh = shaftLight(vW);
         vec3 col = uCopper * (0.2 + 0.75 * ndl * (0.4 + sh)) + uCopperHi * (sp * (0.6 + sh) + fr * 0.35);
+        col += uCopper * uLift * (0.3 + fr * 0.9);
         float tr = fract(uHead - vU);
         float head = exp(-tr * 13.0);
         float tip = exp(-max(uDraw - vU, 0.0) * 40.0) * (1.0 - step(0.999, uDraw));
@@ -1393,14 +1440,15 @@ const ribbon = (() => {
         col = mix(col, skyCol(-V), fogF(length(vW - cameraPosition)));
         gl_FragColor = vec4(col, 1.0);
       }`,
-    uniforms: { uDraw: { value: 0 }, uHead: { value: 0 } }
+    uniforms: { uDraw: { value: 0 }, uHead: { value: 0 }, uLift: { value: 0 } }
   });
+  const m = mk();
   const mesh = new THREE.Mesh(geo, m);
   const g = new THREE.Group(); g.position.copy(vec(HOME[0].F)); g.rotation.y = -0.32; g.add(mesh); scene.add(g);
   const hp = new THREE.Vector3();
   let draw = 0;
   return {
-    g, curve,
+    g, curve, geo, mk,
     setDraw(v) { draw = v; m.uniforms.uDraw.value = v; },
     update(T) {
       g.position.y = HOME[0].F[1] + Math.sin(T * 0.8) * 0.06;
@@ -1451,7 +1499,7 @@ const beacon = (() => {
   const m = mat({
     vs: `attribute float aPh; uniform float uRT; varying float vA;
       void main(){ float f = fract(uRT * 0.2 + aPh); vec3 p = position * (0.3 + f * 4.2); vec4 w = modelMatrix * vec4(p, 1.0);
-        vA = (1.0 - f) * (1.0 - f) * smoothstep(0.0, 0.06, f) * 0.6 * (1.0 - fogF(length(w.xyz - cameraPosition)));
+        vA = (1.0 - f) * (1.0 - f) * smoothstep(0.0, 0.06, f) * 0.85 * (1.0 - fogF(length(w.xyz - cameraPosition)));
         gl_Position = projectionMatrix * viewMatrix * w; }`,
     fs: `varying float vA; void main(){ gl_FragColor = vec4(uCopper * vA, 1.0); }`,
     uniforms: { uRT: { value: 0 } },
@@ -1459,7 +1507,7 @@ const beacon = (() => {
   });
   const mesh = new THREE.Mesh(geo, m); mesh.position.y = -0.4; mesh.frustumCulled = false; g.add(mesh);
   const bp = vec(HOME[5].F);
-  return { g, update(T) { m.uniforms.uRT.value = T; setGlow(1, bp, 0.5 + Math.sin(T * 1.6) * 0.04, 1.0, 0.78, 0.55); } };
+  return { g, update(T) { m.uniforms.uRT.value = T; setGlow(1, bp, 0.6 + Math.sin(T * 1.6) * 0.05, 1.0, 0.78, 0.55); } };
 })();
 
 /* ---------------- Values gestures ---------------- */
@@ -1611,7 +1659,8 @@ const failFast = (() => {
     VEL.push(new THREE.Vector3(0.55 + (i / 8) * 0.7 + rnd() * 0.3, 0.3 + rnd() * 0.7, (rnd() - 0.5) * 1.4));
     AX.push(new THREE.Vector3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).normalize()); SPR.push((1.5 + rnd() * 3.5) * (rnd() < 0.5 ? -1 : 1));
   }
-  const CYC = 8.2, P0 = 0.22, P1 = 0.38, P2 = 0.56, P3 = 0.76, P4 = 0.93, G = 3.2, TC = (P2 - P1) * CYC;
+  // The fall is quick and stays in frame (fail fast); the rebuild takes longer (learn faster).
+  const CYC = 8.2, P0 = 0.22, P1 = 0.38, P2 = 0.5, P3 = 0.76, P4 = 0.93, G = 3.2, TC = (P2 - P1) * CYC;
   const qz = new THREE.Quaternion(), qs = new THREE.Quaternion(), m4 = new THREE.Matrix4(), sc = new THREE.Vector3(), pp = new THREE.Vector3(), qq = new THREE.Quaternion();
   function lean(ph) { if (ph < P0) return 0; const k = Math.min(1, (ph - P0) / (P1 - P0)); return -(Math.sin(k * Math.PI * 3.5) * 0.05 * k * k + k * k * k * 0.12); }
   const LEND = lean(P1);
@@ -1779,6 +1828,34 @@ const swarm = (() => {
   return { g, update(T) { mesh.rotation.z = 0.2 + Math.sin(T * 0.21) * 0.06; mesh.rotation.y = Math.sin(T * 0.17) * 0.22; } };
 })();
 
+// Onward: the values flight ends where the home flight began, on the mark. It draws itself as the camera arrives.
+const endMark = (() => {
+  const d = VAL[VAL.length - 1], F = vec(d.F), C = vec(d.C);
+  const g = new THREE.Group(); g.position.copy(C).lerp(F, 0.72); g.lookAt(C); g.scale.setScalar(1.85); scene.add(g);
+  const m = ribbon.mk(), mesh = new THREE.Mesh(ribbon.geo, m); mesh.rotation.z = 0.16; g.add(mesh);
+  m.uniforms.uLift.value = 0.55;
+  const hp = new THREE.Vector3();
+  let k = 0, lastT = -1;
+  function paint(T) {
+    const e = eInOut(k); m.uniforms.uDraw.value = e;
+    const h = (((T * 0.11) % 1) + 1) % 1; m.uniforms.uHead.value = h;
+    ribbon.curve.getPointAt(clamp(Math.min(h, e), 0, 1), hp); g.updateMatrixWorld(); hp.applyMatrix4(mesh.matrixWorld);
+    setGlow(10, hp, e > 0.02 ? 1.0 : 0, 1.0, 0.8, 0.6);
+  }
+  return {
+    g,
+    update(T) {
+      const dt = lastT < 0 ? 0 : clamp(T - lastT, 0, 0.1); lastT = T;
+      k = clamp(k + (endNear ? dt / 1.9 : -dt / 0.6), 0, 1);
+      g.position.y = C.y + (F.y - C.y) * 0.72 + Math.sin(T * 0.8) * 0.08; mesh.rotation.z = 0.16 + Math.sin(T * 0.3) * 0.05;
+      g.scale.setScalar(orient === 'p' ? 1.25 : 1.85);
+      paint(T);
+    },
+    still() { k = endNear ? 1 : 0; g.scale.setScalar(orient === 'p' ? 1.25 : 1.85); paint(12); },
+    hide() { k = 0; lastT = -1; m.uniforms.uDraw.value = 0; }
+  };
+})();
+
 // The values route, drawn as a dotted line of light with pulses running forward.
 const route = {};
 for (const o of ['l', 'p']) {
@@ -1809,13 +1886,15 @@ const GROUPS = [
   { o: tinker, g: tinker.g, still: () => tinker.update(12.0, 0.72), fade: true },
   { o: failFast, g: failFast.g, still: () => failFast.update(12.0, 0.86), fade: true },
   { o: forgive, g: forgive.g, still: () => forgive.update(10.0), fade: true, slots: [7] },
-  { o: small, g: small.g, still: () => small.update(12.0, 0.86), fade: true, slots: [9] }
+  { o: small, g: small.g, still: () => small.update(12.0, 0.86), fade: true, slots: [9] },
+  { o: endMark, g: endMark.g, still: () => endMark.still(), slots: [10] }
 ];
 function showGroups(stillMode, Tn) {
   for (let i = 0; i < GROUPS.length; i++) {
     const G = GROUPS[i], dd = G.g.position.distanceTo(camera.position);
     const s = G.fade ? sstep(31, 15, dd) : (dd < 95 ? 1 : 0), vis = s > 0.002;
     G.g.visible = vis; if (G.extra) G.extra.visible = vis;
+    if (!vis && G.o.hide) G.o.hide();
     if (G.fade) { G.g.scale.setScalar(Math.max(0.002, eOut(s))); G.g.updateMatrixWorld(); }
     if (vis) { if (stillMode) G.still(); else G.o.update(Tn); }
     if (G.slots) for (let j = 0; j < G.slots.length; j++) { const k = G.slots[j]; gSize[k] = vis ? gSize[k] * (G.fade ? s : 1) : 0; }
@@ -1836,7 +1915,8 @@ let yaw = 0, pitch = 0, roll = 0, T = 0, last = 0, t0 = performance.now();
 let dartiness = 0;
 const tr = { active: false, pending: false, t0: 0, dur: 1, curve: null, mode: 'ahead', fromLook: new THREE.Vector3(), fromSX: 0, fromSY: 0, fromFov: 40, end: new THREE.Vector3(), entrance: false };
 let drawT0 = -1;
-const MOODS = { fog: 0.026, sh: 1, glow: 1 };
+const MOODS = { fog: 0.026, sh: 1, glow: 1, warm: 0 };
+let endNear = false;
 
 function pathNow() { return PATHS[orient][HB.view === 'values' ? 'values' : 'home']; }
 function poseAt(y) {
@@ -1852,9 +1932,12 @@ function poseAt(y) {
   P.curve.getPointAt(Math.min(1, u + 0.03), ahead);
   ahead.sub(tgtPos); if (ahead.lengthSq() > 1e-6) { ahead.normalize().multiplyScalar(12).add(tgtPos); tgtLook.lerp(ahead, w * 0.6); }
   const ks = sstep(0.35, 0.95, e);
-  tgtSX = lerp(A.sx, B.sx, ks) * (1 - w * 0.85); tgtSY = lerp(A.sy, B.sy, ks) * (1 - w * 0.6);
+  // Mid-flight the lens recentres (fully on portrait screens, where the hover shift points the view at the floor of the fog).
+  tgtSX = lerp(A.sx, B.sx, ks) * (1 - w * 0.85); tgtSY = lerp(A.sy, B.sy, ks) * (1 - w * (orient === 'p' ? 0.95 : 0.6));
   tgtFov = baseFov + 7 * w;
   MOODS.fog = lerp(A.mood[0], B.mood[0], e); MOODS.sh = lerp(A.mood[1], B.mood[1], e); MOODS.glow = lerp(A.mood[2], B.mood[2], e);
+  MOODS.warm = lerp(A.mood[3], B.mood[3], e);
+  endNear = HB.view === 'values' && i === n - 2 && t > 0.7;
   dartiness = w;
   return i;
 }
@@ -1864,7 +1947,8 @@ function stillPose() {
   if (HB.stops.length === n) { HB.param(W.scrollY, sp); idx = sp.t > 0.5 ? Math.min(n - 1, sp.i + 1) : sp.i; if (W.scrollY >= HB.stops[n - 1] - 2) idx = n - 1; }
   const S = st[idx]; curU = S.u;
   P.curve.getPointAt(S.u, tgtPos); tgtLook.copy(S.F); tgtSX = S.sx; tgtSY = S.sy; tgtFov = baseFov;
-  MOODS.fog = S.mood[0]; MOODS.sh = S.mood[1]; MOODS.glow = S.mood[2]; dartiness = 0;
+  MOODS.fog = S.mood[0]; MOODS.sh = S.mood[1]; MOODS.glow = S.mood[2]; MOODS.warm = S.mood[3]; dartiness = 0;
+  endNear = HB.view === 'values' && idx === n - 1;
   return idx;
 }
 function applyShift(sx, sy) {
@@ -1874,7 +1958,11 @@ function applyShift(sx, sy) {
 }
 function applyMood() {
   U.uFog.value = MOODS.fog;
-  U.uGlow.value.copy(GLOW_BASE).multiplyScalar(MOODS.glow);
+  const wa = clamp(MOODS.warm, 0, 1), co = clamp(-MOODS.warm, 0, 1);
+  U.uGlow.value.copy(GLOW_BASE).lerp(GLOW_WARM, wa).lerp(GLOW_COOL, co).multiplyScalar(MOODS.glow);
+  U.uSkyMid.value.copy(SKY_MID).lerp(SKY_MID_W, wa).lerp(SKY_MID_C, co);
+  U.uSkyHigh.value.copy(SKY_HIGH).lerp(SKY_HIGH_W, wa).lerp(SKY_HIGH_C, co);
+  U.uShCol.value.copy(SH_COL).lerp(SH_COL_W, wa).lerp(SH_COL_C, co);
   for (let i = 0; i < NS; i++) U.uShB.value[i].x = SHBASE[i] * MOODS.sh;
 }
 function pushAlong(curve, u0, u1, arr) {
@@ -1969,9 +2057,10 @@ function probe(dt, now) {
 /* ---------------- HUD (real values) ---------------- */
 const hF = D.getElementById('hud-fps'), hN = D.getElementById('hud-n'), hX = D.getElementById('hud-xyz'), ro = D.getElementById('ro');
 let hudT = 0, fpsN = 0, lastTxt = '', roT = 0;
-function hud(now) {
+function hud(now, force) {
   fpsN++;
-  if (now - hudT < 300) return;
+  if (!hudT && !force) { hudT = now; fpsN = 0; return; }
+  if (!force && now - hudT < 300) return;
   const fps = fpsN * 1000 / Math.max(1, now - hudT); hudT = now; fpsN = 0;
   if (hF) hF.textContent = still ? 'still' : String(Math.round(fps));
   if (hN) hN.textContent = facetGeo.instanceCount.toLocaleString('en-US');
@@ -2001,7 +2090,7 @@ function frame(now) {
     ys += (sy - ys) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(sy - ys) < 0.3) ys = sy;
     poseAt(ys);
     let k = 1;
-    if (tr.pending && HB.revealed) { tr.pending = false; tr.t0 = now; drawT0 = now + 700; }
+    if (tr.pending && HB.revealed) { tr.pending = false; tr.t0 = now; drawT0 = now + 450; }
     if (tr.active) {
       k = clamp((now - tr.t0) / tr.dur, 0, 1);
       const ek = tr.entrance ? eOut(k) : eInOut(k);
@@ -2065,7 +2154,7 @@ function renderStill() {
     renderer.render(scene, camera);
     if (shaderBad) throw new Error('shader compile failed');
     if (!firstDone) { firstDone = true; HB.glReady(); }
-    hud(performance.now() + 1000); readout(0, true);
+    hud(performance.now(), true); readout(0, true);
   } catch (e) { die(e); }
 }
 function start() {
@@ -2110,6 +2199,7 @@ try {
 } catch (e) {}
 
 /* ---------------- Go ---------------- */
+try { const st = D.getElementById('ldr-stat'); if (st && !HB.revealed) st.textContent = 'Compiling shaders'; } catch (e) {}
 applySize(true);
 poseAt(W.scrollY); camera.position.copy(tgtPos); camera.lookAt(tgtLook); applyShift(tgtSX, tgtSY); camera.updateMatrixWorld();
 // Compile every program (in parallel where the browser can), then draw once with everything visible so no shader
