@@ -34,7 +34,7 @@
         "postalCode": "95816",
         "addressCountry": "US"
       },
-      "areaServed": "San Francisco Bay Area"
+      "location": { "@type": "Place", "name": "San Francisco Bay Area" }
     },
     {
       "@type": "WebSite",
@@ -72,7 +72,7 @@
   --paper:#F4F0E6; --paper-2:#ECE6D8; --paper-3:#E2D9C6;
   --ink:#18202C;   /* 14.4:1 on paper */
   --ink-2:#4A5260; /* 6.9:1 */
-  --ink-3:#5A616C; /* 5.5:1 */
+  --ink-3:#535A65; /* 6.1:1 on paper, 5.1:1 over a major grid line */
   --rule:rgba(24,32,44,.15); --rule-2:rgba(24,32,44,.32);
   --grid:rgba(40,78,122,.065); --grid-2:rgba(40,78,122,.115);
   --ruby:#A3283A;  /* 6.3:1 */
@@ -105,10 +105,13 @@ p,h1,h2,h3,figure,ol,ul,dl,dd{margin:0}
 h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.022em;line-height:1.05;text-wrap:balance}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ruby);outline-offset:3px;border-radius:2px}
+/* headings and <main> take focus only so route changes land in the right place; they are not controls */
+h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,h3[tabindex="-1"]:focus,main:focus{outline:none}
 ::selection{background:rgba(163,40,58,.18)}
 .sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .skip{position:fixed;left:12px;top:-60px;z-index:100;background:var(--ink);color:var(--paper);padding:12px 16px;font:600 .9375rem/1 var(--f-head);text-decoration:none;border-radius:2px}
-.skip:focus{top:12px}
+.skip:not(:focus){opacity:0;pointer-events:none}
+.skip:focus{top:12px;opacity:1}
 .wrap{max-width:1240px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
 @media (min-width:900px){.wrap{padding-left:max(40px, env(safe-area-inset-left, 0px));padding-right:max(40px, env(safe-area-inset-right, 0px))}}
 .mono{font-family:var(--f-mono)}
@@ -160,8 +163,8 @@ button,input{font:inherit;color:inherit}
 
 /* hand-ruled line under headings (decorative) */
 .rule{display:block;width:100%;height:8px;margin-top:16px;overflow:visible}
-.rule path{fill:none;stroke:var(--ink);stroke-width:1.25;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:0}
-.motion .rule:not(.drawn) path{stroke-dashoffset:1}
+.rule path{fill:none;stroke:var(--ink);stroke-width:1.25;stroke-linecap:round;stroke-dasharray:1 3;stroke-dashoffset:0}
+.motion .rule:not(.drawn) path{stroke-dashoffset:1.02}
 .motion .rule.drawn path{transition:stroke-dashoffset 1.2s var(--ease)}
 
 /* sections */
@@ -209,6 +212,8 @@ button,input{font:inherit;color:inherit}
 .stage-hover{aspect-ratio:1 / .86}
 @media (min-width:640px){.stage-hover{aspect-ratio:3 / 2}}
 .stage-wide{aspect-ratio:640 / 280}
+@media (max-width:559px){.stage-wide{aspect-ratio:540 / 370}}
+.fig svg .dt{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
 .stage-loop{aspect-ratio:640 / 300}
 .stage-hill{aspect-ratio:640 / 330}
 .stage-bis{aspect-ratio:640 / 330}
@@ -293,14 +298,39 @@ input[type=range]:disabled{opacity:.45;cursor:not-allowed}
 /* ---------- Values teaser ---------- */
 .vt-intro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 40px;margin-bottom:28px}
 .vt-intro p{color:var(--ink-2);max-width:38ch}
-.vt-list{list-style:none;padding:0;display:grid;gap:0;border-top:1px solid var(--rule-2)}
-.vt-list a{display:grid;grid-template-columns:44px 1fr 56px;gap:4px 14px;align-items:center;padding:20px 0;min-height:64px;text-decoration:none;border-bottom:1px solid var(--rule);transition:background-color .25s}
-.vt-list a:hover{background:rgba(24,32,44,.035)}
-.vt-list .n{font:500 .8125rem/1 var(--f-mono);color:var(--ruby)}
-.vt-list h3{font-size:clamp(1.375rem,1.15rem + .9vw,1.875rem)}
-.vt-list .ln{grid-column:2;font-size:1.0625rem;color:var(--ink-2)}
-.vt-list svg{grid-column:3;grid-row:1 / span 2;width:56px;height:36px;fill:none;stroke:var(--ink);stroke-width:1.25;justify-self:end}
-@media (min-width:900px){.vt-list{grid-template-columns:1fr 1fr;column-gap:40px}.vt-list li:nth-child(-n+2) a{border-top:0}}
+.vt-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+.vt-list a{display:block;padding:14px 0 6px;min-height:64px;text-decoration:none;border-top:1px solid var(--rule-2)}
+.vt-list li:nth-child(n+3) a{margin-top:22px}
+.vt-list .n{display:flex;justify-content:space-between;gap:10px;font:500 .8125rem/1 var(--f-mono);color:var(--ruby);padding-top:2px}
+.vt-list .n .f{color:var(--ink-3);letter-spacing:.04em}
+.vt-list h3{font-size:clamp(1.25rem,1.05rem + .9vw,1.75rem);margin-top:10px}
+.vt-list .ln{display:block;margin-top:6px;font-size:clamp(1rem,.95rem + .2vw,1.0625rem);line-height:1.45;color:var(--ink-2);max-width:30ch}
+.vt-list a:hover h3,.vt-list a:focus-visible h3{text-decoration:underline;text-decoration-color:var(--ruby);text-decoration-thickness:1.5px;text-underline-offset:6px}
+/* the miniatures: the same math as Figs. 4 to 7, drawn small */
+.vt-fig{display:block;width:100%;height:auto;aspect-ratio:200 / 120;box-sizing:border-box;padding:7px 6px;margin:4px 0 14px;overflow:visible;--m:7px;transition:background-color .3s;
+  background:
+    linear-gradient(var(--ink),var(--ink)) 0 0/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 0/1px var(--m) no-repeat,
+    linear-gradient(var(--ink),var(--ink)) 100% 0/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 0/1px var(--m) no-repeat,
+    linear-gradient(var(--ink),var(--ink)) 0 100%/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 100%/1px var(--m) no-repeat,
+    linear-gradient(var(--ink),var(--ink)) 100% 100%/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 100%/1px var(--m) no-repeat}
+.vt-list a:hover .vt-fig{background-color:rgba(24,32,44,.035)}
+.vt-fig *{vector-effect:non-scaling-stroke}
+.vt-fig .ax{stroke:var(--ink);stroke-width:1;fill:none}
+.vt-fig .cu{stroke:var(--ink);stroke-width:1.4;fill:none}
+.vt-fig .ha{fill:url(#hatch-l)}
+.vt-fig .rd{stroke:var(--ruby);stroke-width:1.3;fill:none}
+.vt-fig .dash{stroke-dasharray:3 3}
+.vt-fig .rf{fill:var(--ruby)}
+.vt-fig .pl{fill:var(--paper-2);stroke:var(--ink);stroke-width:1}
+.vt-fig .bar{stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.vt-fig .pv,.vt-fig .jt{fill:var(--paper);stroke:var(--ink);stroke-width:1.1}
+.vt-fig .bx{fill:var(--paper-2);stroke:var(--ink);stroke-width:1}
+.vt-fig .tk{stroke:var(--ink);stroke-width:1.6}
+.vt-fig .tkr{stroke:var(--ruby);stroke-width:2}
+.vt-fig .cell{fill:var(--paper);stroke:rgba(24,32,44,.25)}
+.vt-fig .half{fill:#868889;stroke:rgba(24,32,44,.25)}
+@media (min-width:640px){.vt-list{column-gap:28px}.vt-list a{padding-top:16px}.vt-fig{padding:12px 14px;margin:6px 0 20px}.vt-list li:nth-child(n+3) a{margin-top:28px}}
+@media (min-width:1000px){.vt-list{grid-template-columns:repeat(4,minmax(0,1fr))}.vt-list li:nth-child(n+3) a{margin-top:0}}
 
 /* ---------- Contact ---------- */
 .contact{padding-bottom:clamp(72px,10vw,132px)}
@@ -308,6 +338,21 @@ input[type=range]:disabled{opacity:.45;cursor:not-allowed}
 .email{font:600 clamp(1.5rem,.9rem + 3.6vw,3.25rem)/1.1 var(--f-head);letter-spacing:-.03em;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
 .contact-box .bset{gap:10px}
 .copy-st{min-height:1.5em;font:400 .8125rem/1.5 var(--f-mono);color:var(--ink-2)}
+
+.contact-grid{display:grid;gap:56px}
+.fig-mark{max-width:520px}
+.stage-mark{aspect-ratio:360 / 250}
+.fig-mark figcaption{min-height:0}
+.fig-mark .c-con{fill:none;stroke:var(--ink-3);stroke-opacity:.55;stroke-width:1;stroke-dasharray:3 4}
+.fig-mark .c-con2{fill:none;stroke:var(--ink-3);stroke-opacity:.7;stroke-width:1}
+.fig-mark .c-cut{fill:none;stroke:var(--ruby);stroke-width:1.2;stroke-dasharray:4 4}
+.fig-mark .c-arc{fill:none;stroke:var(--ruby);stroke-width:1.2}
+.fig-mark .c-ctr{fill:var(--paper);stroke:var(--ink);stroke-width:1.1}
+.fig-mark .c-rad{stroke:var(--paper);stroke-width:1;stroke-opacity:.6}
+.fig-mark text.c-pl{fill:var(--paper)}
+.fig-mark svg text{font-size:12px}
+@media (max-width:700px){.fig-mark svg text{font-size:14px}}
+@media (min-width:1100px){.contact-grid{grid-template-columns:minmax(0,1fr) clamp(340px,32vw,440px);align-items:start;column-gap:56px}.contact-box{padding-top:44px}}
 
 /* ---------- Footer ---------- */
 .ftr{border-top:1px solid var(--rule-2);padding:30px 0 calc(30px + env(safe-area-inset-bottom, 0px));background:var(--paper)}
@@ -319,6 +364,7 @@ input[type=range]:disabled{opacity:.45;cursor:not-allowed}
 @media (min-width:900px){.ftr-in{grid-template-columns:auto 1fr auto;align-items:center;gap:40px}}
 
 /* ---------- Values view ---------- */
+.view{scroll-margin-top:calc(var(--hdr) + 8px)}
 .vnav{position:sticky;top:var(--hdr);z-index:20;background:var(--paper);border-bottom:1px solid var(--rule)}
 .vnav-in{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
 .vnav-t{font:500 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
@@ -326,7 +372,7 @@ input[type=range]:disabled{opacity:.45;cursor:not-allowed}
 .vnav ol a{display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:44px;justify-content:center;padding:0 10px;text-decoration:none;font:500 .8125rem/1 var(--f-mono);color:var(--ink-3);border-bottom:1.5px solid transparent;transition:color .2s,border-color .2s}
 .vnav ol a .t{font-family:var(--f-head);font-size:.875rem;color:var(--ink)}
 .vnav ol a[aria-current="true"]{color:var(--ruby);border-bottom-color:var(--ruby)}
-@media (max-width:759px){.vnav ol a .t{display:none}}
+@media (max-width:759px){.vnav ol a .t{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}}
 .spread{position:relative;display:grid;gap:30px;padding:48px 0 56px;border-bottom:1px solid var(--rule)}
 .spread .folio{display:none;font:500 .6875rem/1 var(--f-mono);letter-spacing:.08em;color:var(--ink-3)}
 .page{min-width:0;position:relative}
@@ -353,6 +399,8 @@ input[type=range]:disabled{opacity:.45;cursor:not-allowed}
 .e-no .big{font:600 clamp(3.5rem,2.4rem + 4vw,6rem)/.8 var(--f-head);letter-spacing:-.05em;color:var(--ruby);text-transform:none}
 .entry h2{font-size:clamp(2.5rem,1.5rem + 4vw,4.75rem);letter-spacing:-.04em;line-height:.98;margin-top:22px;max-width:9em}
 .e-line{font-size:clamp(1.3125rem,1.1rem + .8vw,1.75rem);line-height:1.35;margin-top:22px;max-width:22ch}
+.e-rule{max-width:440px;margin-top:22px}
+.e-rule+.e-line{margin-top:18px}
 .entry .note{margin-top:30px}
 .v-end{padding:56px 0 8px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
 
@@ -427,9 +475,9 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             <div class="fallback" aria-hidden="true" hidden></div>
           </div>
           <div class="ctl">
-            <label class="range">
-              <span class="lab">Playback speed</span><output data-o="speed">1/40×</output>
-              <input type="range" min="0" max="1000" step="1" value="696" aria-valuetext="1/40 speed" data-k="speed">
+            <label class="range" for="in-speed">
+              <span class="lab">Playback speed</span><output data-o="speed" for="in-speed" aria-hidden="true">1/40×</output>
+              <input id="in-speed" type="range" min="0" max="1000" step="1" value="696" aria-valuetext="1/40 speed" data-k="speed">
               <span class="ticks" aria-hidden="true"><i style="left:0%">1×</i><i style="left:43.4%">1/10</i><i style="left:86.9%">1/100</i></span>
             </label>
             <div class="bset">
@@ -525,7 +573,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             <a class="btn" href="https://play.toppleton.app" rel="noopener">Play Toppleton <svg aria-hidden="true"><use href="#arr-ne"/></svg></a>
             <span class="url">play.toppleton.app</span>
           </div>
-          <aside class="note" aria-label="Note on Fig. 3"><b>See Fig. 3</b>Stacking is a balance problem. Each slab’s load must have its centre of mass over the slab below.</aside>
+          <aside class="note" aria-label="Note on Fig. 3"><b>See Fig. 3</b>Stacking is a balance problem. Each slab’s load must have its center of mass over the slab below.</aside>
         </div>
 
         <figure class="fig" data-fig="stack" aria-labelledby="f3-cap">
@@ -534,7 +582,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             <svg viewBox="0 90 640 280" role="group" aria-label="Stack of four slabs. Use the arrow keys on a slab to slide it.">
               <rect x="-2" y="300" width="270" height="70" fill="url(#hatch-l)"/>
               <path d="M-2 300 H268 V362" fill="none" stroke="#18202C" stroke-width="1.5"/>
-              <text x="276" y="345">table edge</text>
+              <text class="edge-t" x="276" y="345">table edge</text>
               <g class="slabs"></g>
               <g class="coms"></g>
               <g class="dim" opacity="0"><path class="dl" d="" fill="none" stroke="#18202C" stroke-width="1"/><text class="dt tk sm" x="0" y="0" text-anchor="middle"></text></g>
@@ -548,7 +596,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             </div>
             <span class="hint">Slabs on top ride along.</span>
           </div>
-          <figcaption id="f3-cap"><b>Fig. 3</b><span data-c="txt">Overhang <span class="v">0.57</span> of a slab. The best possible with four slabs, one per level, is <span class="v">1.04</span>.</span></figcaption>
+          <figcaption id="f3-cap"><b>Fig. 3</b><span data-c="txt">Overhang <span class="v">0.57</span> of a slab. Tightest margin <span class="v">0.18</span>, at the table edge. Best possible with four slabs, one per level: <span class="v">1.04</span>.</span></figcaption>
           <p class="sr" aria-live="polite" data-live></p>
         </figure>
       </div>
@@ -587,14 +635,10 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
         <a class="tlink" href="#values"><span class="t">Open the values</span><svg aria-hidden="true"><use href="#arr-e"/></svg></a>
       </div>
       <ol class="vt-list">
-        <li><a href="#value-1"><span class="n">01</span><h3>Be bold.</h3><span class="ln">Pick the hard problem. Go after it.</span>
-          <svg viewBox="0 0 56 36" aria-hidden="true"><path d="M1 33 C 8 33, 9 21, 15 21 S 21 31, 27 31 S 36 5, 43 5 S 52 33, 55 33"/><circle cx="43" cy="5" r="2.2" fill="#A3283A" stroke="none"/></svg></a></li>
-        <li><a href="#value-2"><span class="n">02</span><h3>Tinker.</h3><span class="ln">We learn by building. Prototype first, debate later.</span>
-          <svg viewBox="0 0 56 36" aria-hidden="true"><path d="M10 25 C 12 8, 36 3, 47 12 S 40 33, 25 31 S 8 33, 10 25 Z"/><path d="M14 33 L22 18 L38 22 L44 33" stroke-opacity=".55"/></svg></a></li>
-        <li><a href="#value-3"><span class="n">03</span><h3>Fail fast. Learn faster.</h3><span class="ln">Small bets. Quick tests. Honest results.</span>
-          <svg viewBox="0 0 56 36" aria-hidden="true"><path d="M2 5 H54 M2 13 H28 M15 21 H28 M15 29 H21"/><circle cx="18" cy="29" r="2.2" fill="#A3283A" stroke="none"/></svg></a></li>
-        <li><a href="#value-4"><span class="n">04</span><h3>Sweat the small stuff.</h3><span class="ln">Hummingbirds are tiny and exact. Good software is too.</span>
-          <svg viewBox="0 0 56 36" aria-hidden="true"><rect x="8" y="4" width="10" height="28" fill="#18202C" fill-opacity=".5" stroke="none"/><rect x="18" y="4" width="10" height="28" fill="#18202C" fill-opacity=".5" stroke="none"/><path d="M8 4 H48 M8 32 H48 M8 4 V32 M18 4 V32 M28 4 V32 M38 4 V32 M48 4 V32" stroke-opacity=".55"/></svg></a></li>
+        <li><a href="#value-1"><svg class="vt-fig" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><path d="M12 104H188" class="ax"/><path d="M12 100.6L13.5 100.6L14.9 100.6L16.4 100.6L17.9 100.5L19.3 100.4L20.8 100.3L22.3 100.1L23.7 99.8L25.2 99.4L26.7 98.9L28.1 98.2L29.6 97.3L31.1 96.1L32.5 94.6L34 92.8L35.5 90.8L36.9 88.4L38.4 85.8L39.9 83L41.3 80.2L42.8 77.4L44.3 74.8L45.7 72.5L47.2 70.7L48.7 69.4L50.1 68.8L51.6 68.8L53.1 69.6L54.5 71L56 72.9L57.5 75.3L58.9 77.9L60.4 80.7L61.9 83.6L63.3 86.3L64.8 88.9L66.3 91.2L67.7 93.2L69.2 94.9L70.7 96.3L72.1 97.4L73.6 98.2L75.1 98.9L76.5 99.3L78 99.6L79.5 99.7L80.9 99.8L82.4 99.7L83.9 99.5L85.3 99.3L86.8 98.9L88.3 98.5L89.7 97.9L91.2 97.3L92.7 96.4L94.1 95.4L95.6 94.2L97.1 92.8L98.5 91.2L100 89.3L101.5 87.1L102.9 84.7L104.4 82L105.9 79L107.3 75.7L108.8 72.2L110.3 68.5L111.7 64.5L113.2 60.4L114.7 56.2L116.1 51.9L117.6 47.7L119.1 43.6L120.5 39.7L122 36L123.5 32.7L124.9 29.8L126.4 27.4L127.9 25.5L129.3 24.2L130.8 23.5L132.3 23.4L133.7 24L135.2 25.2L136.7 26.9L138.1 29.3L139.6 32.1L141.1 35.3L142.5 38.9L144 42.8L145.5 46.9L146.9 51.1L148.4 55.3L149.9 59.6L151.3 63.7L152.8 67.7L154.3 71.5L155.7 75L157.2 78.4L158.7 81.4L160.1 84.2L161.6 86.7L163.1 88.9L164.5 90.8L166 92.5L167.5 93.9L168.9 95.2L170.4 96.2L171.9 97.1L173.3 97.8L174.8 98.4L176.3 98.9L177.7 99.3L179.2 99.6L180.7 99.9L182.1 100L183.6 100.2L185.1 100.3L186.5 100.4L188 100.5L188 104L12 104Z" class="ha"/><path d="M12 100.6L13.5 100.6L14.9 100.6L16.4 100.6L17.9 100.5L19.3 100.4L20.8 100.3L22.3 100.1L23.7 99.8L25.2 99.4L26.7 98.9L28.1 98.2L29.6 97.3L31.1 96.1L32.5 94.6L34 92.8L35.5 90.8L36.9 88.4L38.4 85.8L39.9 83L41.3 80.2L42.8 77.4L44.3 74.8L45.7 72.5L47.2 70.7L48.7 69.4L50.1 68.8L51.6 68.8L53.1 69.6L54.5 71L56 72.9L57.5 75.3L58.9 77.9L60.4 80.7L61.9 83.6L63.3 86.3L64.8 88.9L66.3 91.2L67.7 93.2L69.2 94.9L70.7 96.3L72.1 97.4L73.6 98.2L75.1 98.9L76.5 99.3L78 99.6L79.5 99.7L80.9 99.8L82.4 99.7L83.9 99.5L85.3 99.3L86.8 98.9L88.3 98.5L89.7 97.9L91.2 97.3L92.7 96.4L94.1 95.4L95.6 94.2L97.1 92.8L98.5 91.2L100 89.3L101.5 87.1L102.9 84.7L104.4 82L105.9 79L107.3 75.7L108.8 72.2L110.3 68.5L111.7 64.5L113.2 60.4L114.7 56.2L116.1 51.9L117.6 47.7L119.1 43.6L120.5 39.7L122 36L123.5 32.7L124.9 29.8L126.4 27.4L127.9 25.5L129.3 24.2L130.8 23.5L132.3 23.4L133.7 24L135.2 25.2L136.7 26.9L138.1 29.3L139.6 32.1L141.1 35.3L142.5 38.9L144 42.8L145.5 46.9L146.9 51.1L148.4 55.3L149.9 59.6L151.3 63.7L152.8 67.7L154.3 71.5L155.7 75L157.2 78.4L158.7 81.4L160.1 84.2L161.6 86.7L163.1 88.9L164.5 90.8L166 92.5L167.5 93.9L168.9 95.2L170.4 96.2L171.9 97.1L173.3 97.8L174.8 98.4L176.3 98.9L177.7 99.3L179.2 99.6L180.7 99.9L182.1 100L183.6 100.2L185.1 100.3L186.5 100.4L188 100.5" class="cu"/><path d="M19 96.4Q45.4 75.7 71.8 93.2M71.8 93.2Q98.2 8.8 124.6 26.3" class="rd dash"/><circle cx="132.1" cy="19.4" r="3.6" class="rf"/></svg><span class="n">01<span class="f" aria-hidden="true">Fig. 4</span></span><h3>Be bold.</h3><span class="ln">Pick the hard problem. Go after it.</span></a></li>
+        <li><a href="#value-2"><svg class="vt-fig" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><path d="M81.4 34.9L82.3 33.9L83.1 32.8L84 31.8L84.8 30.8L85.6 29.8L86.3 28.9L87 27.9L87.7 27L88.3 26.1L88.9 25.2L89.5 24.4L89.9 23.6L90.4 22.8L90.8 22L91.1 21.2L91.4 20.5L91.6 19.8L91.8 19.1L92 18.4L92.1 17.8L92.1 17.2L92.1 16.6L92 16L91.9 15.5L91.8 15L91.6 14.5L91.3 14L91 13.6L90.7 13.2L90.3 12.8L89.9 12.4L89.5 12.1L89 11.7L88.5 11.5L88 11.2L87.4 11L86.8 10.7L86.1 10.6L85.5 10.4L84.8 10.3L84.1 10.2L83.4 10.1L82.6 10L81.8 10L81 10L80.2 10L79.4 10.1L78.6 10.2L77.7 10.3L76.8 10.4L76 10.6L75.1 10.8L74.2 11L73.3 11.2L72.4 11.5L71.5 11.8L70.6 12.1L69.7 12.5L68.8 12.8L67.9 13.2L67 13.7L66.1 14.1L65.2 14.6L64.3 15.1L63.4 15.6L62.5 16.1L61.6 16.7L60.8 17.2L59.9 17.8L59.1 18.5L58.2 19.1L57.4 19.7L56.6 20.4L55.8 21.1L55 21.8L54.2 22.5L53.5 23.3L52.8 24L52 24.8L51.3 25.5L50.6 26.3L50 27.1L49.3 27.9L48.7 28.8L48.1 29.6L47.5 30.4L46.9 31.3L46.3 32.1L45.8 32.9L45.3 33.8L44.8 34.7L44.3 35.5L43.9 36.4L43.5 37.3L43.1 38.1L42.7 39L42.3 39.9L42 40.7L41.7 41.6L41.4 42.4L41.1 43.3L40.9 44.1L40.7 45L40.5 45.8L40.3 46.6L40.2 47.4L40 48.2L39.9 49L39.9 49.8L39.8 50.6L39.8 51.3L39.8 52.1L39.8 52.8L39.8 53.5L39.9 54.2L39.9 54.9L40 55.5L40.2 56.2L40.3 56.8L40.5 57.4L40.7 58L40.9 58.5L41.1 59L41.4 59.5L41.6 60L41.9 60.5L42.2 60.9L42.6 61.3L42.9 61.6L43.3 62L43.7 62.3L44.1 62.6L44.5 62.8L45 63L45.4 63.2L45.9 63.3L46.4 63.4L46.9 63.5L47.4 63.6L48 63.5L48.6 63.5L49.1 63.4L49.7 63.3L50.3 63.2L51 63L51.6 62.7L52.3 62.5L53 62.1L53.6 61.8L54.3 61.4L55.1 61L55.8 60.5L56.6 60L57.3 59.4L58.1 58.8L58.9 58.2L59.7 57.5L60.6 56.8L61.4 56L62.3 55.2L63.2 54.4L64.1 53.5L65 52.6L65.9 51.7L66.8 50.8L67.8 49.8L68.7 48.8L69.7 47.8L70.7 46.8L71.6 45.7L72.6 44.6L73.6 43.6L74.6 42.5L75.6 41.4L76.6 40.3L77.6 39.2L78.5 38.1L79.5 37.1L80.4 36Z" class="rd"/><path d="M79.6 73.6L89.7 12.2L151.8 16.5Z" class="pl"/><path d="M68.2 96L79.6 73.6L151.8 16.5L151.9 96" class="bar"/><path d="M68.2 96l-4.5 7h9zM151.9 96l-4.5 7h9z" class="pv"/><circle cx="79.6" cy="73.6" r="2.6" class="jt"/><circle cx="151.8" cy="16.5" r="2.6" class="jt"/><circle cx="89.7" cy="12.2" r="3.4" class="rf"/></svg><span class="n">02<span class="f" aria-hidden="true">Fig. 5</span></span><h3>Tinker.</h3><span class="ln">We learn by building. Prototype first, debate later.</span></a></li>
+        <li><a href="#value-3"><svg class="vt-fig" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><path d="M12 14H188" class="ax"/><path d="M12 14V9" class="ax"/><path d="M28 14V11" class="ax"/><path d="M45.8 14V11" class="ax"/><path d="M63.6 14V11" class="ax"/><path d="M81.3 14V11" class="ax"/><path d="M99.1 14V9" class="ax"/><path d="M116.9 14V11" class="ax"/><path d="M134.7 14V11" class="ax"/><path d="M152.4 14V11" class="ax"/><path d="M170.2 14V11" class="ax"/><path d="M188 14V9" class="ax"/><rect x="10.5" y="22.5" width="179" height="7" class="bx"/><path d="M99.1 20V32" class="tk"/><rect x="10.5" y="36" width="88.3" height="7" class="bx"/><path d="M54.7 33.5V45.5" class="tk"/><rect x="54.9" y="49.5" width="43.9" height="7" class="bx"/><path d="M76 47V59" class="tk"/><rect x="76.3" y="63" width="22.6" height="7" class="bx"/><path d="M86.7 60.5V72.5" class="tk"/><rect x="86.9" y="76.5" width="11.9" height="7" class="bx"/><path d="M92 74V86" class="tk"/><rect x="86.9" y="90" width="4.8" height="7" class="bx"/><path d="M88.4 87.5V99.5" class="tkr"/><path d="M88.4 14V87.5" class="rd dash"/><circle cx="88.4" cy="14" r="3.2" class="rf"/></svg><span class="n">03<span class="f" aria-hidden="true">Fig. 6</span></span><h3>Fail fast. Learn faster.</h3><span class="ln">Small bets. Quick tests. Honest results.</span></a></li>
+        <li><a href="#value-4"><svg class="vt-fig" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><rect x="12" y="16" width="22" height="22" class="cell"/><rect x="12" y="38" width="22" height="22" class="cell"/><rect x="12" y="60" width="22" height="22" class="cell"/><rect x="12" y="82" width="22" height="22" class="cell"/><rect x="34" y="16" width="22" height="22" class="cell"/><rect x="34" y="38" width="22" height="22" class="cell"/><rect x="34" y="60" width="22" height="22" class="cell"/><rect x="34" y="82" width="22" height="22" class="cell"/><rect x="56" y="16" width="22" height="22" class="cell"/><rect x="56" y="38" width="22" height="22" class="cell"/><rect x="56" y="60" width="22" height="22" class="cell"/><rect x="56" y="82" width="22" height="22" class="cell"/><rect x="78" y="16" width="22" height="22" class="half"/><rect x="78" y="38" width="22" height="22" class="half"/><rect x="78" y="60" width="22" height="22" class="half"/><rect x="78" y="82" width="22" height="22" class="half"/><rect x="100" y="16" width="22" height="22" class="half"/><rect x="100" y="38" width="22" height="22" class="half"/><rect x="100" y="60" width="22" height="22" class="half"/><rect x="100" y="82" width="22" height="22" class="half"/><rect x="122" y="16" width="22" height="22" class="cell"/><rect x="122" y="38" width="22" height="22" class="cell"/><rect x="122" y="60" width="22" height="22" class="cell"/><rect x="122" y="82" width="22" height="22" class="cell"/><rect x="144" y="16" width="22" height="22" class="cell"/><rect x="144" y="38" width="22" height="22" class="cell"/><rect x="144" y="60" width="22" height="22" class="cell"/><rect x="144" y="82" width="22" height="22" class="cell"/><rect x="166" y="16" width="22" height="22" class="cell"/><rect x="166" y="38" width="22" height="22" class="cell"/><rect x="166" y="60" width="22" height="22" class="cell"/><rect x="166" y="82" width="22" height="22" class="cell"/><rect x="89" y="10" width="22" height="100" class="rd dash"/></svg><span class="n">04<span class="f" aria-hidden="true">Fig. 7</span></span><h3>Sweat the small stuff.</h3><span class="ln">Hummingbirds are tiny and exact. Good software is too.</span></a></li>
       </ol>
     </div>
   </section>
@@ -606,14 +650,21 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
         <h2 id="contact-h">Contact</h2>
         <svg class="rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 4.2 C 220 3, 380 5.4, 599 3.8"/></svg>
       </div>
-      <div class="contact-box">
-        <p class="lede" style="margin-top:0">Write to us.</p>
-        <p class="email" id="email-addr">admin@hummingbolt.com</p>
-        <div class="bset">
-          <a class="btn" href="mailto:admin@hummingbolt.com">Email admin@hummingbolt.com</a>
-          <button class="b" type="button" id="copy-btn" style="min-height:48px">Copy address</button>
+      <div class="contact-grid">
+        <div class="contact-box">
+          <p class="lede" style="margin-top:0">Write to us.</p>
+          <p class="email" id="email-addr">admin@hummingbolt.com</p>
+          <div class="bset">
+            <a class="btn" href="mailto:admin@hummingbolt.com">Email admin@hummingbolt.com</a>
+            <button class="b" type="button" id="copy-btn" style="min-height:48px">Copy address</button>
+          </div>
+          <p class="copy-st" id="copy-st" aria-live="polite"></p>
         </div>
-        <p class="copy-st" id="copy-st" aria-live="polite"></p>
+        <figure class="fig fig-mark" aria-labelledby="f8-cap">
+          <div class="fig-head"><span class="no">The mark</span><span class="ttl">Measured from the logo</span></div>
+          <div class="stage stage-mark"><svg viewBox="0 0 360 250" aria-hidden="true" focusable="false"><circle cx="162.3" cy="118.4" r="81.9" class="c-con"/><circle cx="147.3" cy="143.2" r="81.9" class="c-con"/><g transform="translate(30 6) scale(3.9)"><path d="M51.13 16.78A21 21 0 0 0 21.88 11.62A21 21 0 0 0 16.72 40.87Z" fill="#18202C"/><path d="M47.28 23.13A21 21 0 0 1 42.12 52.38A21 21 0 0 1 12.87 47.22Z" fill="#A3283A"/></g><path d="M73.8 180.4L253.5 54.5" class="c-cut"/><path d="M58.7 205.2L78.9 191.1" class="c-con2"/><path d="M247.5 118.4L268.8 118.4" class="c-con2"/><path d="M260.6 118.4A98.3 98.3 0 0 0 242.8 62" class="c-arc"/><text x="267.5" y="89.3">35°</text><circle cx="162.3" cy="118.4" r="2.6" class="c-ctr"/><circle cx="147.3" cy="143.2" r="2.6" class="c-ctr"/><path d="M162.3 118.4L104.4 60.5" class="c-rad"/><text x="259.5" y="58.5">CUT</text><text x="141.4" y="84.5" text-anchor="middle" class="c-pl">r</text></svg></div>
+          <figcaption id="f8-cap"><b>Mark</b>One disc of radius <span class="v">r</span>, cut through its center at <span class="v">35°</span>. One half slides <span class="v">0.32 r</span> along the cut and <span class="v">0.14 r</span> off it.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -656,6 +707,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
       <div class="page page-l">
         <p class="e-no"><span class="big">01</span><span>Entry</span></p>
         <h2 id="v1-h">Be bold.</h2>
+        <svg class="rule e-rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 4.4 C 150 3.0, 330 5.6, 599 3.9"/></svg>
         <p class="e-line">Pick the hard problem. Go after it.</p>
         <aside class="note" aria-label="Note on Fig. 4"><b>Note</b>The climber tests one step left and one step right, and moves only uphill. When stuck, it halves the step. Try a small first step, then a bold one.</aside>
         <p class="folio" aria-hidden="true">p. 12</p>
@@ -675,9 +727,9 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             </svg>
           </div>
           <div class="ctl">
-            <label class="range">
-              <span class="lab">First step</span><output data-o="step">0.08</output>
-              <input type="range" min="2" max="60" step="1" value="8" data-k="step" aria-valuetext="0.08">
+            <label class="range" for="in-step">
+              <span class="lab">First step</span><output data-o="step" for="in-step" aria-hidden="true">0.08</output>
+              <input id="in-step" type="range" min="2" max="60" step="1" value="8" data-k="step" aria-valuetext="0.08">
             </label>
             <div class="bset"><button class="b" type="button" data-k="go">Climb again</button></div>
           </div>
@@ -692,6 +744,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
       <div class="page page-l">
         <p class="e-no"><span class="big">02</span><span>Entry</span></p>
         <h2 id="v2-h">Tinker.</h2>
+        <svg class="rule e-rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 3.7 C 210 5.3, 360 2.9, 599 4.3"/></svg>
         <p class="e-line">We learn by building. Prototype first, debate later.</p>
         <aside class="note" aria-label="Note on Fig. 5"><b>Note</b>A four-bar linkage. Change a length and the pen draws a new path. The faint line is your last try.</aside>
         <p class="folio" aria-hidden="true">p. 14</p>
@@ -704,11 +757,11 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             <div class="fallback" aria-hidden="true" hidden></div>
           </div>
           <div class="ctl">
-            <label class="range"><span class="lab">Crank</span><output data-o="a">0.30</output><input type="range" min="20" max="45" step="1" value="30" data-k="a"></label>
-            <label class="range"><span class="lab">Coupler</span><output data-o="b">1.10</output><input type="range" min="80" max="140" step="1" value="110" data-k="b"></label>
-            <label class="range"><span class="lab">Pen offset</span><output data-o="v">0.50</output><input type="range" min="-40" max="80" step="1" value="50" data-k="v"></label>
+            <label class="range" for="in-crank"><span class="lab">Crank</span><output data-o="a" for="in-crank" aria-hidden="true">0.30</output><input id="in-crank" type="range" min="20" max="45" step="1" value="30" data-k="a"></label>
+            <label class="range" for="in-coupler"><span class="lab">Coupler</span><output data-o="b" for="in-coupler" aria-hidden="true">1.10</output><input id="in-coupler" type="range" min="80" max="140" step="1" value="110" data-k="b"></label>
+            <label class="range" for="in-pen"><span class="lab">Pen offset</span><output data-o="v" for="in-pen" aria-hidden="true">0.50</output><input id="in-pen" type="range" min="-40" max="80" step="1" value="50" data-k="v"></label>
           </div>
-          <figcaption id="f5-cap"><b>Fig. 5</b><span data-c="txt">Crank <span class="v">0.30</span>, coupler <span class="v">1.10</span>, rocker <span class="v">0.95</span>, ground <span class="v">1.00</span>.</span></figcaption>
+          <figcaption id="f5-cap"><b>Fig. 5</b><span data-c="txt">Crank <span class="v">0.30</span>, coupler <span class="v">1.10</span>, rocker <span class="v">0.95</span>, ground <span class="v">1.00</span>. Shortest plus longest is <span class="v">1.40</span>, not more than the other two (<span class="v">1.95</span>), so the crank <span class="good">turns all the way round</span>.</span></figcaption>
         </figure>
         <p class="folio" aria-hidden="true">p. 15</p>
       </div>
@@ -718,6 +771,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
       <div class="page page-l">
         <p class="e-no"><span class="big">03</span><span>Entry</span></p>
         <h2 id="v3-h">Fail fast. Learn faster.</h2>
+        <svg class="rule e-rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 4.1 C 170 2.9, 410 5.3, 599 3.7"/></svg>
         <p class="e-line">Small bets. Quick tests. Honest results.</p>
         <aside class="note" aria-label="Note on Fig. 6"><b>Note</b>Find a hidden number from 1 to 100. Each test is a cheap guess, and each answer halves the range. It never takes more than seven.</aside>
         <p class="folio" aria-hidden="true">p. 16</p>
@@ -749,6 +803,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
       <div class="page page-l">
         <p class="e-no"><span class="big">04</span><span>Entry</span></p>
         <h2 id="v4-h">Sweat the small stuff.</h2>
+        <svg class="rule e-rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 3.9 C 230 5.2, 350 3.0, 599 4.2"/></svg>
         <p class="e-line">Hummingbirds are tiny and exact. Good software is too.</p>
         <aside class="note" aria-label="Note on Fig. 7"><b>Note</b>The figure draws a one-pixel line and reads back the pixels your browser made. Half a pixel off, and the line goes soft.</aside>
         <p class="folio" aria-hidden="true">p. 18</p>
@@ -761,7 +816,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(loc
             <div class="fallback" aria-hidden="true" hidden></div>
           </div>
           <div class="ctl">
-            <label class="range"><span class="lab">Line position</span><output data-o="x">+0.50 px</output><input type="range" min="0" max="100" step="1" value="50" data-k="x" aria-valuetext="plus 0.50 pixels"></label>
+            <label class="range" for="in-line"><span class="lab">Line position</span><output data-o="x" for="in-line" aria-hidden="true">+0.50 px</output><input id="in-line" type="range" min="0" max="100" step="1" value="50" data-k="x" aria-valuetext="plus 0.50 pixels"></label>
             <div class="bset"><label class="sw"><input type="checkbox" data-k="snap"><span class="tr" aria-hidden="true"></span><span>Snap to pixels</span></label></div>
           </div>
           <figcaption id="f7-cap"><b>Fig. 7</b><span data-c="txt">A one-pixel line, half a pixel off the grid.</span></figcaption>
@@ -809,9 +864,12 @@ function ease(t) { t = clamp(t, 0, 1); return t < .5 ? 4 * t * t * t : 1 - Math.
 function easeOut(t) { t = clamp(t, 0, 1); return 1 - Math.pow(1 - t, 3); }
 function sq(v) { return v * v; }
 function f2(v) { return (Math.round(v * 100) / 100).toFixed(2); }
+function setText(el, t) { if (el && el.__t !== t) { el.__t = t; el.textContent = t; } }
+function setHTML(el, t) { if (el && el.__h !== t) { el.__h = t; el.innerHTML = t; } }
 function cssVar(n) { return getComputedStyle(HTML).getPropertyValue(n).trim(); }
-var C = { ink: cssVar('--ink') || '#18202C', ink2: cssVar('--ink-2') || '#4A5260', ink3: cssVar('--ink-3') || '#5A616C', ruby: cssVar('--ruby') || '#A3283A', teal: cssVar('--teal') || '#1D6352', paper: cssVar('--paper') || '#F4F0E6', paper2: cssVar('--paper-2') || '#ECE6D8' };
+var C = { ink: cssVar('--ink') || '#18202C', ink2: cssVar('--ink-2') || '#4A5260', ink3: cssVar('--ink-3') || '#535A65', ruby: cssVar('--ruby') || '#A3283A', teal: cssVar('--teal') || '#1D6352', paper: cssVar('--paper') || '#F4F0E6', paper2: cssVar('--paper-2') || '#ECE6D8' };
 var MONO = '"IBM Plex Mono","Plex Mono Fallback",ui-monospace,Menlo,monospace';
+var FONT10 = '500 10px ' + MONO, FONT11 = '500 11px ' + MONO;
 var NS = 'http://www.w3.org/2000/svg';
 function sv(tag, attrs, parent) { var e = D.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
 function dprCap() { var cap = (coarse || innerWidth < 700) ? 1.25 : 1.75; if (HB.tier < 2) cap = Math.min(cap, 1.25); if (HB.tier < 1) cap = 1; return Math.min(W.devicePixelRatio || 1, cap); }
@@ -846,6 +904,8 @@ var ro = W.ResizeObserver ? new ResizeObserver(function (es) { for (var i = 0; i
 function register(f, root, stage) {
   f.visible = !io; figs.push(f); root.__fig = f; if (io) io.observe(root);
   if (stage) { stage.__fig = f; if (ro) ro.observe(stage); else W.addEventListener('resize', function () { f.resize && f.resize(); kick(); }); }
+  var cvs = stage && stage.querySelector('canvas');
+  if (cvs) cvs.addEventListener('contextrestored', function () { f.dirty = true; if (f.resize) f.resize(true); kick(); });
   HB.figs[f.name] = f; return f;
 }
 function sizeCanvas(cv, force) {
@@ -879,16 +939,43 @@ function FigHover(root) {
   pts.push([Tx, Ty]);
   var hull = convexHull(pts), HULL = new Float32Array(hull.length * 2);
   for (i = 0; i < hull.length; i++) { HULL[i * 2] = hull[i][0]; HULL[i * 2 + 1] = hull[i][1]; }
+  // tail: a fan of five feathers from a base inside the body's taper (outline built once)
+  var TD = beta + Math.PI, TBR = 1.84, TS = 0.29, TL = 1.1, NTF = 5, NTP = 46;
+  var TAIL = new Float32Array((NTP + 2) * 2), TSEP = new Float32Array((NTF - 1) * 4);
+  (function () {
+    var bx = TBR * Math.cos(TD), by = TBR * Math.sin(TD), px = -Math.sin(TD), py = Math.cos(TD), j, u, ph, w, R;
+    TAIL[0] = bx - 0.11 * px; TAIL[1] = by - 0.11 * py;
+    for (j = 0; j < NTP; j++) {
+      u = j / (NTP - 1); ph = TD - TS + 2 * TS * u; w = (u * NTF) % 1;
+      R = TL * (1 - 0.09 * sq(2 * u - 1)) * (1 - 0.035 * (1 - Math.sin(Math.PI * w)));
+      TAIL[2 + j * 2] = bx + R * Math.cos(ph); TAIL[3 + j * 2] = by + R * Math.sin(ph);
+    }
+    TAIL[2 + NTP * 2] = bx + 0.11 * px; TAIL[3 + NTP * 2] = by + 0.11 * py;
+    for (j = 1; j < NTF; j++) { u = j / NTF; ph = TD - TS + 2 * TS * u; R = TL * (1 - 0.09 * sq(2 * u - 1)) * 0.86; TSEP[(j - 1) * 4] = bx + 0.25 * Math.cos(ph); TSEP[(j - 1) * 4 + 1] = by + 0.25 * Math.sin(ph); TSEP[(j - 1) * 4 + 2] = bx + R * Math.cos(ph); TSEP[(j - 1) * 4 + 3] = by + R * Math.sin(ph); }
+  })();
+  // gorget: Anna's hummingbird, the Bay Area's resident. Chin and throat, flaring back along the neck.
+  // Three quadratic curves in bird space, sampled once; the drawing clips it to the body hull.
+  var GOR = new Float32Array(3 * 14 * 2);
+  (function () {
+    function hp(r, adeg) { return [Hx + r * Math.cos(adeg * DEG), Hy + r * Math.sin(adeg * DEG)]; }
+    var S0 = hp(rh * 0.9, -20), S1 = [1.17, 0.22], D = hp(0.9, -151);
+    var seg = [[S0, hp(1.1, -48), S1], [S1, [0.84, 0.5], D], [D, [0.84, 1.07], S0]], n = 0;
+    for (var sI = 0; sI < 3; sI++) for (var j = 0; j < 14; j++) {
+      var t = j / 14, a = 1 - t, P0 = seg[sI][0], P1 = seg[sI][1], P2 = seg[sI][2];
+      GOR[n++] = a * a * P0[0] + 2 * a * t * P1[0] + t * t * P2[0]; GOR[n++] = a * a * P0[1] + 2 * a * t * P1[1] + t * t * P2[1];
+    }
+  })();
   var NW = 15, WX = new Float32Array(NW), WB = new Float32Array(NW), WT = new Float32Array(NW), WC = new Float32Array(NW);
   for (i = 0; i < NW; i++) { var u = i / (NW - 1); WX[i] = u * LW; WB[i] = 0.09 * Math.sin(Math.PI * Math.min(1, u * 1.05)); WT[i] = u * LW * 0.985 - 0.04 * (1 - u); WC[i] = 0.64 * Math.pow(Math.max(0, 1 - Math.pow(u, 2.3)), 0.55) * (1 - 0.32 * u); }
   var dBeak = -9 * DEG;
-  var state = { speed: 1 / 40, phase: 0.12, playing: !reduced, strobe: true, intro: !reduced && !STATIC, t0: -1, introSpeedDone: false, userSpeed: false, k: 1, lastSg: 1, capT: 0, eFrame: 0, slW: -1 };
+  var L_STROKE = 'STROKE ' + Math.round(2 * AMP / DEG) + '°', L_HEAD = 'HEAD r = ' + rh.toFixed(2), L_AXIS = 'BODY AXIS ' + Math.round(beta / DEG) + '°';
+  var state = { speed: 1 / 40, phase: 0.12, playing: !reduced, strobe: true, intro: !reduced && !STATIC, t0: -1, introSpeedDone: false, userSpeed: false, k: 1, lastSg: 1, capT: 0, eFrame: 0, slW: -1, bob: 0 };
   var ctx = get2d(cv), f = { name: 'hover', dirty: true, visible: false };
   f.state = state;
   function speedFromV(v) { return Math.exp(-v / 1000 * LOG200); }
   function vFromSpeed(s) { return Math.round(-Math.log(s) / LOG200 * 1000); }
   function speedLabel(s) { return s > 0.97 ? '1' : '1/' + Math.round(1 / s); }
-  function syncRange() { var lbl = speedLabel(state.speed); out.textContent = lbl + '×'; rng.setAttribute('aria-valuetext', (lbl === '1' ? 'full' : lbl) + ' speed'); }
+  function syncRange() { var lbl = speedLabel(state.speed); if (out.__t === lbl + '×') return; setText(out, lbl + '×'); rng.setAttribute('aria-valuetext', (lbl === '1' ? 'full' : lbl) + ' speed'); }
   function psiAt(ph) { return PSI0 + AMP * Math.sin(TAU * ph); }
 
   // ---- static SVG version (fallback / no canvas) ----
@@ -905,13 +992,15 @@ function FigHover(root) {
     for (i = 0; i < 10; i++) g += '<path d="' + wingD(i / 10 + 0.025, 1) + '" fill="none" stroke="' + C.ink3 + '" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>';
     var bt = [Hx + (rh + 1.95) * Math.cos(dBeak), Hy + (rh + 1.95) * Math.sin(dBeak)];
     var beak = 'M' + p(Hx + rh * Math.cos(dBeak + 17 * DEG), Hy + rh * Math.sin(dBeak + 17 * DEG)) + 'L' + p(bt[0], bt[1]) + 'L' + p(Hx + rh * Math.cos(dBeak - 15 * DEG), Hy + rh * Math.sin(dBeak - 15 * DEG)) + 'Z';
-    var tail = ''; for (i = -1; i <= 1; i++) { var ta = beta + Math.PI + i * 0.2, L = i ? 1.02 : 0.82, bx = Tx - 0.35 * Math.cos(beta + Math.PI), by = Ty - 0.35 * Math.sin(beta + Math.PI); tail += 'M' + p(bx + 0.12 * Math.cos(ta + 1.57), by + 0.12 * Math.sin(ta + 1.57)) + 'L' + p(Tx + L * Math.cos(ta), Ty + L * Math.sin(ta)) + 'L' + p(bx - 0.12 * Math.cos(ta + 1.57), by - 0.12 * Math.sin(ta + 1.57)) + 'Z'; }
+    var tail = 'M' + p(TAIL[0], TAIL[1]); for (i = 1; i < TAIL.length / 2; i++) tail += 'L' + p(TAIL[i * 2], TAIL[i * 2 + 1]); tail += 'Z';
+    var tsep = ''; for (i = 0; i < NTF - 1; i++) tsep += 'M' + p(TSEP[i * 4], TSEP[i * 4 + 1]) + 'L' + p(TSEP[i * 4 + 2], TSEP[i * 4 + 3]);
+    var gor = 'M' + p(GOR[0], GOR[1]); for (i = 1; i < GOR.length / 2; i++) gor += 'L' + p(GOR[i * 2], GOR[i * 2 + 1]); gor += 'Z';
     var arcA = PSI0 - AMP, arcB = PSI0 + AMP;
     var arc = 'M' + p(Sx + LW * Math.cos(arcA), Sy + LW * Math.sin(arcA)) + 'A' + (LW * s) + ' ' + (LW * s) + ' 0 0 0 ' + p(Sx + LW * Math.cos(arcB), Sy + LW * Math.sin(arcB));
     return '<svg viewBox="-470 -420 920 800" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="hb-body"><path d="' + h + '"/></clipPath></defs>' +
       '<circle cx="0" cy="0" r="100" fill="none" stroke="' + C.ink3 + '" stroke-opacity=".45" vector-effect="non-scaling-stroke"/><circle cx="' + (Hx * s) + '" cy="' + (-Hy * s) + '" r="' + (rh * s) + '" fill="none" stroke="' + C.ink3 + '" stroke-opacity=".45" vector-effect="non-scaling-stroke"/>' +
       '<path d="' + arc + '" fill="none" stroke="' + C.ruby + '" stroke-dasharray="5 6" vector-effect="non-scaling-stroke"/>' + g +
-      '<path d="' + tail + '" fill="' + C.ink + '"/><path d="' + h + '" fill="' + C.ink + '"/><circle clip-path="url(#hb-body)" cx="' + ((Hx + 0.6 * Math.cos(-64 * DEG)) * s) + '" cy="' + (-(Hy + 0.6 * Math.sin(-64 * DEG)) * s) + '" r="' + (0.46 * s) + '" fill="' + C.ruby + '"/>' +
+      '<path d="' + tail + '" fill="' + C.ink + '"/><path d="' + tsep + '" stroke="' + C.paper + '" stroke-opacity=".5" vector-effect="non-scaling-stroke"/><path d="' + h + '" fill="' + C.ink + '"/><path clip-path="url(#hb-body)" d="' + gor + '" fill="' + C.ruby + '"/>' +
       '<path d="' + beak + '" fill="' + C.ink + '"/><circle cx="' + ((Hx + 0.25 * Math.cos(30 * DEG)) * s) + '" cy="' + (-(Hy + 0.25 * Math.sin(30 * DEG)) * s) + '" r="8" fill="' + C.paper + '"/>' +
       '<path d="' + wingD(0.16, 1) + '" fill="' + C.ink + '"/></svg>';
   }
@@ -936,10 +1025,10 @@ function FigHover(root) {
   function updateCaption(force) {
     var s = state.speed, e = state.playing ? FREQ * s * emaDt / 1000 : 0;
     var lbl = speedLabel(s);
-    cap.speed.textContent = lbl === '1' ? 'full' : lbl;
-    cap.beat.textContent = (1 / (FREQ * s)).toFixed(s > 0.2 ? 3 : 2) + ' s';
-    cap.frame.textContent = e.toFixed(2);
-    cap.tail.textContent = !state.playing ? ', because playback is paused' : e > 0.25 ? ', so the wing is a blur' : e > 0.06 ? ', so the wing smears' : ', so the wing looks sharp';
+    setText(cap.speed, lbl === '1' ? 'full' : lbl);
+    setText(cap.beat, (1 / (FREQ * s)).toFixed(s > 0.2 ? 3 : 2) + ' s');
+    setText(cap.frame, e.toFixed(2));
+    setText(cap.tail, !state.playing ? ', because playback is paused' : e > 0.25 ? ', so the wing is a blur' : e > 0.06 ? ', so the wing smears' : ', so the wing looks sharp');
   }
 
   f.tick = function (dt, now) {
@@ -955,7 +1044,13 @@ function FigHover(root) {
       }
       if (tIntro > 3.7) { state.intro = false; state.introSpeedDone = true; if (!state.userSpeed) { state.speed = 1 / 40; rng.value = 696; syncRange(); } }
     }
-    if (state.playing) { state.phase += FREQ * state.speed * dt; state.phase -= Math.floor(state.phase); }
+    if (state.playing) {
+      state.phase += FREQ * state.speed * dt; state.phase -= Math.floor(state.phase);
+      // hover bob: two lift pulses per beat (downstroke and upstroke). Faded out once a frame's exposure
+      // covers much of a beat, where a real camera would blur it away rather than show jitter.
+      var ex = FREQ * state.speed * emaDt / 1000;
+      state.bob = 0.032 * Math.sin(2 * TAU * state.phase + 0.5) * clamp(1 - ex / 0.12, 0, 1);
+    }
     state.capT += dt; if (state.capT > 0.12 || f.dirty) { state.capT = 0; updateCaption(); }
     draw(w, h, state.intro ? tIntro : 99);
     f.dirty = false;
@@ -983,7 +1078,7 @@ function FigHover(root) {
     var d = cv._d; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.clearRect(0, 0, w, h);
     var small = w < 520;
     var k = Math.min(w / (small ? 8.7 : 9.6), h / (small ? 7.9 : 8.4)); state.k = k;
-    var ox = w * 0.5 + 0.15 * k, oy = h * 0.5 + 0.28 * k;
+    var ox = w * 0.5 + 0.15 * k, oy0 = h * 0.5 + 0.28 * k, oy = oy0 + state.bob * k;
     var sx = ox + k * Sx, sy = oy - k * Sy;
     var pC = easeOut(tI / 1.0), pB = clamp((tI - 0.45) / 0.6, 0, 1), pW = clamp((tI - 0.95) / 0.45, 0, 1), pL = clamp((tI - 2.4) / 0.7, 0, 1);
     var i, j;
@@ -1027,20 +1122,21 @@ function FigHover(root) {
     }
     // --- body: tail, hull, throat, beak, eye
     ctx.globalAlpha = pB; ctx.fillStyle = C.ink;
-    var bxo = Tx - 0.35 * Math.cos(beta + Math.PI), byo = Ty - 0.35 * Math.sin(beta + Math.PI);
-    ctx.beginPath();
-    for (i = -1; i <= 1; i++) {
-      var ta = beta + Math.PI + i * 0.2, L = i ? 1.02 : 0.82;
-      ctx.moveTo(ox + k * (bxo + 0.12 * Math.cos(ta + 1.5708)), oy - k * (byo + 0.12 * Math.sin(ta + 1.5708)));
-      ctx.lineTo(ox + k * (Tx + L * Math.cos(ta)), oy - k * (Ty + L * Math.sin(ta)));
-      ctx.lineTo(ox + k * (bxo - 0.12 * Math.cos(ta + 1.5708)), oy - k * (byo - 0.12 * Math.sin(ta + 1.5708)));
-    }
-    ctx.fill();
+    var nT = TAIL.length / 2;
+    ctx.beginPath(); ctx.moveTo(ox + k * TAIL[0], oy - k * TAIL[1]);
+    for (i = 1; i < nT; i++) ctx.lineTo(ox + k * TAIL[i * 2], oy - k * TAIL[i * 2 + 1]);
+    ctx.closePath(); ctx.fill();
+    // hairlines between the tail feathers
+    ctx.globalAlpha = 0.42 * pB; ctx.strokeStyle = C.paper; ctx.lineWidth = 1; ctx.beginPath();
+    for (i = 0; i < NTF - 1; i++) { ctx.moveTo(ox + k * TSEP[i * 4], oy - k * TSEP[i * 4 + 1]); ctx.lineTo(ox + k * TSEP[i * 4 + 2], oy - k * TSEP[i * 4 + 3]); }
+    ctx.stroke(); ctx.globalAlpha = pB;
     ctx.beginPath(); ctx.moveTo(ox + k * HULL[0], oy - k * HULL[1]);
     for (i = 1; i < hull.length; i++) ctx.lineTo(ox + k * HULL[i * 2], oy - k * HULL[i * 2 + 1]);
     ctx.closePath(); ctx.fill();
     ctx.save(); ctx.clip();
-    ctx.fillStyle = C.ruby; ctx.beginPath(); ctx.arc(ox + k * (Hx + 0.6 * Math.cos(-64 * DEG)), oy - k * (Hy + 0.6 * Math.sin(-64 * DEG)), k * 0.46, 0, TAU); ctx.fill();
+    ctx.fillStyle = C.ruby; ctx.beginPath(); ctx.moveTo(ox + k * GOR[0], oy - k * GOR[1]);
+    for (i = 1; i < GOR.length / 2; i++) ctx.lineTo(ox + k * GOR[i * 2], oy - k * GOR[i * 2 + 1]);
+    ctx.closePath(); ctx.fill();
     ctx.restore();
     var bl = 0.2 + 0.8 * easeOut((tI - 0.5) / 0.7), btx = Hx + (rh + 1.95 * bl) * Math.cos(dBeak), bty = Hy + (rh + 1.95 * bl) * Math.sin(dBeak);
     ctx.fillStyle = C.ink; ctx.beginPath();
@@ -1072,17 +1168,16 @@ function FigHover(root) {
     }
     // --- labels
     if (pL > 0) {
-      ctx.globalAlpha = pL; ctx.fillStyle = C.ink3; ctx.font = '500 ' + (small ? 10 : 11) + 'px ' + MONO; ctx.textBaseline = 'middle';
-      var la = A0 + 0.06, lx = sx + (R + 12) * Math.cos(la), ly = sy - (R + 12) * Math.sin(la);
+      ctx.globalAlpha = pL; ctx.fillStyle = C.ink3; ctx.font = small ? FONT10 : FONT11; ctx.textBaseline = 'middle';
+      var sy0 = oy0 - k * Sy, la = A0 + 0.06, lx = sx + (R + 12) * Math.cos(la), ly = sy0 - (R + 12) * Math.sin(la);
       ctx.textAlign = 'left'; ctx.fillText('WINGTIP PATH', lx + 2, ly);
-      var lb = A1 - 0.02, mx = sx + (R + 12) * Math.cos(lb), my = sy - (R + 12) * Math.sin(lb);
-      var sl = 'STROKE ' + Math.round(2 * AMP / DEG) + '°';
-      if (state.slW < 0) state.slW = ctx.measureText(sl).width;
-      ctx.textAlign = 'left'; ctx.fillText(sl, Math.max(6, mx - state.slW), my + 14);
+      var lb = A1 - 0.02, mx = sx + (R + 12) * Math.cos(lb), my = sy0 - (R + 12) * Math.sin(lb);
+      if (state.slW < 0) state.slW = ctx.measureText(L_STROKE).width;
+      ctx.textAlign = 'left'; ctx.fillText(L_STROKE, Math.max(6, mx - state.slW), my + 14);
       if (!small) {
-        ctx.textAlign = 'center'; ctx.fillText('HEAD r = ' + rh.toFixed(2), ox + k * Hx - 0.1 * k, oy - k * (Hy + rh) - 14);
-        ctx.textAlign = 'left'; ctx.fillText('CHEST r = 1.00', ox + k * 1.15, oy + k * 0.62);
-        ctx.fillText('BODY AXIS ' + Math.round(beta / DEG) + '°', ox + k * 3.05 * Math.cos(beta) + 8, oy - k * 3.05 * Math.sin(beta) + 2);
+        ctx.textAlign = 'center'; ctx.fillText(L_HEAD, ox + k * Hx - 0.1 * k, oy0 - k * (Hy + rh) - 14);
+        ctx.textAlign = 'left'; ctx.fillText('CHEST r = 1.00', ox + k * 1.15, oy0 + k * 0.62);
+        ctx.fillText(L_AXIS, ox + k * 3.05 * Math.cos(beta) + 8, oy0 - k * 3.05 * Math.sin(beta) + 2);
       }
     }
     ctx.globalAlpha = 1;
@@ -1165,7 +1260,7 @@ function FigLoop(root) {
       if (inv === 0) {
         st.done = true; for (var v = 1; v <= N; v++) bars[v].setAttribute('fill', '#D5E3DC');
         say('Loop ' + st.loop + ' · check: sorted', 'Loop <span class="v">' + st.loop + '</span>. Check: <span class="v good">0</span> pairs out of order. The check passes, so the loop stops.');
-        live.textContent = 'Sorted in ' + st.loop + ' loops.';
+        if (st.user) live.textContent = 'Sorted in ' + st.loop + ' loops.';
       } else {
         say('Loop ' + st.loop + ' · check: ' + inv + ' out of order', 'Loop <span class="v">' + st.loop + '</span>. Check: <span class="v bad">' + inv + '</span> ' + (inv === 1 ? 'pair' : 'pairs') + ' still out of order. Go again.');
         st.loop++;
@@ -1175,8 +1270,8 @@ function FigLoop(root) {
   }
   function setRunUI() { bRun.textContent = st.running ? 'Pause' : 'Run'; }
   bRun.addEventListener('click', function () { st.running = !st.running; st.user = true; setRunUI(); kick(); });
-  bStep.addEventListener('click', function () { st.running = false; setRunUI(); if (st.anim) { st.anim = 0; layout(); } doPhase(); st.tokenT = 1; placeToken(); kick(); });
-  bShuf.addEventListener('click', function () { shuffle(); kick(); });
+  bStep.addEventListener('click', function () { st.running = false; st.user = true; setRunUI(); if (st.anim) { st.anim = 0; layout(); } doPhase(); st.tokenT = 1; placeToken(); kick(); });
+  bShuf.addEventListener('click', function () { st.user = true; shuffle(); kick(); });
   f.onMotion = function () { if (reduced && !st.user) { st.running = false; setRunUI(); } };
   function placeToken() {
     var t = easeOut(st.tokenT), a0 = (-90 + 120 * st.from) * DEG, a1 = a0 + 120 * DEG, a = a0 + (a1 - a0) * t;
@@ -1206,7 +1301,8 @@ function FigLoop(root) {
 function FigStack(root) {
   var svg = root.querySelector('svg'), gS = svg.querySelector('.slabs'), gC = svg.querySelector('.coms'), dim = svg.querySelector('.dim'), dl = dim.querySelector('.dl'), dtx = dim.querySelector('.dt'), hintT = svg.querySelector('.hint-t');
   var bBest = root.querySelector('[data-k=best]'), bReset = root.querySelector('[data-k=reset]'), capTxt = root.querySelector('[data-c=txt]'), live = root.querySelector('[data-live]');
-  var N = 4, E = 268, TOP = 300, LU = 150, HU = 36, G = 1500;
+  var N = 4, E = 268, TOP = 300, LU = 150, HU = 36, G = 1500, XMIN = 79, XMAX = 561, edgeT = svg.querySelector('.edge-t');
+  var mqS = W.matchMedia ? matchMedia('(max-width: 559px)') : null, slabR = [], slabF = [], slabT = [], pendingMode = false;
   var x = new Float64Array(N), stable = new Float64Array(N), start = new Float64Array(N), goal = new Float64Array(N);
   var INIT = [-0.4, -0.28, -0.13, 0.07];
   var HARM = 0; for (var q = 1; q <= N; q++) HARM += 1 / (2 * q);
@@ -1216,15 +1312,27 @@ function FigStack(root) {
   for (var i = 0; i < N; i++) {
     x[i] = E + INIT[i] * LU; stable[i] = x[i];
     var g = sv('g', { class: 'slab', tabindex: '0', role: 'slider', 'aria-label': 'Slab ' + (i + 1) + ' of 4, counted from the bottom', 'aria-valuemin': '-0.8', 'aria-valuemax': '1.6', style: 'cursor:grab;touch-action:pan-y;outline:none' }, gS);
-    var r = sv('rect', { x: -LU / 2, y: 0, width: LU, height: HU, fill: C.paper2, stroke: C.ink, 'stroke-width': 1.5 }, g);
-    sv('rect', { class: 'focus', x: -LU / 2 - 4, y: -4, width: LU + 8, height: HU + 8, fill: 'none', stroke: C.ruby, 'stroke-width': 2, opacity: 0 }, g);
-    var t = sv('text', { x: 0, y: HU / 2 + 5, 'text-anchor': 'middle', class: 'tk' }, g); t.textContent = i + 1;
+    slabR[i] = sv('rect', { x: -LU / 2, y: 0, width: LU, height: HU, fill: C.paper2, stroke: C.ink, 'stroke-width': 1.5 }, g);
+    slabF[i] = sv('rect', { class: 'focus', x: -LU / 2 - 4, y: -4, width: LU + 8, height: HU + 8, fill: 'none', stroke: C.ruby, 'stroke-width': 2, opacity: 0 }, g);
+    var t = slabT[i] = sv('text', { x: 0, y: HU / 2 + 5, 'text-anchor': 'middle', class: 'tk' }, g); t.textContent = i + 1;
     g.__i = i; slabs.push(g);
     var cg = sv('g', { opacity: 1 }, gC);
     sv('circle', { r: 6.5, fill: C.paper, stroke: C.ink, 'stroke-width': 1.3 }, cg);
     sv('path', { d: 'M0 0 H6.5 A6.5 6.5 0 0 1 0 6.5 Z M0 0 H-6.5 A6.5 6.5 0 0 1 0 -6.5 Z', fill: C.ink }, cg);
     coms.push(cg);
     g.addEventListener('focus', onFocus); g.addEventListener('blur', onFocus);
+  }
+  // phones: zoom into the middle of the plate and use taller slabs, so each slab is a ~44 px touch target
+  function setMode() {
+    if (st.tips.length || st.drag >= 0) { pendingMode = true; return; }
+    pendingMode = false;
+    var small = !!(mqS && mqS.matches);
+    HU = small ? 68 : 36; XMIN = (small ? 30 : 0) + LU / 2 + 4; XMAX = (small ? 570 : 640) - LU / 2 - 4;
+    svg.setAttribute('viewBox', small ? '30 0 540 370' : '0 90 640 280');
+    hintT.setAttribute('x', small ? 548 : 632); hintT.setAttribute('y', small ? 24 : 114);
+    if (edgeT) edgeT.setAttribute('y', small ? 362 : 345);
+    for (var k = 0; k < N; k++) { slabR[k].setAttribute('height', HU); slabF[k].setAttribute('height', HU + 8); slabT[k].setAttribute('y', HU / 2 + 6); x[k] = clamp(x[k], XMIN, XMAX); }
+    render();
   }
   function onFocus(e) { var g = e.currentTarget, vis = false; try { vis = g.matches(':focus-visible'); } catch (er) { vis = true; } g.querySelector('.focus').setAttribute('opacity', e.type === 'focus' && vis ? 1 : 0); }
   // centre of mass of slabs k..N-1 (equal masses), support interval under slab k
@@ -1247,7 +1355,7 @@ function FigStack(root) {
     for (var k = 0; k < N; k++) {
       if (k < n) slabs[k].setAttribute('transform', 'translate(' + x[k].toFixed(2) + ' ' + (TOP - (k + 1) * HU) + ')');
       slabs[k].setAttribute('aria-valuenow', ((x[k] - E) / LU).toFixed(2));
-      slabs[k].setAttribute('aria-valuetext', 'centre ' + ((x[k] - E) / LU).toFixed(2) + ' slab lengths from the table edge');
+      slabs[k].setAttribute('aria-valuetext', 'center ' + ((x[k] - E) / LU).toFixed(2) + ' slab lengths from the table edge');
       if (k >= n) { coms[k].setAttribute('opacity', 0); continue; }
       var c = comAbove(k, n), y = TOP - k * HU, bad = c < (k ? x[k - 1] - LU / 2 : -1e9) - 0.0001 || c > (k ? x[k - 1] + LU / 2 : E) + 0.0001;
       coms[k].setAttribute('transform', 'translate(' + c.toFixed(2) + ' ' + y + ')');
@@ -1271,13 +1379,13 @@ function FigStack(root) {
   function caption(a) {
     if (a.fail >= 0) {
       var k = a.fail, c = comAbove(k, N), lo = k ? x[k - 1] - LU / 2 : -1e9, hi = k ? x[k - 1] + LU / 2 : E, past = c > hi ? c - hi : lo - c;
-      capTxt.innerHTML = who(k) + ': centre of mass <span class="v bad">' + (past / LU).toFixed(2) + '</span> past the edge ' + (k ? 'of slab ' + k : 'of the table') + '. Let go and it tips.';
+      capTxt.innerHTML = who(k) + ': center of mass <span class="v bad">' + (past / LU).toFixed(2) + '</span> past the edge ' + (k ? 'of slab ' + k : 'of the table') + '. Let go and it tips.';
     } else {
       capTxt.innerHTML = 'Overhang <span class="v">' + overhang().toFixed(2) + '</span> of a slab. Tightest margin <span class="v' + (a.worst / LU < 0.03 ? ' bad' : '') + '">' + (a.worst / LU).toFixed(2) + '</span>' + (a.wk ? ', on slab ' + a.wk : ', at the table edge') + '. Best possible with four slabs, one per level: <span class="v">' + HARM.toFixed(2) + '</span>.';
     }
   }
   function save() { for (var k = 0; k < N; k++) stable[k] = x[k]; }
-  function moveGroup(i, nx) { var dx = clamp(nx, LU / 2 + 4, 640 - LU / 2 - 4) - x[i]; for (var k = i; k < N; k++) x[k] = clamp(x[k] + dx, LU / 2 + 4 - 400, 640 + 400); }
+  function moveGroup(i, nx) { var dx = clamp(nx, XMIN, XMAX) - x[i]; for (var k = i; k < N; k++) x[k] = clamp(x[k] + dx, LU / 2 + 4 - 400, 640 + 400); }
   function settle() { var a = analyse(N); if (a.fail >= 0) startTip(a.fail, N); else save(); }
   // group k..n-1 rotates about the edge it passed: I·θ'' = M·g·(horizontal lever of its centre of mass)
   function startTip(k, n) {
@@ -1287,7 +1395,7 @@ function FigStack(root) {
     for (var j = k; j < n; j++) { var dx = x[j] - px, dy = py - (TOP - (j + 0.5) * HU); tip.gx += dx; tip.gy += dy; tip.I += (LU * LU + HU * HU) / 12 + dx * dx + dy * dy; }
     tip.gx /= tip.m; tip.gy /= tip.m; tip.I /= tip.m;
     st.tips.push(tip); st.n = k; svg.style.cursor = 'default';
-    var msg = who(k) + (k === N - 1 ? ' tipped' : ' tipped') + ': its centre of mass passed the edge ' + (k ? 'of slab ' + k : 'of the table') + ', so gravity turned it about that edge.';
+    var msg = who(k) + (k === N - 1 ? ' tipped' : ' tipped') + ': its center of mass passed the edge ' + (k ? 'of slab ' + k : 'of the table') + ', so gravity turned it about that edge.';
     live.textContent = msg; capTxt.innerHTML = msg;
     dim.setAttribute('opacity', 0); render(); kick();
   }
@@ -1318,7 +1426,7 @@ function FigStack(root) {
     st.tips.length = 0; st.n = N;
     for (k = minK; k < N; k++) { x[k] = stable[k]; slabs[k].style.opacity = 0; }
     var arr = []; for (k = 0; k < N; k++) arr[k] = stable[k];
-    st.fade = 0.0001; svg.style.cursor = ''; render(); animateTo(arr, 0.6);
+    st.fade = 0.0001; svg.style.cursor = ''; if (pendingMode) setMode(); render(); animateTo(arr, 0.6);
   }
   function animateTo(arr, dur) { for (var k = 0; k < N; k++) { start[k] = x[k]; goal[k] = arr[k]; } st.anim = reduced ? 1 : 0.0001; st.animDur = dur; if (reduced) { for (k = 0; k < N; k++) x[k] = goal[k]; st.anim = 0; render(); save(); } kick(); }
   bBest.addEventListener('click', function () {
@@ -1338,8 +1446,8 @@ function FigStack(root) {
     if (st.drag < 0 || e.pointerId !== st.pid) return; if (e.clientX === 0 && e.clientY === 0) return;
     var p = svgPoint(svg, e, pt); if (!p) return; moveGroup(st.drag, p.x - st.off); render();
   });
-  function endDrag(e) { if (st.drag < 0 || (e && e.pointerId !== st.pid)) return; slabs[st.drag].style.cursor = 'grab'; slabs[st.drag].firstChild.setAttribute('fill', C.paper2); st.drag = -1; settle(); render(); }
-  svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+  function endDrag(e) { if (st.drag < 0 || (e && e.pointerId !== st.pid)) return; slabs[st.drag].style.cursor = 'grab'; slabs[st.drag].firstChild.setAttribute('fill', C.paper2); st.drag = -1; settle(); render(); if (pendingMode && !st.tips.length) setMode(); }
+  svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag); svg.addEventListener('lostpointercapture', endDrag);
   svg.addEventListener('keydown', function (e) {
     var g = e.target.closest ? e.target.closest('.slab') : null; if (!g || st.tips.length || st.anim) return;
     var step = e.shiftKey ? LU * 0.1 : LU * 0.02, i = g.__i;
@@ -1358,7 +1466,8 @@ function FigStack(root) {
     if (st.keyT > 0) { st.keyT -= dt; if (st.keyT <= 0) { st.keyT = 0; settle(); render(); } }
     if (st.fade > 0) { st.fade = Math.min(1, st.fade + dt / 0.5); for (var j = 0; j < N; j++) if (slabs[j].style.opacity !== '') slabs[j].style.opacity = st.fade >= 1 ? '' : st.fade; if (st.fade >= 1) st.fade = 0; }
   };
-  render();
+  if (mqS) { if (mqS.addEventListener) mqS.addEventListener('change', setMode); else if (mqS.addListener) mqS.addListener(setMode); }
+  setMode();
   return register(f, root, null);
 }
 
@@ -1378,11 +1487,12 @@ function FigHill(root) {
   var X0 = 0.04, MAXEV = 120, ev = [], st = { s0: 0.08, run: false, idx: 0, t: 0, cx: X0, hop: null, result: null, auto: !reduced && !STATIC, started: false };
   var f = { name: 'hill', visible: false }; f.state = st;
   function plan(s0) {
-    ev.length = 0; var x = X0, s = s0, fx = F(x), tests = 0, moves = 0;
+    ev.length = 0; var x = X0, s = s0, fx = F(x), tests = 0, moves = 0, it = 0;
     while (s >= 0.004 && ev.length < MAXEV - 3) {
+      it++;
       var xl = x - s, xr = x + s, fl = xl >= 0 ? F(xl) : -1, fr = xr <= 1 ? F(xr) : -1;
-      if (xl >= 0) { ev.push({ t: 0, x: xl, y: fl, ok: fl > fx && fl >= fr }); tests++; }
-      if (xr <= 1) { ev.push({ t: 0, x: xr, y: fr, ok: fr > fx && fr > fl }); tests++; }
+      if (xl >= 0) { ev.push({ t: 0, it: it, x: xl, y: fl, ok: fl > fx && fl >= fr }); tests++; }
+      if (xr <= 1) { ev.push({ t: 0, it: it, x: xr, y: fr, ok: fr > fx && fr > fl }); tests++; }
       if (Math.max(fl, fr) > fx + 1e-9) { var nx = fr > fl ? xr : xl; ev.push({ t: 1, x0: x, x: nx, y: F(nx) }); x = nx; fx = F(x); moves++; }
       else s /= 2;
     }
@@ -1390,7 +1500,8 @@ function FigHill(root) {
   }
   function placeClimber(x) { climber.setAttribute('transform', 'translate(' + X(x).toFixed(1) + ' ' + (Y(F(x)) - 9).toFixed(1) + ')'); }
   function capFor(r) { return 'First step <span class="v">' + f2(st.s0) + '</span>. <span class="v">' + r.moves + '</span> moves, <span class="v">' + r.tests + '</span> tests. Stopped at height <span class="v ' + (r.high ? 'good' : 'bad') + '">' + f2(r.y) + '</span>: ' + (r.high ? 'the highest peak.' : 'the nearby peak.'); }
-  function start() {
+  function start(byUser) {
+    st.byUser = byUser === true;
     st.result = plan(st.s0); st.idx = 0; st.t = 0; st.cx = X0; st.hop = null; while (trail.firstChild) trail.removeChild(trail.firstChild);
     placeClimber(X0); st.run = true; st.started = true;
     capTxt.innerHTML = 'First step <span class="v">' + f2(st.s0) + '</span>. Climbing…';
@@ -1405,11 +1516,13 @@ function FigHill(root) {
       if (instant) { st.cx = e.x; placeClimber(e.x); } else st.hop = { x0: x0, y0: y0, x1: x1, y1: y1, hy: hy, t: 0, x: e.x };
     }
   }
-  function finish() { st.run = false; capTxt.innerHTML = capFor(st.result); live.textContent = 'Stopped at height ' + f2(st.result.y) + ', ' + (st.result.high ? 'the highest peak.' : 'the nearby peak.'); placeClimber(st.result.x); }
+  function finish() { st.run = false; capTxt.innerHTML = capFor(st.result); if (st.byUser) live.textContent = 'Stopped at height ' + f2(st.result.y) + ', ' + (st.result.high ? 'the highest peak.' : 'the nearby peak.'); placeClimber(st.result.x); }
   var deb = 0;
-  rng.addEventListener('input', function () { st.s0 = +rng.value / 100; out.textContent = f2(st.s0); rng.setAttribute('aria-valuetext', f2(st.s0)); clearTimeout(deb); deb = setTimeout(start, 260); });
-  bGo.addEventListener('click', start);
-  f.onShow = function () { if (!st.started) { if (st.auto) setTimeout(start, 350); else start(); } };
+  rng.addEventListener('input', function () { st.s0 = +rng.value / 100; out.textContent = f2(st.s0); rng.setAttribute('aria-valuetext', f2(st.s0)); clearTimeout(deb); deb = setTimeout(function () { start(true); }, 260); });
+  bGo.addEventListener('click', function () { start(true); });
+  f.onShow = function () { if (!st.started) { if (st.auto) setTimeout(start, st.primed ? 60 : 350); else start(); } };
+  // the finished climb, drawn once so the figure is complete at rest; it replays when it comes into view
+  f.prime = function () { if (st.started) return; var r = plan(st.s0); for (var q = 0; q < ev.length; q++) apply(ev[q], true); placeClimber(r.x); capTxt.innerHTML = capFor(r); st.primed = true; };
   f.wants = function () { return st.run; };
   f.tick = function (dt) {
     if (st.hop) {
@@ -1424,7 +1537,7 @@ function FigHill(root) {
       st.t = 0;
       if (st.idx >= ev.length) { finish(); return; }
       // one beat = both tests of an iteration, then the move (if any)
-      if (ev[st.idx].t === 0) { while (st.idx < ev.length && ev[st.idx].t === 0) { apply(ev[st.idx], false); st.idx++; if (st.idx < ev.length && ev[st.idx - 1].x < ev[st.idx].x === false && ev[st.idx].t === 0) break; } }
+      if (ev[st.idx].t === 0) { var it = ev[st.idx].it; while (st.idx < ev.length && ev[st.idx].t === 0 && ev[st.idx].it === it) apply(ev[st.idx++], false); }
       else apply(ev[st.idx++], false);
     }
   };
@@ -1462,6 +1575,8 @@ function FigLink(root) {
   }
   // frame the drawing: bounds of the pivots, joints and pen over one turn, eased so the view never jumps
   var vb = { x0: -1, x1: 1, y0: -0.3, y1: 1, tx0: -1, tx1: 1, ty0: -0.3, ty1: 1 };
+  var vk = 1, vox = 0, voy = 0, gx = new Float64Array(2), J = new Float64Array(8);
+  function X(v) { return vox + vk * v; } function Y(v) { return voy - vk * v; }
   function fitTarget() {
     var x0 = -P.d / 2 - 0.1, x1 = P.d / 2 + 0.1, y0 = -0.2, y1 = 0.2;
     for (var i = 0; i < 120; i++) if (solve(i / 120 * TAU)) {
@@ -1471,7 +1586,9 @@ function FigLink(root) {
   }
   function restart() { prev.set(cur); st.pn = st.n; st.n = 0; st.head = 0; st.lastS = st.th; fitTarget(); f.dirty = true; caption(); }
   function fullCurve() { st.n = 0; for (var i = 0; i < NB; i++) { if (solve(i / NB * TAU)) { cur[st.n * 2] = Pp.x; cur[st.n * 2 + 1] = Pp.y; st.n++; } } st.head = 0; }
-  function onInput(e) { var k = e.target.getAttribute('data-k'); P[k] = +e.target.value / 100; outs[k].textContent = f2(P[k]); restart(); if (reduced || !st.playing) fullCurve(); kick(); }
+  var LBL = { a: '', c: '', d: '' };
+  function labels() { LBL.a = 'CRANK ' + f2(P.a); LBL.c = 'ROCKER ' + f2(P.c); LBL.d = 'GROUND ' + f2(P.d); }
+  function onInput(e) { var k = e.target.getAttribute('data-k'); P[k] = +e.target.value / 100; outs[k].textContent = f2(P[k]); e.target.setAttribute('aria-valuetext', f2(P[k])); labels(); restart(); if (reduced || !st.playing) fullCurve(); kick(); }
   ins.a.addEventListener('input', onInput); ins.b.addEventListener('input', onInput); ins.v.addEventListener('input', onInput);
   function buildStatic() {
     fullCurve(); var s = 120, d = '';
@@ -1485,6 +1602,9 @@ function FigLink(root) {
   f.resize = function (force) { if (sizeCanvas(cv, force)) f.dirty = true; };
   f.wants = function () { return f.dirty || (st.playing && !reduced); };
   f.onMotion = function () { st.playing = !reduced; if (reduced) fullCurve(); f.dirty = true; };
+  // draw the whole pen path once at rest; when the figure comes into view the pen draws it again
+  f.prime = function () { f.resize(); if (!cv._w) return; fullCurve(); st.primed = !reduced; f.dirty = true; f.tick(0); };
+  f.onShow = function () { if (st.primed && st.playing && !reduced) { st.primed = false; st.n = 0; st.head = 0; st.lastS = st.th; f.dirty = true; } };
   f.tick = function (dt) {
     var w = cv._w, h = cv._h; if (!w) { f.resize(); w = cv._w; h = cv._h; }
     if (st.playing && !reduced) {
@@ -1505,8 +1625,7 @@ function FigLink(root) {
     vb.x0 += (vb.tx0 - vb.x0) * e; vb.x1 += (vb.tx1 - vb.x1) * e; vb.y0 += (vb.ty0 - vb.y0) * e; vb.y1 += (vb.ty1 - vb.y1) * e;
     if (Math.abs(vb.tx0 - vb.x0) + Math.abs(vb.tx1 - vb.x1) + Math.abs(vb.ty0 - vb.y0) + Math.abs(vb.ty1 - vb.y1) > 0.002) f.dirty = true;
     var mx = 40, my = 24, k = Math.min((w - 2 * mx) / (vb.x1 - vb.x0), (h - 2 * my - 48) / (vb.y1 - vb.y0));
-    var ox = w / 2 - k * (vb.x0 + vb.x1) / 2, oy = my + k * vb.y1 + ((h - 2 * my - 48) - k * (vb.y1 - vb.y0)) / 2;
-    function X(v) { return ox + k * v; } function Y(v) { return oy - k * v; }
+    vk = k; vox = w / 2 - k * (vb.x0 + vb.x1) / 2; voy = my + k * vb.y1 + ((h - 2 * my - 48) - k * (vb.y1 - vb.y0)) / 2;
     var i, j;
     // previous try, faint
     if (st.pn > 1) { ctx.strokeStyle = C.ink3; ctx.globalAlpha = 0.4; ctx.lineWidth = 1; ctx.beginPath(); for (i = 0; i < st.pn; i++) { j = i * 2; if (i) ctx.lineTo(X(prev[j]), Y(prev[j + 1])); else ctx.moveTo(X(prev[j]), Y(prev[j + 1])); } ctx.stroke(); }
@@ -1519,7 +1638,7 @@ function FigLink(root) {
     }
     ctx.globalAlpha = 1;
     // ground pivots with hatching
-    var gx = [-P.d / 2, P.d / 2];
+    gx[0] = -P.d / 2; gx[1] = P.d / 2;
     ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2;
     for (i = 0; i < 2; i++) {
       var px = X(gx[i]), py = Y(0);
@@ -1534,17 +1653,18 @@ function FigLink(root) {
     // crank, coupler, rocker
     ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(X(gx[0]), Y(0)); ctx.lineTo(X(A.x), Y(A.y)); ctx.lineTo(X(B.x), Y(B.y)); ctx.lineTo(X(gx[1]), Y(0)); ctx.stroke();
     // joints
-    var J = [gx[0], 0, A.x, A.y, B.x, B.y, gx[1], 0];
+    J[0] = gx[0]; J[1] = 0; J[2] = A.x; J[3] = A.y; J[4] = B.x; J[5] = B.y; J[6] = gx[1]; J[7] = 0;
     ctx.lineWidth = 1.3; for (i = 0; i < 8; i += 2) { ctx.beginPath(); ctx.arc(X(J[i]), Y(J[i + 1]), 4.2, 0, TAU); ctx.fillStyle = C.paper; ctx.fill(); ctx.stroke(); }
     ctx.fillStyle = C.ruby; ctx.beginPath(); ctx.arc(X(Pp.x), Y(Pp.y), 4.6, 0, TAU); ctx.fill();
     // labels
-    ctx.fillStyle = C.ink3; ctx.font = '500 ' + (w < 480 ? 10 : 11) + 'px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('CRANK ' + f2(P.a), X(gx[0]), Y(0) + 32);
-    ctx.fillText('ROCKER ' + f2(P.c), X(gx[1]), Y(0) + 32);
-    ctx.fillText('GROUND ' + f2(P.d), X(0), Y(0) + 50);
+    ctx.fillStyle = C.ink3; ctx.font = w < 480 ? FONT10 : FONT11; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(LBL.a, X(gx[0]), Y(0) + 32);
+    ctx.fillText(LBL.c, X(gx[1]), Y(0) + 32);
+    ctx.fillText(LBL.d, X(0), Y(0) + 50);
     ctx.fillStyle = C.ruby; ctx.fillText('PEN', X(Pp.x), Y(Pp.y) - 16);
   }
   fitTarget(); vb.x0 = vb.tx0; vb.x1 = vb.tx1; vb.y0 = vb.ty0; vb.y1 = vb.ty1; solve(st.th);
+  labels(); for (var kk in ins) ins[kk].setAttribute('aria-valuetext', f2(P[kk]));
   caption(); if (reduced) fullCurve();
   register(f, root, stage); f.resize();
   return f;
@@ -1563,7 +1683,7 @@ function FigBisect(root) {
   var st = { target: 0, lo: 1, hi: 100, tests: 0, done: false, t: 0, auto: !reduced && !STATIC, running: false, started: false, wait: 0 };
   var f = { name: 'bisect', visible: false }; f.state = st;
   function fresh() {
-    st.target = 1 + Math.floor(Math.random() * 100); st.lo = 1; st.hi = 100; st.tests = 0; st.done = false; st.t = 0; st.wait = 0;
+    st.byUser = false; st.target = 1 + Math.floor(Math.random() * 100); st.lo = 1; st.hi = 100; st.tests = 0; st.done = false; st.t = 0; st.wait = 0;
     while (gRows.firstChild) gRows.removeChild(gRows.firstChild); tgt.setAttribute('opacity', 0);
     capTxt.innerHTML = 'A hidden number from <span class="v">1</span> to <span class="v">100</span>. Each test halves the range.';
   }
@@ -1573,7 +1693,7 @@ function FigBisect(root) {
     var row = sv('g', {}, gRows);
     sv('rect', { x: X(st.lo).toFixed(1) - 3, y: y - 7, width: (X(st.hi) - X(st.lo) + 6).toFixed(1), height: 14, fill: C.paper2, stroke: C.ink, 'stroke-width': 1 }, row);
     sv('path', { d: 'M' + X(g).toFixed(1) + ' ' + (y - 12) + ' V' + (y + 12), stroke: res === 0 ? C.ruby : C.ink, 'stroke-width': 2 }, row);
-    var lab = sv('text', { x: (X(g) + 10).toFixed(1), y: y + 4, 'text-anchor': 'start', class: 'tk' }, row);
+    var lab = sv('text', { x: (X(g) + 10).toFixed(1), y: y + 4, 'text-anchor': 'start', class: 'tk dt' }, row);
     lab.textContent = (st.tests + 1) + ' · ' + g + (res === 0 ? ' · found' : res > 0 ? ' · too high' : ' · too low');
     var tw = 0; try { tw = lab.getComputedTextLength(); } catch (er) { tw = 120; }
     if (X(g) + 10 + tw > 632) { lab.setAttribute('x', (X(g) - 10).toFixed(1)); lab.setAttribute('text-anchor', 'end'); }
@@ -1582,16 +1702,17 @@ function FigBisect(root) {
     if (res === 0) {
       st.done = true; tgt.setAttribute('transform', 'translate(' + X(st.target).toFixed(1) + ' 40)'); tgt.setAttribute('opacity', 1);
       capTxt.innerHTML = 'Found <span class="v">' + st.target + '</span> in <span class="v">' + st.tests + '</span> ' + (st.tests === 1 ? 'test' : 'tests') + '. With 100 numbers, halving never needs more than <span class="v">7</span>.';
-      live.textContent = 'Found ' + st.target + ' in ' + st.tests + ' tests.';
+      if (st.byUser) live.textContent = 'Found ' + st.target + ' in ' + st.tests + ' tests.';
     } else {
       if (res > 0) st.hi = g - 1; else st.lo = g + 1;
       capTxt.innerHTML = 'Test <span class="v">' + st.tests + '</span>: ' + g + ' is ' + (res > 0 ? 'too high' : 'too low') + '. The number is between <span class="v">' + st.lo + '</span> and <span class="v">' + st.hi + '</span>.';
     }
   }
   function runAll() { while (!st.done) test(); }
-  bNew.addEventListener('click', function () { fresh(); if (reduced || STATIC) runAll(); else { st.running = true; kick(); } });
-  bStep.addEventListener('click', function () { st.running = false; if (st.done) fresh(); test(); });
+  bNew.addEventListener('click', function () { fresh(); st.byUser = true; if (reduced || STATIC) runAll(); else { st.running = true; kick(); } });
+  bStep.addEventListener('click', function () { st.running = false; if (st.done) fresh(); st.byUser = true; test(); });
   f.onShow = function () { if (!st.started) { st.started = true; fresh(); if (st.auto) { st.running = true; st.t = -0.3; } else runAll(); kick(); } };
+  f.prime = function () { if (st.started) return; fresh(); runAll(); };
   f.wants = function () { return st.running; };
   f.tick = function (dt) {
     st.t += dt;
@@ -1610,11 +1731,12 @@ function FigPixel(root) {
   var rng = root.querySelector('[data-k=x]'), out = root.querySelector('[data-o=x]'), chk = root.querySelector('[data-k=snap]');
   var COLS = 12, ROWS = 5, LX = 5;
   var ctx = get2d(cv), f = { name: 'pixel', visible: false, dirty: true };
-  var st = { off: 0.5, snap: false, auto: !reduced && !STATIC, t: 0, cov: new Float32Array(COLS), measured: true, acc: 0 };
+  var st = { off: 0.5, snap: false, auto: !reduced && !STATIC, t: 1.75, cov: new Float32Array(COLS), measured: true, acc: 0 };
   f.state = st;
   var oc = null, octx = null, big = null, bctx = null;
   try { oc = D.createElement('canvas'); oc.width = COLS; oc.height = ROWS; octx = oc.getContext('2d', { willReadFrequently: true }); big = D.createElement('canvas'); big.width = 48; big.height = 30; bctx = big.getContext('2d'); } catch (e) { octx = null; }
-  var styles = []; // 101 shades between paper and ink, built once
+  var styles = [], PCT = [], IDX = []; // 101 shades between paper and ink, and the label strings, built once
+  for (var pi = 0; pi <= 100; pi++) PCT.push(pi + '%'); for (pi = 0; pi < COLS; pi++) IDX.push(String(pi));
   (function () { var p = [244, 240, 230], q = [24, 32, 44]; for (var i = 0; i <= 100; i++) { var a = i / 100; styles.push('rgb(' + Math.round(p[0] + (q[0] - p[0]) * a) + ',' + Math.round(p[1] + (q[1] - p[1]) * a) + ',' + Math.round(p[2] + (q[2] - p[2]) * a) + ')'); } })();
   function eff() { return st.snap ? Math.round(st.off) : st.off; }
   function measure() {
@@ -1637,12 +1759,13 @@ function FigPixel(root) {
     for (i = 0; i < COLS; i++) if (st.cov[i] > 0.005) cols.push(i);
     var txt = 'Line at <span class="v">x = ' + (LX + o).toFixed(2) + ' px</span>' + (st.snap && Math.abs(st.off - o) > 0.001 ? ' (snapped)' : '') + '. ';
     txt += cols.map(function (c, n) { return (n ? 'column ' : 'Column ') + c + ': <span class="v">' + Math.round(st.cov[c] * 100) + '%</span>'; }).join(', ');
-    var sharp = cols.length === 1 && st.cov[cols[0]] > 0.97;
-    txt += '. ' + (sharp ? '<span class="good">One full column: a sharp line.</span>' : '<span class="bad">Split across columns: a soft line.</span>');
+    var mx = 0; for (i = 0; i < COLS; i++) mx = Math.max(mx, st.cov[i]);
+    var sharp = cols.length === 1 && mx > 0.97;
+    txt += '. ' + (sharp ? '<span class="good">One full column: a sharp line.</span>' : mx > 0.9 ? 'Almost one column: nearly sharp.' : '<span class="bad">Split across columns: a soft line.</span>');
     if (!st.measured) txt += ' (Computed; this browser blocked reading pixels.)';
-    capTxt.innerHTML = txt;
+    setHTML(capTxt, txt);
   }
-  function setUI() { var o = st.off; out.textContent = '+' + o.toFixed(2) + ' px'; rng.setAttribute('aria-valuetext', 'plus ' + o.toFixed(2) + ' pixels'); }
+  function setUI() { var o = st.off, t = '+' + o.toFixed(2) + ' px'; if (out.__t === t) return; setText(out, t); rng.setAttribute('aria-valuetext', 'plus ' + o.toFixed(2) + ' pixels'); }
   rng.addEventListener('input', function () { st.auto = false; st.off = +rng.value / 100; setUI(); measure(); caption(); f.dirty = true; kick(); });
   chk.addEventListener('change', function () { st.snap = chk.checked; measure(); caption(); f.dirty = true; kick(); });
   function buildStatic() {
@@ -1654,6 +1777,7 @@ function FigPixel(root) {
   f.resize = function (force) { if (sizeCanvas(cv, force)) f.dirty = true; };
   f.wants = function () { return f.dirty || (st.auto && !reduced); };
   f.onMotion = function () { if (reduced) st.auto = false; f.dirty = true; };
+  f.prime = function () { f.resize(); if (!cv._w) return; measure(); caption(); draw(cv._w, cv._h); f.dirty = false; };
   f.tick = function (dt) {
     var w = cv._w, h = cv._h; if (!w) { f.resize(); w = cv._w; h = cv._h; }
     if (st.auto && !reduced) {
@@ -1665,8 +1789,9 @@ function FigPixel(root) {
   };
   function draw(w, h) {
     var d = cv._d; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.clearRect(0, 0, w, h);
-    var small = w < 480, cell = Math.floor(Math.min((w - (small ? 24 : 150)) / COLS, (h - 86) / ROWS)), gw = cell * COLS, gh = cell * ROWS;
-    var x0 = Math.round(small ? (w - gw) / 2 : (w - gw - 96) / 2), y0 = Math.round((h - gh) / 2 - 10), r, c;
+    var small = w < 480, prev = !small && !!big && Math.abs(cv._d - (W.devicePixelRatio || 1)) < 0.01;
+    var cell = Math.floor(Math.min((w - (prev ? 150 : 24)) / COLS, (h - 86) / ROWS)), gw = cell * COLS, gh = cell * ROWS;
+    var x0 = Math.round(prev ? (w - gw - 96) / 2 : (w - gw) / 2), y0 = Math.round((h - gh) / 2 - 10), r, c;
     for (r = 0; r < ROWS; r++) for (c = 0; c < COLS; c++) { ctx.fillStyle = styles[Math.round(st.cov[c] * 100)]; ctx.fillRect(x0 + c * cell, y0 + r * cell, cell, cell); }
     // pixel grid
     ctx.strokeStyle = 'rgba(24,32,44,.22)'; ctx.lineWidth = 1; ctx.beginPath();
@@ -1677,16 +1802,15 @@ function FigPixel(root) {
     var o = eff(), lx = x0 + (LX + o) * cell;
     ctx.strokeStyle = C.ruby; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]); ctx.strokeRect(lx, y0 - 10, cell, gh + 20); ctx.setLineDash([]);
     // column readouts
-    ctx.font = '500 ' + (small ? 10 : 11) + 'px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.font = small ? FONT10 : FONT11; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.globalAlpha = 1;
     for (c = 0; c < COLS; c++) {
       var v = Math.round(st.cov[c] * 100);
-      ctx.fillStyle = v > 0 ? C.ink : C.ink3; ctx.globalAlpha = v > 0 ? 1 : 0.6;
-      if (v > 0 || !small) ctx.fillText(v + '%', x0 + c * cell + cell / 2, y0 + gh + 18);
-      ctx.globalAlpha = 0.7; ctx.fillStyle = C.ink3; if (!small || c % 2 === 0) ctx.fillText(String(c), x0 + c * cell + cell / 2, y0 - 26);
+      ctx.fillStyle = v > 0 ? C.ink : C.ink3;
+      if (v > 0 || !small) ctx.fillText(PCT[v], x0 + c * cell + cell / 2, y0 + gh + 18);
+      ctx.fillStyle = C.ink3; if (!small || c % 2 === 0) ctx.fillText(IDX[c], x0 + c * cell + cell / 2, y0 - 26);
     }
-    ctx.globalAlpha = 1;
-    // actual-size preview: 1 canvas pixel = 1 device pixel
-    if (!small && big) {
+    // actual-size preview: only where 1 canvas pixel really is 1 device pixel (the DPR cap can break that)
+    if (prev) {
       var bx = x0 + gw + 34, by = y0 + 4, dd = cv._d;
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = false; ctx.drawImage(big, Math.round(bx * dd), Math.round(by * dd)); ctx.restore();
       ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillStyle = C.ink3; ctx.fillText('ACTUAL', bx, by + 30 / dd + 10); ctx.fillText('SIZE', bx, by + 30 / dd + 24);
@@ -1703,8 +1827,13 @@ function build(name, fn) { if (built[name]) return; var el = D.querySelector('[d
 build('hover', FigHover);
 var later = function () { build('loop', FigLoop); build('stack', FigStack); kick(); };
 if (W.requestIdleCallback) requestIdleCallback(later, { timeout: 900 }); else setTimeout(later, 120);
-function buildValues() { build('hill', FigHill); build('link', FigLink); build('bisect', FigBisect); build('pixel', FigPixel); kick(); }
-if (D.fonts && D.fonts.ready) D.fonts.ready.then(function () { for (var i = 0; i < figs.length; i++) figs[i].dirty = true; kick(); });
+function buildValues() {
+  build('hill', FigHill); build('link', FigLink); build('bisect', FigBisect); build('pixel', FigPixel);
+  var pn = ['hill', 'link', 'bisect', 'pixel'];
+  for (var i = 0; i < pn.length; i++) { var pf = HB.figs[pn[i]]; if (pf && pf.prime && !pf.visible) { try { pf.prime(); } catch (e) { if (W.console) console.warn('figure prime failed', pn[i], e); } } }
+  kick();
+}
+if (D.fonts && D.fonts.ready) D.fonts.ready.then(function () { for (var i = 0; i < figs.length; i++) { figs[i].dirty = true; if (figs[i].state && 'slW' in figs[i].state) figs[i].state.slW = -1; } kick(); });
 kick();
 
 /* ---------- decorative ink rules ---------- */
@@ -1715,7 +1844,7 @@ else { var rio = new IntersectionObserver(function (es) { for (var i = 0; i < es
 /* ---------- router: #values is its own view ---------- */
 var views = { home: D.getElementById('home'), values: D.getElementById('values') };
 var baseTitle = D.title, metaD = D.querySelector('meta[name="description"]'), baseDesc = metaD ? metaD.getAttribute('content') : '';
-var VALUES_TITLE = 'Values — Hummingbolt', VALUES_DESC = 'Hummingbolt’s four values: Be bold. Tinker. Fail fast, learn faster. Sweat the small stuff. Each one comes with a small working figure.';
+var VALUES_TITLE = 'Values — Hummingbolt', VALUES_DESC = 'The four values of Hummingbolt, a software and AI lab in the San Francisco Bay Area: Be bold. Tinker. Fail fast. Learn faster. Sweat the small stuff.';
 var navValues = D.querySelector('.nav a[href="#values"]'), current = 'home';
 function viewFor(h) {
   if (h === 'values' || /^value-[1-4]$/.test(h)) return 'values';
@@ -1726,8 +1855,9 @@ function viewFor(h) {
   return current;
 }
 function jump(top) { var sb = HTML.style.scrollBehavior; HTML.style.scrollBehavior = 'auto'; W.scrollTo(0, top); HTML.style.scrollBehavior = sb; }
-function route(initial) {
-  var h = decodeURIComponent((location.hash || '').slice(1)), v = viewFor(h), changed = v !== current;
+function readHash() { var r = (location.hash || '').slice(1); try { return decodeURIComponent(r); } catch (e) { return r; } }
+function route(initial, hOver) {
+  var h = hOver != null ? hOver : readHash(), v = viewFor(h), changed = v !== current;
   if (changed || initial) {
     views.home.hidden = v !== 'home'; views.values.hidden = v !== 'values'; current = HB.view = v;
     D.title = v === 'values' ? VALUES_TITLE : baseTitle;
@@ -1744,8 +1874,11 @@ function route(initial) {
   } else if (changed || h === 'top' || h === 'values') {
     if (changed || initial) jump(0); else W.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
   }
-  if (changed && !initial) { var h1 = views[v].querySelector('h1'); if (h1 && !target) { try { h1.focus({ preventScroll: true }); } catch (e) { h1.focus(); } } }
-  if (target && (changed || !initial)) { var foc = target.matches('section,article') ? target.querySelector('h2,h3') : null; if (foc) { foc.setAttribute('tabindex', '-1'); try { foc.focus({ preventScroll: true }); } catch (e) {} } }
+  // move focus after the browser has finished its own fragment handling (which can reset focus)
+  var foc = null;
+  if (changed && !initial && !target) foc = views[v].querySelector('h1');
+  if (target && (changed || !initial)) { foc = target.matches('section,article') ? target.querySelector('h2,h3') : target; if (foc && !foc.hasAttribute('tabindex')) foc.setAttribute('tabindex', '-1'); }
+  if (foc) setTimeout(function () { try { foc.focus({ preventScroll: true }); } catch (e) {} }, 0);
 }
 D.addEventListener('click', function (e) {
   var a = e.target.closest ? e.target.closest('a[href^="#"]') : null; if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -1753,8 +1886,12 @@ D.addEventListener('click', function (e) {
   if (href === '#') { e.preventDefault(); return; }
   if (a.classList.contains('skip')) { e.preventDefault(); var m = D.getElementById('main'); m.focus({ preventScroll: true }); m.scrollIntoView(); return; }
   e.preventDefault(); setMenu(false);
-  if (location.hash !== href) history.pushState(null, '', href); route(false);
-  if (location.hash === href && a.closest('.vnav,.toc')) { /* focus handled by route */ }
+  if (location.hash !== href) {
+    var pushed = false;
+    try { history.pushState(null, '', href); pushed = true; } catch (er) {}
+    if (!pushed) { try { location.hash = href; } catch (er2) {} } // hashchange will route as well
+  }
+  route(false, location.hash === href ? null : href.slice(1));
 });
 W.addEventListener('popstate', function () { route(false); });
 W.addEventListener('hashchange', function () { route(false); });
@@ -1782,7 +1919,7 @@ if (mBtn) {
 /* ---------- copy email ---------- */
 var copyBtn = D.getElementById('copy-btn'), copySt = D.getElementById('copy-st'), emailEl = D.getElementById('email-addr');
 function selectEmail() { try { var rg = D.createRange(); rg.selectNodeContents(emailEl); var s = W.getSelection(); s.removeAllRanges(); s.addRange(rg); } catch (e) {} }
-function legacyCopy(text) { try { var ta = D.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none'; D.body.appendChild(ta); ta.select(); var ok = D.execCommand('copy'); D.body.removeChild(ta); return ok; } catch (e) { return false; } }
+function legacyCopy(text) { var back = D.activeElement; try { var ta = D.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none'; D.body.appendChild(ta); ta.select(); var ok = D.execCommand('copy'); D.body.removeChild(ta); if (back && back.focus) back.focus(); return ok; } catch (e) { return false; } }
 if (copyBtn) copyBtn.addEventListener('click', function () {
   var text = emailEl.textContent.trim();
   function done(ok) { if (ok) { copySt.textContent = 'Copied ' + text + ' to the clipboard.'; copyBtn.textContent = 'Copied'; setTimeout(function () { copyBtn.textContent = 'Copy address'; }, 2200); } else { selectEmail(); copySt.textContent = 'Copy was blocked. The address is selected: press Ctrl+C, or ⌘C on a Mac.'; } }
