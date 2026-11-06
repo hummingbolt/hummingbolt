@@ -69,8 +69,14 @@ h1,h2,h3{margin:0;font-weight:inherit;text-wrap:balance}
 .ldr-o{fill:none;stroke:currentColor;stroke-width:6;opacity:0;animation:show .25s ease 1.1s forwards}
 .ldr-name{font-family:var(--f-display);font-stretch:120%;font-weight:500;font-size:1.55rem;letter-spacing:.005em}
 .ldr-st{font:500 .68rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);display:flex;gap:14px;min-height:1em}
-.ldr-bar{width:240px;height:1px;background:var(--line);overflow:hidden}
-.ldr-bar i{display:block;height:100%;background:var(--bone);transform-origin:0 50%;transform:scaleX(0);transition:transform .45s var(--ease)}
+/* progress as a caliper rule: 41 ticks, a long one every fifth; the bone ticks uncover as each real step completes */
+.ldr-bar{position:relative;width:241px;height:11px;
+  background:repeating-linear-gradient(90deg,rgba(236,228,215,.26) 0 1px,transparent 1px 30px) 0 0/100% 100% no-repeat,
+             repeating-linear-gradient(90deg,rgba(236,228,215,.26) 0 1px,transparent 1px 6px) 0 100%/100% 5px no-repeat}
+.ldr-bar i{position:absolute;inset:0;display:block;
+  background:repeating-linear-gradient(90deg,var(--bone) 0 1px,transparent 1px 30px) 0 0/100% 100% no-repeat,
+             repeating-linear-gradient(90deg,var(--bone) 0 1px,transparent 1px 6px) 0 100%/100% 5px no-repeat;
+  clip-path:inset(0 100% 0 0);transition:clip-path .5s var(--ease)}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes show{to{opacity:1}}
 @keyframes seam{0%{transform:scaleX(.12);opacity:0}18%{opacity:1}45%{transform:scaleX(1);opacity:.9}100%{transform:scaleX(1);opacity:0}}
@@ -97,7 +103,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
 .hdr{position:fixed;top:0;left:0;right:0;z-index:20;padding-top:env(safe-area-inset-top, 0px);
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
 /* header backing: dense enough under the nav that scrolled text or bright steel never shows through it (nav text stays AA) */
-.hdr::before{content:"";position:absolute;inset:0 0 -28px;z-index:-1;pointer-events:none;background:linear-gradient(rgba(var(--bg-rgb),.93),rgba(var(--bg-rgb),.86) 62%,rgba(var(--bg-rgb),0))}
+.hdr::before{content:"";position:absolute;inset:0 0 -28px;z-index:-1;pointer-events:none;background:linear-gradient(rgba(var(--bg-rgb),.96),rgba(var(--bg-rgb),.9) 62%,rgba(var(--bg-rgb),0))}
 @media (max-width:859px){.hdr::before{background:linear-gradient(var(--bg),var(--bg) calc(100% - 28px),rgba(var(--bg-rgb),0))}}
 html.menu-open .hdr::before{background:var(--bg);bottom:0}
 .hdr-in{height:var(--hdr);display:flex;align-items:center;justify-content:space-between;gap:16px}
@@ -176,18 +182,24 @@ main{position:relative;z-index:3;display:block}
 @media (min-width:860px){
   .ch--hero{align-items:center}
   .ch--hero .ch-in{width:min(52rem,52vw)}
-  .ch--hero .stage{right:0;width:58%;top:calc(var(--hdr) + 1%);bottom:4%}
+  /* the hero form is framed a touch past the right edge, so it reads as a large object in the room, not a product tile */
+  .ch--hero .stage{right:-4%;width:62%;top:calc(var(--hdr) - 1%);bottom:2%}
+}
+/* small laptops and tablets in landscape: a narrower stage and a shorter lede line, so the form never runs under the copy */
+@media (min-width:860px) and (max-width:1279px){
+  .ch--hero .stage{width:56%}
+  .ch--hero .lede{max-width:29ch}
 }
 @keyframes cue{50%{transform:none}100%{transform:translateX(100%)}}
 
 /* entrance: words rise out of their own line as the shutter opens (JS wraps the words; without JS nothing changes) */
 .w{display:inline-block;overflow:hidden;vertical-align:top;padding:.14em .04em .12em;margin:-.14em -.04em -.12em}
 .w>span{display:inline-block;will-change:transform}
-.rise .w>span{animation:rise 1.15s var(--ease) both;animation-delay:calc(var(--d,0s) + var(--i,0) * 70ms)}
-.rise .eyebrow,.rise .lede,.rise .ctas{animation:fup 1s var(--ease) both}
+.rise .w>span{animation:rise 1s var(--ease) both;animation-delay:calc(var(--d,0s) + var(--i,0) * 60ms)}
+.rise .eyebrow,.rise .lede,.rise .ctas,.rise .v-toc{animation:fup .9s var(--ease) both}
 .rise .eyebrow{animation-delay:var(--d,0s)}
-.rise .lede{animation-delay:calc(var(--d,0s) + .32s)}
-.rise .ctas{animation-delay:calc(var(--d,0s) + .44s)}
+.rise .lede{animation-delay:calc(var(--d,0s) + .26s)}
+.rise .ctas,.rise .v-toc{animation-delay:calc(var(--d,0s) + .36s)}
 @keyframes rise{from{transform:translate3d(0,108%,0)}to{transform:none}}
 @keyframes fup{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
 
@@ -206,9 +218,11 @@ main{position:relative;z-index:3;display:block}
   .ch--make .make-list::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:calc(-1 * max(16px, env(safe-area-inset-left, 0px)));right:calc(-1 * max(16px, env(safe-area-inset-right, 0px)));top:-48px;bottom:-128px;background:linear-gradient(rgba(var(--bg-rgb),0),rgba(var(--bg-rgb),.9) 48px,rgba(var(--bg-rgb),.9) calc(100% - 128px),rgba(var(--bg-rgb),0))}
 }
 @media (min-width:860px){
-  .ch--make{display:grid;grid-template-rows:auto minmax(36vh,1fr) auto;align-items:stretch;gap:28px}
-  .ch--make .stage{position:relative;inset:auto;width:100%;height:auto;min-height:36vh}
+  /* tighter rows so the three forms get a real stage, not a strip */
+  .ch--make{display:grid;grid-template-rows:auto minmax(44vh,1fr) auto;align-items:stretch;gap:18px;padding-block:calc(var(--hdr) + 30px) 60px}
+  .ch--make .stage{position:relative;inset:auto;width:100%;height:auto;min-height:44vh}
   .make-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+  .make-list li{padding-block:16px 4px}
 }
 
 /* toppleton */
@@ -230,12 +244,21 @@ main{position:relative;z-index:3;display:block}
 .v-line{font-size:clamp(1.18rem,1rem + .7vw,1.7rem);line-height:1.38;color:var(--bone);max-width:26ch}
 .v-cap{display:flex;align-items:center;gap:10px;font:500 .66rem/1.5 var(--f-mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim);padding-top:16px;border-top:1px solid var(--line);max-width:30rem}
 .v-cap b{width:10px;height:10px;flex:none;border-radius:1px;background:var(--sw,#888);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
-/* beat index: which of the five you are on, as a numeral and a five-step track */
+/* beat index: which of the four you are on, as a numeral and a four-step track */
 .v-idx{display:flex;align-items:center;gap:5px;font:500 .72rem/1 var(--f-mono);letter-spacing:.14em;color:var(--dim);font-variant-numeric:tabular-nums}
-.v-idx b{font-weight:500;color:var(--bone);margin-right:12px}
+/* the beat numeral is set large and light, like an engraved part number, so each value opens on its own mark */
+.v-idx b{font-family:var(--f-display);font-stretch:100%;font-weight:250;font-size:clamp(2.6rem,1.6rem + 2.4vw,4.4rem);line-height:.8;letter-spacing:-.04em;color:var(--bone);margin-right:20px;font-variant-numeric:tabular-nums}
 .v-idx i{display:block;width:26px;height:2px;background:var(--line-2)}
 .v-idx i.on{background:var(--accent)}
 .v-idx span{margin-left:12px}
+/* values overture: the four, numbered; each row scrolls to its beat */
+.v-toc{list-style:none;margin:6px 0 0;padding:0;display:grid;max-width:30rem;border-top:1px solid var(--line)}
+.v-toc li{border-bottom:1px solid var(--line)}
+.v-toc button{appearance:none;background:none;border:0;color:var(--bone);font:500 1rem/1.25 var(--f-body);letter-spacing:.005em;text-align:left;width:100%;min-height:46px;padding:10px 0;display:flex;align-items:center;gap:18px;cursor:pointer;transition:color .2s,padding .35s var(--ease)}
+.v-toc button span{font:500 .68rem/1 var(--f-mono);letter-spacing:.14em;color:var(--dim);flex:none;width:2.2em}
+.v-toc button::after{content:"→";margin-left:auto;font-family:var(--f-mono);font-size:.85rem;color:var(--dim);transition:transform .35s var(--ease),color .2s}
+.v-toc button:hover{padding-left:6px}
+.v-toc button:hover::after{transform:translateX(4px);color:var(--accent)}
 .ch--v .ch-in{gap:24px}
 .ch--v .d-v{margin-top:6px}
 @media (min-width:860px){.ch--v .ch-in{width:min(46rem,46vw)}
@@ -267,7 +290,7 @@ main{position:relative;z-index:3;display:block}
   font:500 .62rem/1 var(--f-mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim);pointer-events:none;transition:opacity .4s;font-variant-numeric:tabular-nums}
 .hud span{white-space:nowrap}
 .hud em{font-style:normal;color:var(--bone)}
-.hud.hide{opacity:0}
+.hud.hide,.hud.mute{opacity:0}
 .hud-cue{margin-left:auto;display:flex;align-items:center;gap:14px;transition:opacity .5s var(--ease)}
 .hud-cue i{display:block;width:56px;height:1px;background:var(--line-2);position:relative;overflow:hidden}
 .hud-cue i::after{content:"";position:absolute;inset:0;background:var(--bone);transform:translateX(-100%);animation:cue 2.4s var(--ease) infinite}
@@ -403,8 +426,8 @@ main{position:relative;z-index:3;display:block}
       <div class="stage" aria-hidden="true"></div>
       <div class="ch-in">
         <p class="eyebrow">Values</p>
-        <h2 class="d-l" id="h-how">Five rules we work by.</h2>
-        <ul class="vlist"><li>Be bold.</li><li>Tinker.</li><li>Fail fast. Learn faster.</li><li>Forgiveness over permission.</li><li>Sweat the small stuff.</li></ul>
+        <h2 class="d-l" id="h-how">Four rules we work by.</h2>
+        <ul class="vlist"><li>Be bold.</li><li>Tinker.</li><li>Fail fast. Learn faster.</li><li>Sweat the small stuff.</li></ul>
         <div class="ctas"><a class="btn" href="#values" data-cursor="Read">Read our values <span class="ar" aria-hidden="true">→</span></a></div>
       </div>
     </section>
@@ -432,28 +455,30 @@ main{position:relative;z-index:3;display:block}
       <div class="ch-in">
         <p class="eyebrow">Values</p>
         <h1 class="d-xl" id="h-values" tabindex="-1" data-rise>How we work.</h1>
-        <p class="lede">Five rules. Short on purpose. Scroll and the sculpture takes a new shape for each one.</p>
+        <p class="lede">Four rules. Short on purpose. Each one gets its own shape.</p>
+        <ol class="v-toc" aria-label="The four values">
+          <li><button type="button" data-beat="1"><span aria-hidden="true">01</span>Be bold.</button></li>
+          <li><button type="button" data-beat="2"><span aria-hidden="true">02</span>Tinker.</button></li>
+          <li><button type="button" data-beat="3"><span aria-hidden="true">03</span>Fail fast. Learn faster.</button></li>
+          <li><button type="button" data-beat="4"><span aria-hidden="true">04</span>Sweat the small stuff.</button></li>
+        </ol>
       </div>
     </section>
     <section class="ch ch--v" data-ch="bold" aria-labelledby="v-bold">
       <div class="stage" aria-hidden="true"></div>
-      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>01</b><i class="on"></i><i></i><i></i><i></i><i></i><span>05</span></p><h2 class="d-v" id="v-bold">Be bold.</h2><p class="v-line">Pick the hard problem. Go after it.</p><p class="v-cap" data-cap="bold"><b></b><span>Fan · polished steel</span></p></div>
+      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>01</b><i class="on"></i><i></i><i></i><i></i><span>04</span></p><h2 class="d-v" id="v-bold">Be bold.</h2><p class="v-line">Pick the hard problem. Go after it.</p><p class="v-cap" data-cap="bold"><b></b><span>Fan · polished steel</span></p></div>
     </section>
     <section class="ch ch--v ch--r" data-ch="tinker" aria-labelledby="v-tinker">
       <div class="stage" aria-hidden="true"></div>
-      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>02</b><i></i><i class="on"></i><i></i><i></i><i></i><span>05</span></p><h2 class="d-v" id="v-tinker">Tinker.</h2><p class="v-line">We learn by building. Prototype first, debate later.</p><p class="v-cap" data-cap="tinker"><b></b><span>Parts tray · bead-blasted steel</span></p></div>
+      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>02</b><i></i><i class="on"></i><i></i><i></i><span>04</span></p><h2 class="d-v" id="v-tinker">Tinker.</h2><p class="v-line">We learn by building. Prototype first, debate later.</p><p class="v-cap" data-cap="tinker"><b></b><span>Parts tray · bead-blasted steel</span></p></div>
     </section>
     <section class="ch ch--v" data-ch="fail" aria-labelledby="v-fail">
       <div class="stage" aria-hidden="true"></div>
-      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>03</b><i></i><i></i><i class="on"></i><i></i><i></i><span>05</span></p><h2 class="d-v" id="v-fail">Fail fast. Learn faster.</h2><p class="v-line">Small bets. Quick tests. Honest results.</p><p class="v-cap" data-cap="fail"><b></b><span>Tower · tool steel</span></p></div>
+      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>03</b><i></i><i></i><i class="on"></i><i></i><span>04</span></p><h2 class="d-v" id="v-fail">Fail fast. Learn faster.</h2><p class="v-line">Small bets. Quick tests. Honest results.</p><p class="v-cap" data-cap="fail"><b></b><span>Tower · tool steel</span></p></div>
     </section>
-    <section class="ch ch--v ch--r" data-ch="forgive" aria-labelledby="v-forgive">
+    <section class="ch ch--v ch--r" data-ch="small" aria-labelledby="v-small">
       <div class="stage" aria-hidden="true"></div>
-      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>04</b><i></i><i></i><i></i><i class="on"></i><i></i><span>05</span></p><h2 class="d-v" id="v-forgive">Forgiveness over permission.</h2><p class="v-line">On small calls, we act and own the outcome. On safety and privacy, we always ask first.</p><p class="v-cap" data-cap="forgive"><b></b><span>Wall · gunmetal, blued core</span></p></div>
-    </section>
-    <section class="ch ch--v" data-ch="small" aria-labelledby="v-small">
-      <div class="stage" aria-hidden="true"></div>
-      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>05</b><i></i><i></i><i></i><i></i><i class="on"></i><span>05</span></p><h2 class="d-v" id="v-small">Sweat the small stuff.</h2><p class="v-line">Hummingbirds are tiny and exact. Good software is too.</p><p class="v-cap" data-cap="small"><b></b><span>Rosette · thin-film steel</span></p></div>
+      <div class="ch-in"><p class="v-idx" aria-hidden="true"><b>04</b><i></i><i></i><i></i><i class="on"></i><span>04</span></p><h2 class="d-v" id="v-small">Sweat the small stuff.</h2><p class="v-line">Hummingbirds are tiny and exact. Good software is too.</p><p class="v-cap" data-cap="small"><b></b><span>Rosette · thin-film steel</span></p></div>
     </section>
     <section class="ch ch--vend" data-ch="vend" aria-labelledby="v-end">
       <div class="stage" aria-hidden="true"></div>
@@ -565,21 +590,21 @@ var KN=[[24,12,-1.75,-1.15,.135,.135,.055,.055,.055,.055],[36,12,-1.75,-.78,.13,
   [24,6,-.85,-.3,.12,.12,.045,.008,.045,.008],[16,16,-1.75,.5,.1,0,.03,.03,.26,.03],[20,5,.2,-1.12,.26,.17,.09,.05,.06,.02],
   [12,3,.3,-.3,.38,.27,.16,.012,.11,.01],[8,1,.98,.74,0,.09,.8,.035,.035,.012]];
 
-/* ===================== the ten forms =====================
+/* ===================== the nine forms =====================
    mat: [colour, roughness, metalness, clearcoat, iridescence]   bg: [glow, edge] */
 var POSES=HB.POSES={
-  wing:{label:'Wingpath',finish:'Liquid steel',ex:1.85,ey:1.4,still:1.6,mat:['#cdc5ba',.16,1,0,0],bg:['#2c241e','#0e0c0b'],
+  wing:{label:'Wingpath',finish:'Liquid steel',ex:1.85,ey:1.4,still:1.6,mat:['#cdc5ba',.16,1,0,0],bg:['#30261d','#0e0c0b'],kc:'#fff0e0',
     fill:function(t,o,cfg){var sw=cfg&&cfg.dock?0.14:1,uc=(t*0.05)%1;
       qE(QG,sw*0.13*Math.sin(t*0.21+1.2),sw*0.5*Math.sin(t*0.19),sw*0.05*Math.sin(t*0.13));
       for(var i=0;i<N;i++){var j=i*3,k=i*4;qRot(V3,QG,WP[j],WP[j+1],WP[j+2]);QL[0]=WQ[k];QL[1]=WQ[k+1];QL[2]=WQ[k+2];QL[3]=WQ[k+3];qMul(QO,QG,QL);
         var du=Math.abs(WU[i]-uc);du=Math.min(du,1-du);var a=clamp(1-du/0.03,0,1);put(o,i,V3[0],V3[1],V3[2],QO,0.2,0.135,0.0165,0.015,a*a*(3-2*a))}}},
-  split:{label:'Three forms',finish:'Machined steel',ex:2.7,ey:0.98,still:0.6,mat:['#c6bfb5',.22,1,0,0],bg:['#28211c','#0e0c0b'],
-    fill:function(t,o){var i=0,r,c,k,s,g,a;
+  split:{label:'Three forms',finish:'Machined steel',ex:2.7,ey:0.92,still:0.6,mat:['#c6bfb5',.22,1,0,0],bg:['#2b241d','#0e0c0b'],kc:'#fff1e2',
+    fill:function(t,o){var i=0,r,c,k,s,g,a,SP=HB.stack?1.58:2.0; /* closer spacing on narrow screens, so the forms read larger */
       put(o,i++,0,0,0,QI,0.37,0.74,0.03,0.03,0);put(o,i++,0,0.02,0.13,QI,0.33,0.66,0.008,0.008,0);
       for(r=0;r<5;r++)for(c=0;c<4;c++)put(o,i++,-0.225+c*0.15,0.46-r*0.16,0.25,QI,0.052,0.052,0.016,0.016,(r===1&&c===2)?1:0);
       for(c=0;c<4;c++)put(o,i++,-0.225+c*0.15,-0.56,0.25,QI,0.052,0.052,0.016,0.016,0);
       while(i<60)put(o,i++,0,0,0,QI,0.3,0.6,0.02,0.01,0);
-      qE(QG,-0.1+0.04*Math.sin(t*0.5),-0.4+0.12*Math.sin(t*0.3),0);grp(o,0,60,QG,-2.0,0.03*Math.sin(t*0.8),0);
+      qE(QG,-0.1+0.04*Math.sin(t*0.5),-0.4+0.12*Math.sin(t*0.3),0);grp(o,0,60,QG,-SP,0.03*Math.sin(t*0.8),0);
       for(k=0;k<5;k++){qAA(QL,0,1,0,(k%2)*PI/2+0.12*Math.sin(k*2.1));var ox=0.06*Math.sin(k*1.7),oz=0.05*Math.cos(k*1.3),y=-0.4+k*0.205;
         for(s=0;s<12;s++){qRot(V3,QL,-0.458+s*0.0833,0,0);put(o,i++,V3[0]+ox,y,V3[2]+oz,QL,0.034,0.098,0.16,0.016,k===4?1:0)}}
       qE(QG,0.02*Math.sin(t*1.1),0.5+t*0.18,0.025*Math.sin(t*0.9));grp(o,60,120,QG,0,0,0,0,-0.5,0);
@@ -587,36 +612,36 @@ var POSES=HB.POSES={
         for(s=0;s<18;s++){a=TAU*s/18+t*(g%2?0.45:-0.35);qRot(V3,QT,Math.cos(a)*rad,0,Math.sin(a)*rad);qAA(QL,0,1,0,-a);qMul(QO,QT,QL);
           put(o,i++,V3[0],V3[1],V3[2],QO,0.05,0.05,0.05,0.022,s===0?1:0)}}
       for(k=0;k<6;k++)put(o,i++,CUBE6[k][0],CUBE6[k][1],CUBE6[k][2],QI,0.062,0.062,0.062,0.03,0);
-      qE(QG,0.25,t*0.12,0);grp(o,120,180,QG,2.0,0.02,0)}},
-  tower:{label:'Tower',finish:'Laminated steel',ex:1.0,ey:1.32,still:0,mat:['#d2c6b5',.28,1,0,0],bg:['#30261e','#0f0c0b'],
+      qE(QG,0.25,t*0.12,0);grp(o,120,180,QG,SP,0.02,0)}},
+  tower:{label:'Tower',finish:'Laminated steel',ex:1.0,ey:1.32,still:0,mat:['#d2c6b5',.28,1,0,0],bg:['#36291c','#0f0c0b'],kc:'#ffe4c4',
     fill:function(t,o){var i=0,base=-1.2;
       for(var k=0;k<10;k++){qAA(QL,0,1,0,(k%2)*PI/2+0.16*Math.sin(k*2.3+0.4));var ox=0.15*Math.sin(k*1.25),oz=0.09*Math.cos(k*0.95+0.5),y=base+0.12+k*0.245;
         for(var s=0;s<18;s++){qRot(V3,QL,-0.7083+s*0.0833,0,0);put(o,i++,V3[0]+ox,y,V3[2]+oz,QL,0.0355,0.118,0.205,0.02,k===9?1:0)}}
       qE(QG,0.016*Math.sin(t*0.83),0.35+t*0.1,0.022*Math.sin(t*1.07));grp(o,0,N,QG,0,0,0,0,base,0)}},
-  lattice:{label:'Lattice',finish:'Polished steel',ex:1.32,ey:1.16,still:1.0,mat:['#bcc0c6',.13,1,0,0],bg:['#221e1c','#0c0b0b'],
+  lattice:{label:'Lattice',finish:'Satin steel',ex:1.32,ey:1.16,still:1.0,mat:['#c9c6c1',.3,1,0,0],bg:['#22252a','#0c0b0b'],kc:'#e8eef8',
     fill:function(t,o){var i=0,sp=0.34;
       for(var y=0;y<5;y++){qAA(QL,0,1,0,(y-2)*0.42*Math.sin(t*0.33)+t*0.1);var br=1+0.05*Math.sin(t*0.6+y*0.9);
         for(var x=0;x<6;x++)for(var z=0;z<6;z++){qRot(V3,QL,(x-2.5)*sp*br,(y-2)*sp*br,(z-2.5)*sp*br);put(o,i++,V3[0],V3[1],V3[2],QL,0.068,0.068,0.068,0.03,0)}}
       var h=Math.floor(t*2.4);for(var m=0;m<3;m++)o.A[PERM[((h-m)%N+N)%N]]=m===0?1:(m===1?0.55:0.25);
       qE(QG,0.42,t*0.07,0.12);grp(o,0,N,QG,0,0,0)}},
-  monolith:{label:'Monolith',finish:'Black lacquer',ex:0.66,ey:1.2,still:0,mat:['#2a2624',.22,.8,1,0],bg:['#2a231e','#0d0b0a'],
+  monolith:{label:'Monolith',finish:'Black lacquer',ex:0.66,ey:1.2,still:0,mat:['#3a332d',.22,.8,1,0],bg:['#2c241d','#0d0b0a'],kc:'#fff0e0',
     fill:function(t,o){var i=0,tw=0.06+0.16*Math.sin(t*0.3),hh=2.25/90-0.003;
       for(var k=0;k<45;k++){var f=k/44,y=-1.125+2.25*(k+0.5)/45;qAA(QL,0,1,0,tw*(f-0.5)*2);
         for(var m=0;m<4;m++)put(o,i++,0,y,0,QL,0.5,hh,0.125,0.006,0)}
       qE(QG,0,0.55+t*0.09,0);grp(o,0,N,QG,0,0.03*Math.sin(t*0.6),0)}},
-  fan:{label:'Fan',finish:'Polished steel',ex:1.85,ey:1.62,still:0,mat:['#d8d1c6',.09,1,0,0],bg:['#33291f','#0f0c0a'],
+  fan:{label:'Fan',finish:'Polished steel',ex:1.85,ey:1.62,still:0,mat:['#d8d1c6',.09,1,0,0],bg:['#402d1a','#0f0c0a'],kc:'#ffd6a0',
     fill:function(t,o){var i=0,open=0.93+0.07*Math.sin(t*0.6),hx=-0.95,hy=-1.25,T=FANT;
       for(var g=0;g<3;g++){var L=T[g][0],w=T[g][1],z=T[g][2];
         for(var k=0;k<60;k++){var f=k/59,a=-0.1+f*2.0*open+g*0.012,rr=0.42+L/2;
           qAA(QT,0,0,1,a);qAA(QL,1,0,0,0.55);qMul(QO,QT,QL);
           put(o,i++,hx+Math.cos(a)*rr,hy+Math.sin(a)*rr,z-f*0.08*(g+1),QO,L/2,w,0.0075,0.0068,(g===0&&k>=57)?1:0)}}
       qE(QG,0.05*Math.sin(t*0.4),0.12*Math.sin(t*0.25),0);grp(o,0,N,QG,0.1,0.06,0)}},
-  knoll:{label:'Parts tray',finish:'Bead-blasted steel',ex:2.4,ey:1.9,still:0.9,mat:['#bfb7ac',.46,1,0,0],bg:['#29221c','#0e0c0b'],
+  knoll:{label:'Parts tray',finish:'Bead-blasted steel',ex:2.4,ey:1.9,still:0.9,mat:['#bfb7ac',.46,1,0,0],bg:['#2c2b28','#0e0c0b'],kc:'#f6f3ec',
     fill:function(t,o){var i=0;put(o,i++,0,-0.075,0.05,QI,1.98,0.012,1.42,0.012,0);
       for(var g=0;g<KN.length;g++){var K=KN[g];for(var n=0;n<K[0];n++){var c=n%K[1],r=(n/K[1])|0;put(o,i++,K[2]+c*K[4],K[7]-0.06,K[3]+r*K[5]-0.09,QI,K[6],K[7],K[8],K[9],0)}}
       var per=2.2,cyc=Math.floor(t/per),ph=(t-cyc*per)/per,idx=1+PERM[(cyc*37)%N]%(N-1),l=Math.sin(PI*clamp((ph-0.08)/0.8,0,1));
       o.P[idx*3+1]+=l*0.42;qE(QT,l*0.5,l*PI*0.6,0);o.Q[idx*4]=QT[0];o.Q[idx*4+1]=QT[1];o.Q[idx*4+2]=QT[2];o.Q[idx*4+3]=QT[3];o.A[idx]=l}},
-  topple:{label:'Topple',finish:'Tool steel',ex:1.78,ey:1.12,still:3.3,mat:['#aea79e',.27,1,0,0],bg:['#252019','#0d0b0a'],
+  topple:{label:'Topple',finish:'Tool steel',ex:1.78,ey:1.12,still:3.3,mat:['#aea79e',.27,1,0,0],bg:['#3a2419','#0d0b0a'],kc:'#ffcdb0',
     fill:function(t,o){var tc=((t%6.4)+6.4)%6.4,base=-0.95,i=0,SH=-0.47;
       for(var k=0;k<9;k++){var yaw=(k%2)*PI/2+0.1*Math.sin(k*1.9),rx=-0.55+0.08*Math.sin(k*1.4),rz=0.05*Math.cos(k*1.1),ry=base+0.11+k*0.225,X=rx,Y=ry,Z=rz,ang=0,yw=yaw;
         if(k>=4){var m=k-4,fx=0.3+m*0.44,fz=0.32*Math.sin(m*1.9+0.4),fy=base+0.11,fyaw=PI/2+0.22*Math.sin(m*2.3+1),p;
@@ -624,13 +649,7 @@ var POSES=HB.POSES={
           else if(tc>=3.9){var q=clamp((tc-3.9-m*0.28)/0.55,0,1);q=q*q*(3-2*q);p=1-q;X=rx+(fx-rx)*p;Y=ry+(fy-ry)*p+Math.sin(PI*q)*0.5;Z=rz+(fz-rz)*p;ang=-PI*p;yw=yaw+(fyaw-yaw)*p}}
         qAA(QT,0,0,1,ang);qAA(QL,0,1,0,yw);qMul(QO,QT,QL);
         for(var s=0;s<20;s++){qRot(V3,QO,-0.6175+s*0.065,0,0);put(o,i++,V3[0]+X+SH,V3[1]+Y,V3[2]+Z,QO,0.0285,0.105,0.19,0.018,k===8?1:0)}}}},
-  wall:{label:'Wall',finish:'Gunmetal, blued core',ex:1.72,ey:1.3,still:1.2,mat:['#c3bcb2',.2,1,0,0],bg:['#271f1b','#0d0b0b'],
-    fill:function(t,o){var i=0;
-      for(var r=0;r<12;r++)for(var c=0;c<15;c++){var x=(c-7)*0.2,y=(r-5.5)*0.2,lock=(c>=6&&c<=8&&r>=4&&r<=7),push=0;
-        if(!lock){var s=0.5+0.5*Math.sin((x*0.9+y*0.55)*1.7-t*1.5);push=s*s*s*s}
-        qE(QL,-push*0.75,push*0.45,0);put(o,i++,x,y,push*0.42-(lock?0.03:0),QL,0.088,0.088,0.032,0.02,lock?1:0)}
-      qE(QG,0.04*Math.sin(t*0.3),0.08*Math.sin(t*0.21),0);grp(o,0,N,QG,0,0,0)}},
-  spiral:{label:'Rosette',finish:'Thin-film steel',ex:1.6,ey:1.06,still:0,mat:['#a59e95',.15,1,0,1],bg:['#231d1c','#0d0b0b'],
+  spiral:{label:'Rosette',finish:'Thin-film steel',ex:1.6,ey:1.06,still:0,mat:['#a59e95',.15,1,0,1],bg:['#392524','#0d0b0b'],kc:'#ffd8cb',
     fill:function(t,o){var GA=2.399963229728653,rot=t*0.06;
       for(var i=0;i<N;i++){var f=Math.sqrt((i+0.5)/N),r=1.45*f,a=i*GA+rot,y=0.38*(1-f*f)-0.2;
         qAA(QT,0,1,0,-a);qAA(QL,0,0,1,Math.atan(-0.3615*r)+0.18);qMul(QO,QT,QL);
@@ -639,7 +658,7 @@ var POSES=HB.POSES={
 
 /* chapter → form + camera (az/el radians, fov degrees, zoom > 1 crops in) */
 var CH={
-  hero:{pose:'wing',az:-0.34,el:0.1,fov:28},
+  hero:{pose:'wing',az:-0.34,el:0.1,fov:28,zoom:1.06},
   make:{pose:'split',az:0,el:0.16,fov:28},
   game:{pose:'tower',az:0.6,el:-0.12,fov:30,roll:-0.025},
   lab:{pose:'lattice',az:-0.72,el:0.3,fov:30,roll:0.02},
@@ -648,8 +667,7 @@ var CH={
   vintro:{pose:'monolith',az:0.42,el:0.12,fov:28,roll:-0.02},
   bold:{pose:'fan',az:0.24,el:0.12,fov:30,roll:0.04,zoom:1.1},
   tinker:{pose:'knoll',az:0,el:1.12,fov:30,roll:-0.32},
-  fail:{pose:'topple',az:0.62,el:0.18,fov:30},
-  forgive:{pose:'wall',az:-0.6,el:0.08,fov:30},
+  fail:{pose:'topple',az:0.62,el:0.18,fov:30,zoom:1.1},
   small:{pose:'spiral',az:0.2,el:0.72,fov:22,zoom:1.2},
   vend:{pose:'wing',dock:1,az:0,el:0.02,fov:24}
 };
@@ -665,7 +683,7 @@ $$('.view').forEach(function(v){var key=v.getAttribute('data-view');$$('[data-ch
 HB.list=function(){return HB.views[HB.view]};
 
 function measure(){var vw=DE.clientWidth||W.innerWidth,vh=W.innerHeight,cv=$('#gl'),chh=(cv&&cv.clientHeight)||vh,sy=W.scrollY||0,list=HB.list();
-  var maxS=Math.max(0,DE.scrollHeight-vh),focus=mqStack.matches?0.3:0.5;HB.vw=vw;HB.vh=chh;
+  var maxS=Math.max(0,DE.scrollHeight-vh),focus=mqStack.matches?0.3:0.5;HB.vw=vw;HB.vh=chh;POSES.split.ex=mqStack.matches?2.3:2.7;
   for(var i=0;i<list.length;i++){var c=list[i],r=c.stage.getBoundingClientRect(),cy=r.top+sy+r.height/2,a=i===0?0:clamp(cy-vh*focus,0,maxS);
     if(i>0&&a<=list[i-1].a)a=list[i-1].a+1;c.a=a;var yp=cy-a;
     c.f={x:((r.left+r.width/2)/vw)*2-1,y:1-(yp/chh)*2,h:Math.max(0.1,r.height/chh),w:Math.max(0.1,r.width/vw)}}
@@ -680,8 +698,9 @@ HB.place=function(o){var l=HB.list(),n=l.length,y=W.scrollY||0,vh=HB.vh||W.inner
 function target(){var l=HB.list(),y=W.scrollY||0,n=l.length;if(!n)return 0;if(y<=l[0].a)return 0;if(y>=l[n-1].a)return n-1;
   for(var i=0;i<n-1;i++){if(y<l[i+1].a){var u=(y-l[i].a)/Math.max(1,l[i+1].a-l[i].a);return i+clamp((u-0.18)/0.64,0,1)}}return n-1}
 var lastR=-1,scrimEl=$('#scrim');
-function scrimSide(r){var l=HB.list();if(!l.length)return;var el=l[clamp(r,0,l.length-1)].el;scrimEl.setAttribute('data-side',el.classList.contains('ch--make')?'tb':(el.classList.contains('ch--r')?'r':'l'))}
 var hudEl=$('#hud');
+/* the HUD steps aside on the make chapter, whose three-column text runs to the bottom of the frame */
+function scrimSide(r){var l=HB.list();if(!l.length)return;var el=l[clamp(r,0,l.length-1)].el,mk=el.classList.contains('ch--make');scrimEl.setAttribute('data-side',mk?'tb':(el.classList.contains('ch--r')?'r':'l'));hudEl.classList.toggle('mute',mk)}
 function onScroll(){HB.scrollY=W.scrollY||0;HB.cT=target();hudEl.classList.toggle('past',HB.scrollY>40);var r=Math.round(HB.cT);if(r!==lastR){lastR=r;hudScene(r);scrimSide(r);if(HB.gl!=='on')drawPoster()}
   if(HB.reduced&&HB.requestFrame)HB.requestFrame()}
 W.addEventListener('scroll',onScroll,{passive:true});
@@ -717,7 +736,7 @@ function drawPoster(){var cv=$('#poster');if(!cv||cv.hidden)return;var ctx=cv.ge
   var depth=new Float32Array(N),vol=new Float32Array(N);
   for(var i=0;i<N;i++){var j=i*3;depth[i]=(PO.P[j]-cx)*fx+(PO.P[j+1]-cy)*fy+(PO.P[j+2]-cz)*fz;vol[i]=PO.S[i*4]*PO.S[i*4+1]*PO.S[i*4+2]}
   order.sort(function(a,b){return (depth[b]-depth[a])||(vol[a]-vol[b])});
-  var base=hex(P.mat[0]),acc=hex('#3b5994'),rough=P.mat[1],e1=24*0.16/rough,e2=70*0.16/rough,e3=40*0.16/rough,q=[0,0,0,1],ax=[[0,0,0],[0,0,0],[0,0,0]],sx=[0,0,0],pts=[[0,0],[0,0],[0,0],[0,0]];
+  var base=hex(P.mat[0]),acc=hex('#46679f'),rough=P.mat[1],e1=24*0.16/rough,e2=70*0.16/rough,e3=40*0.16/rough,q=[0,0,0,1],ax=[[0,0,0],[0,0,0],[0,0,0]],sx=[0,0,0],pts=[[0,0],[0,0],[0,0],[0,0]];
   function proj(px,py,pz,o){var vx=px-cx,vy=py-cy,vz=pz-cz,z=vx*fx+vy*fy+vz*fz;z=Math.max(0.05,z);
     o[0]=((vx*Rx+vy*Ry+vz*Rz)/(z*tanH*asp)+pcam.sx+1)/2*w;o[1]=(1-((vx*Ux+vy*Uy+vz*Uz)/(z*tanH)+pcam.sy))/2*h}
   for(var n=0;n<N;n++){var id=order[n],j3=id*3,k4=id*4,px=PO.P[j3],py=PO.P[j3+1],pz=PO.P[j3+2];
@@ -750,11 +769,11 @@ function rise(ci,delay){if(HB.reduced||!ci)return;ci.classList.remove('rise');vo
 var ldr=$('#ldr'),ldrTxt=$('#ldr-txt'),ldrN=$('#ldr-n'),ldrBar=$('#ldr-bar');
 var STEPS=['type','engine','light','frame'],LBL={type:'Loading type',engine:'Loading 3D engine',light:'Lighting the scene',frame:'Rendering first frame'};
 function updLoader(){var done=0,next='';STEPS.forEach(function(k){if(HB.steps[k])done++;else if(!next)next=LBL[k]});
-  ldrBar.style.transform='scaleX('+(done/STEPS.length)+')';ldrN.textContent=done+'/'+STEPS.length;ldrTxt.textContent=done===STEPS.length?(HB.gl==='off'?'Static poster ready':'Ready'):next}
+  ldrBar.style.clipPath='inset(0 '+(100-100*done/STEPS.length).toFixed(1)+'% 0 0)';ldrN.textContent=done+'/'+STEPS.length;ldrTxt.textContent=done===STEPS.length?(HB.gl==='off'?'Static poster ready':'Ready'):next}
 HB.step=function(k){HB.steps[k]=true;updLoader();var all=STEPS.every(function(s){return HB.steps[s]});if(all)maybeReveal()};
 function reveal(){if(HB.revealed)return;HB.revealed=true;HB.revealedAt=performance.now();ldr.classList.add('out');
   if(HB.gl==='pending')hudFps.innerHTML='3D <em>loading</em> · static poster';setTimeout(function(){ldr.hidden=true},1500);
-  if((W.scrollY||0)<300)rise($('.view:not([hidden]) .ch-in'),.45);if(HB.onReveal)HB.onReveal()}
+  if((W.scrollY||0)<300)rise($('.view:not([hidden]) .ch-in'),.28);if(HB.onReveal)HB.onReveal()}
 function maybeReveal(){var el=performance.now()-HB.t0,min=HB.reduced?0:1150;if(el>=min)reveal();else setTimeout(reveal,min-el)}
 setTimeout(reveal,HB.reduced?1200:2500);
 ldr.addEventListener('click',reveal);
@@ -810,6 +829,11 @@ route(true);
 /* Values link while already on Values: back to its top, focus its heading */
 D.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#values"]');if(!a||HB.view!=='values'||location.hash!=='#values')return;
   e.preventDefault();if(HB.reduced)jump(0);else W.scrollTo({top:0,behavior:'smooth'});var h=$('#h-values');try{h.focus({preventScroll:true})}catch(er){}});
+/* values overture: jump to a beat (no hash change, so the route stays #values), then focus its heading */
+D.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-beat]');if(!b||HB.view!=='values')return;
+  var i=+b.getAttribute('data-beat'),c=HB.list()[i];if(!c)return;
+  if(HB.reduced)jump(c.a);else W.scrollTo({top:c.a,behavior:'smooth'});
+  var h=$('h2',c.el);if(h){if(!h.hasAttribute('tabindex'))h.setAttribute('tabindex','-1');try{h.focus({preventScroll:true})}catch(er){}}});
 $('#skip').addEventListener('click',function(e){e.preventDefault();var h=$('.view:not([hidden]) h1');if(h){try{h.focus()}catch(er){}}});
 
 /* ===================== menu ===================== */
@@ -922,8 +946,8 @@ function start(THREE) {
     uniforms: bgU, depthTest: false, depthWrite: false,
     vertexShader: 'varying vec2 vUv; void main(){ vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.0, 1.0); }',
     fragmentShader: 'uniform vec3 uA; uniform vec3 uB; uniform vec2 uC; uniform float uAsp; uniform float uT; varying vec2 vUv;' +
-      'void main(){ vec2 p = vUv * 2.0 - 1.0; vec2 d = p - uC; d.x *= uAsp; float r = length(d) * 0.62; float g = exp(-r * r * 2.2);' +
-      ' float floorBand = smoothstep(0.0, -1.2, p.y - uC.y) * 0.18; vec3 c = mix(uB, uA, clamp(g + floorBand * g, 0.0, 1.0));' +
+      'void main(){ vec2 p = vUv * 2.0 - 1.0; vec2 d = p - uC; d.x *= uAsp; float r = length(d) * 0.66; float g = exp(-r * r * 2.6) * 1.08 + exp(-r * r * 0.7) * 0.12;' +
+      ' float floorBand = smoothstep(0.1, -1.1, p.y - uC.y) * 0.22; float top = smoothstep(0.2, 1.0, p.y) * 0.25; vec3 c = mix(uB, uA, clamp(g + floorBand * g - top * (1.0 - g), 0.0, 1.0));' +
       ' float n = fract(sin(dot(gl_FragCoord.xy + uT, vec2(12.9898, 78.233))) * 43758.5453); c += (n - 0.5) / 255.0 * 2.0; gl_FragColor = vec4(c, 1.0); }'
   });
   const bg = new THREE.Mesh(bgGeo, bgMat);
@@ -957,7 +981,7 @@ function start(THREE) {
   const aAcc = new THREE.InstancedBufferAttribute(accArr, 1); aAcc.setUsage(THREE.DynamicDrawUsage);
   geo.setAttribute('aSize', aSize); geo.setAttribute('aAcc', aAcc);
 
-  const accU = { value: new THREE.Color('#3b5994') }, accRU = { value: 0.26 };
+  const accU = { value: new THREE.Color('#46679f') }, accRU = { value: 0.3 };
   function makeMat(lowQ) {
     const m = lowQ
       ? new THREE.MeshStandardMaterial({ color: 0xcdc5ba, metalness: 1, roughness: 0.16 })
@@ -1007,7 +1031,8 @@ function start(THREE) {
   /* ---------- per-form colours, prepared once ---------- */
   const P = HB.POSES, PC = {}, BGA = {}, BGB = {};
   const hx3 = (h) => [parseInt(h.substr(1, 2), 16) / 255, parseInt(h.substr(3, 2), 16) / 255, parseInt(h.substr(5, 2), 16) / 255];
-  for (const k in P) { PC[k] = new THREE.Color(P[k].mat[0]); BGA[k] = hx3(P[k].bg[0]); BGB[k] = hx3(P[k].bg[1]); }
+  const KC = {};
+  for (const k in P) { PC[k] = new THREE.Color(P[k].mat[0]); BGA[k] = hx3(P[k].bg[0]); BGB[k] = hx3(P[k].bg[1]); KC[k] = new THREE.Color(P[k].kc || '#fff0e0'); }
 
   /* ---------- sizing ---------- */
   let asp = 1;
@@ -1117,6 +1142,8 @@ function start(THREE) {
     bgU.uA.value.set(lerp(ga[0], gb[0], tm), lerp(ga[1], gb[1], tm), lerp(ga[2], gb[2], tm));
     bgU.uB.value.set(lerp(ea[0], eb[0], tm), lerp(ea[1], eb[1], tm), lerp(ea[2], eb[2], tm));
     bgU.uT.value = (frames % 64) * 1.37;
+    /* each scene has its own key-light temperature, blended with the form */
+    key.color.lerpColors(KC[A.cfg.pose], KC[B.cfg.pose], tm);
 
     /* camera: framed into each chapter's .stage box, with a dolly-out between shots */
     HB.camOf(A, asp, camA); HB.camOf(B, asp, camB);

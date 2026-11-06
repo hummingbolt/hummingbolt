@@ -166,15 +166,11 @@ html.menu-open .hdr::before{display:none}
 .v-num{display:flex;align-items:baseline;gap:10px;font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-variant-numeric:tabular-nums}
 .v-num b{font:400 clamp(44px,5vw,72px)/.9 var(--display);letter-spacing:-.02em;color:var(--sodium);font-variant-numeric:lining-nums}
 .v-title{font:400 clamp(64px,max(11.8vw,min(20vw,112px)),196px)/.86 var(--display);letter-spacing:-.034em;color:var(--bone);margin:.14em 0 .18em -.035em;text-wrap:balance;max-width:7.2em}
-.v-title.long{font-size:clamp(54px,max(9.4vw,min(16vw,92px)),156px);max-width:8.6em}
 .v-cap{font:500 clamp(20px,2vw,30px)/1.3 var(--sans);color:var(--bone);max-width:24ch;letter-spacing:-.008em;text-wrap:balance}
-.v-cap.wide{max-width:32ch}
-.v-cap span{display:block}
-.v-cap span + span{margin-top:.5em;color:var(--soft)}
 .v-outro{min-height:80vh;min-height:80svh;display:flex;align-items:center;padding-block:120px}
-/* chapter index on the values intro: five plates in a row (desktop), a ruled list (phone) */
+/* chapter index on the values intro: four plates in a row (desktop), a ruled list (phone) */
 .v-intro .stack{width:100%}
-.v-index{list-style:none;padding:0;margin-top:34px;align-self:stretch;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--rule-2)}
+.v-index{list-style:none;padding:0;margin-top:34px;align-self:stretch;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--rule-2)}
 .v-index li{display:flex}
 .v-index li + li{border-left:1px solid var(--rule)}
 .v-index a{position:relative;flex:1 1 auto;min-width:0;display:grid;grid-template-rows:auto 1fr auto;gap:12px;min-height:124px;padding:16px 18px;text-decoration:none;color:var(--bone)}
@@ -363,7 +359,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
         <li><a href="#make">What we make <span>01&ndash;03</span></a></li>
         <li><a href="#toppleton">Toppleton <span>04</span></a></li>
         <li><a href="#lab">Lab <span>05</span></a></li>
-        <li><a href="#values" data-values-link>Values <span>V1&ndash;V5</span></a></li>
+        <li><a href="#values" data-values-link>Values <span>V1&ndash;V4</span></a></li>
         <li><a href="#contact">Contact <span>07</span></a></li>
       </ul>
     </nav>
@@ -446,15 +442,14 @@ html.has-cur,html.has-cur *{cursor:none!important}
   <section class="beat vt" id="values-teaser" data-exp="sphere" data-no="06" data-align="left" aria-labelledby="vt-h">
     <div class="wrap"><div class="slab stack">
       <p class="eyebrow">How we work</p>
-      <h2 class="statement" id="vt-h">Five values.</h2>
+      <h2 class="statement" id="vt-h">Four values.</h2>
       <ol class="vt-list">
         <li>Be bold.</li>
         <li>Tinker.</li>
         <li>Fail fast. Learn faster.</li>
-        <li>Forgiveness over permission.</li>
         <li>Sweat the small stuff.</li>
       </ol>
-      <div class="ctas"><a class="btn" href="#values">See the five experiments <span class="arrow" aria-hidden="true"></span></a></div>
+      <div class="ctas"><a class="btn" href="#values">See the four experiments <span class="arrow" aria-hidden="true"></span></a></div>
       <p class="exp"><b>Exp. 06 &mdash; Boundary</b><span>Potential flow past a sphere</span></p>
     </div></div>
   </section>
@@ -477,22 +472,21 @@ html.has-cur,html.has-cur *{cursor:none!important}
 <div class="view" id="view-values" data-view="values" hidden>
   <section class="v-intro" id="values-top" data-exp="wing" data-no="00" data-align="hero" aria-labelledby="values-h1">
     <div class="wrap"><div class="stack">
-      <p class="eyebrow">Values &middot; five experiments</p>
+      <p class="eyebrow">Values &middot; four experiments</p>
       <h1 class="giant" id="values-h1" tabindex="-1"><span class="ln">How we</span> <span class="ln">work.</span></h1>
-      <p class="line">Five values. Each one runs as its own experiment.</p>
+      <p class="line">Four values. Each one runs as its own experiment.</p>
       <ol class="v-index">
         <li><a href="#v-1"><span class="n">01</span><span class="t">Be bold.</span><span class="x"><span class="vh"> Experiment: </span>Jet</span></a></li>
         <li><a href="#v-2"><span class="n">02</span><span class="t">Tinker.</span><span class="x"><span class="vh"> Experiment: </span>Knot</span></a></li>
         <li><a href="#v-3"><span class="n">03</span><span class="t">Fail fast. Learn faster.</span><span class="x"><span class="vh"> Experiment: </span>Bursts</span></a></li>
-        <li><a href="#v-4"><span class="n">04</span><span class="t">Forgiveness over permission.</span><span class="x"><span class="vh"> Experiment: </span>Boundary</span></a></li>
-        <li><a href="#v-5"><span class="n">05</span><span class="t">Sweat the small stuff.</span><span class="x"><span class="vh"> Experiment: </span>Wingpath, close</span></a></li>
+        <li><a href="#v-4"><span class="n">04</span><span class="t">Sweat the small stuff.</span><span class="x"><span class="vh"> Experiment: </span>Wingpath, close</span></a></li>
       </ol>
     </div></div>
   </section>
 
   <section class="v-beat" id="v-1" data-exp="jet" data-no="V1" data-align="left" aria-labelledby="v1-h">
     <div class="wrap"><div class="slab stack">
-      <p class="v-num"><b>01</b> of 05<span class="v-ticks" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></span></p>
+      <p class="v-num"><b>01</b> of 04<span class="v-ticks" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span></p>
       <h2 class="v-title" id="v1-h">Be bold.</h2>
       <p class="v-cap">Pick the hard problem. Go after it.</p>
       <p class="exp"><b>Exp. V1 &mdash; Jet</b><span>A free jet, driven hard into still fluid</span></p>
@@ -501,7 +495,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
 
   <section class="v-beat" id="v-2" data-exp="knot" data-no="V2" data-align="right" aria-labelledby="v2-h">
     <div class="wrap"><div class="slab stack">
-      <p class="v-num"><b>02</b> of 05<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="on"></i><i></i><i></i><i></i></span></p>
+      <p class="v-num"><b>02</b> of 04<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="on"></i><i></i><i></i></span></p>
       <h2 class="v-title" id="v2-h">Tinker.</h2>
       <p class="v-cap">We learn by building. Prototype first, debate later.</p>
       <p class="exp"><b>Exp. V2 &mdash; Knot</b><span>Torus knot, rewound as it runs</span><span data-r="knot">p 2.00 &middot; q 3.00</span></p>
@@ -510,32 +504,23 @@ html.has-cur,html.has-cur *{cursor:none!important}
 
   <section class="v-beat" id="v-3" data-exp="burst" data-no="V3" data-align="left" aria-labelledby="v3-h">
     <div class="wrap"><div class="slab stack">
-      <p class="v-num"><b>03</b> of 05<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="done"></i><i class="on"></i><i></i><i></i></span></p>
+      <p class="v-num"><b>03</b> of 04<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="done"></i><i class="on"></i><i></i></span></p>
       <h2 class="v-title" id="v3-h">Fail fast. Learn faster.</h2>
       <p class="v-cap">Small bets. Quick tests. Honest results.</p>
       <p class="exp"><b>Exp. V3 &mdash; Bursts</b><span>Seven short bursts per 1.1 s cycle</span></p>
     </div></div>
   </section>
 
-  <section class="v-beat" id="v-4" data-exp="sphere" data-no="V4" data-align="right" aria-labelledby="v4-h">
+  <section class="v-beat" id="v-4" data-exp="macro" data-no="V4" data-align="right" aria-labelledby="v4-h">
     <div class="wrap"><div class="slab stack">
-      <p class="v-num"><b>04</b> of 05<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i></i></span></p>
-      <h2 class="v-title long" id="v4-h">Forgiveness over permission.</h2>
-      <p class="v-cap wide"><span>On small calls, we act and own the outcome.</span><span>On safety and privacy, we always ask first.</span></p>
-      <p class="exp"><b>Exp. V4 &mdash; Boundary</b><span>Free flow around a sphere it never enters</span></p>
-    </div></div>
-  </section>
-
-  <section class="v-beat" id="v-5" data-exp="macro" data-no="V5" data-align="left" aria-labelledby="v5-h">
-    <div class="wrap"><div class="slab stack">
-      <p class="v-num"><b>05</b> of 05<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i></span></p>
-      <h2 class="v-title" id="v5-h">Sweat the small stuff.</h2>
+      <p class="v-num"><b>04</b> of 04<span class="v-ticks" aria-hidden="true"><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i></span></p>
+      <h2 class="v-title" id="v4-h">Sweat the small stuff.</h2>
       <p class="v-cap">Hummingbirds are tiny and exact. Good software is too.</p>
-      <p class="exp"><b>Exp. V5 &mdash; Wingpath, close</b><span>Close range, low noise</span></p>
+      <p class="exp"><b>Exp. V4 &mdash; Wingpath, close</b><span>Close range, low noise</span></p>
     </div></div>
   </section>
 
-  <section class="v-outro" id="values-end" data-exp="rest" data-no="07" data-align="right" aria-labelledby="vo-h">
+  <section class="v-outro" id="values-end" data-exp="rest" data-no="07" data-align="left" aria-labelledby="vo-h">
     <div class="wrap"><div class="slab stack">
       <p class="eyebrow">Hummingbolt</p>
       <h2 class="statement" id="vo-h">A software and AI lab.</h2>
@@ -561,8 +546,7 @@ html.has-cur,html.has-cur *{cursor:none!important}
     <li><a href="#v-1" data-for="v-1"><span class="t">Be bold</span><span>01</span><i></i></a></li>
     <li><a href="#v-2" data-for="v-2"><span class="t">Tinker</span><span>02</span><i></i></a></li>
     <li><a href="#v-3" data-for="v-3"><span class="t">Fail fast</span><span>03</span><i></i></a></li>
-    <li><a href="#v-4" data-for="v-4"><span class="t">Forgiveness</span><span>04</span><i></i></a></li>
-    <li><a href="#v-5" data-for="v-5"><span class="t">Small stuff</span><span>05</span><i></i></a></li>
+    <li><a href="#v-4" data-for="v-4"><span class="t">Small stuff</span><span>04</span><i></i></a></li>
   </ol>
 </nav>
 <div class="cur" id="cur" aria-hidden="true">
@@ -610,7 +594,7 @@ const PRESETS = {
   jet:    { name: 'Jet',             f: 6, a: [3.0, 0.22, 0.32, -1.45],q: [2.5, 4, 5, 0.0],    cam: [-0.38, 0.14, 5.4, 34, 0.25, 0, 0, 0.03, 7], sheet: [0, 0, 1, 0.04, 0.4, 0.1, 0],        exp: 0.05, ref: 2.4, br: 1.1 },
   knot:   { name: 'Knot',            f: 7, a: [0.13, 0.45, 0.95, 5.0], q: [4, 9, 6, 0.04],     cam: [0.3, 0.62, 6.4, 34, 0, 0, 0, 0.0, 9],     sheet: [0, 1, 0, 0.32, 0.3, 0.12, 0],       exp: 0.07, ref: 1.6, br: 1.0 },
   burst:  { name: 'Bursts',          f: 8, a: [1.1, 1.7, 0.08, 0],     q: [0.5, 1.1, 3.2, 0.0],cam: [0.1, 0.18, 5.4, 34, 0, 0, 0, 0.0, 7],     sheet: [0, 0, 1, 0.12, 0.5, 0.14, 0],       exp: 0.06, ref: 1.8, br: 1.15 },
-  macro:  { name: 'Wingpath, close', f: 0, a: [0.05, 0.9, 1.45, 9.0],  q: [4, 9, 8, 0.012],    cam: [0.08, 0.06, 2.4, 30, 0.42, 0.12, 0, -0.04, 22], sheet: [0, 0, 1, 0.12, 0.4, 0.07, 0],   exp: 0.05, ref: 1.6, br: 1.0 }
+  macro:  { name: 'Wingpath, close', f: 0, a: [0.05, 0.9, 1.45, 9.0],  q: [4, 9, 8, 0.012],    cam: [0.08, 0.06, 2.4, 30, 0.13, 0.12, 0, -0.04, 22], sheet: [0, 0, 1, 0.12, 0.4, 0.07, 0],   exp: 0.05, ref: 1.6, br: 1.0 }
 };
 for (const k in PRESETS) { const p = PRESETS[k]; p.a = new Float32Array(p.a); p.q = new Float32Array(p.q); }
 const KNOTS = [[2, 3], [2, 5], [3, 4], [3, 5], [3, 2]];
@@ -893,6 +877,8 @@ function pointerRay() {
   ray.wx = cam.px + dx * th; ray.wy = cam.py + dy * th; ray.wz = cam.pz + dz * th;
 }
 window.addEventListener('pointermove', e => {
+  // Browsers can send one synthetic move at (0,0) on load; ignore it so the cursor does not park in the corner.
+  if (!ptr.has && e.clientX === 0 && e.clientY === 0) return;
   if (ptr.has) { ptr.dx += e.clientX - ptr.x; ptr.dy += e.clientY - ptr.y; }
   ptr.x = e.clientX; ptr.y = e.clientY; ptr.has = true; ptr.inside = true;
   if (e.pointerType === 'mouse') { const t = e.target; ptr.link = !!(t && t.closest && t.closest('a,button')); }
