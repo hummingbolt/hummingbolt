@@ -1,0 +1,2167 @@
+<title>Hummingbolt — Flight</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Hummingbolt — Flight.
+   Layout: one fixed real-time world behind native-scrolling "stops". Each stop is a screen tall; the camera hovers there,
+   then darts to the next. Text is set like a film title card on the side the camera leaves free. */
+:root {
+  color-scheme: dark;
+  --ink: #050c0b;
+  --deep: #0b1d1b;
+  --teal: #16352f;
+  --bone: #ece5d6;
+  --mist: #a7b6ae;
+  --copper: #d89b6b;
+  --copper-hi: #f0c79f;
+  --hair: rgba(236, 229, 214, 0.16);
+  --hair-hi: rgba(236, 229, 214, 0.42);
+  --shade: rgba(5, 12, 11, 0.78);
+  --f-display: "Geologica", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-body: "Geologica", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono: "Martian Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { background: var(--ink); scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ink); color: var(--bone);
+  font: 400 16px/1.6 var(--f-body); font-variation-settings: "SHRP" 0;
+  overflow-x: clip; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--ink); }
+a { color: inherit; }
+::selection { background: var(--copper); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--copper); outline-offset: 4px; border-radius: 2px; }
+[tabindex="-1"]:focus { outline: none; }
+.vh { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- World layers ---------- */
+.sky, .layer, .veil { position: fixed; left: 0; top: 0; width: 100%; height: 100vh; height: 100lvh; pointer-events: none; }
+.sky {
+  z-index: 0;
+  background:
+    radial-gradient(80% 55% at 62% -8%, rgba(150, 104, 66, .34), rgba(150, 104, 66, 0) 70%),
+    linear-gradient(180deg, #081816 0%, #0d2623 42%, #091b19 66%, #030807 100%);
+}
+.layer { z-index: 0; display: block; touch-action: pan-y; }
+#gl { opacity: 0; transition: opacity 1.1s ease; }
+#gl.on { opacity: 1; }
+.veil { z-index: 1; background: radial-gradient(130% 95% at 50% 42%, rgba(2, 6, 6, 0) 50%, rgba(2, 6, 6, .66) 100%); }
+.veil::after { content: ""; position: absolute; inset: 0; background-image: var(--grain, none); background-size: 128px 128px; opacity: .6; }
+
+/* ---------- Loader: the wingpath draws itself, beats twice, and the camera flies through it ---------- */
+.ldr { position: fixed; inset: 0; z-index: 40; display: none; place-items: center; background: var(--ink); }
+.js .ldr { display: grid; animation: ldr-safe .45s ease 2.45s forwards; }
+.ldr.out { opacity: 0; visibility: hidden; pointer-events: none; animation: none; transition: opacity .7s ease .1s, visibility 0s linear .85s; }
+@keyframes ldr-safe { to { opacity: 0; } }
+.ldr-in { position: relative; display: grid; justify-items: center; gap: 26px; }
+/* A low copper bloom gathers behind the mark while it beats, then opens as the camera flies through. */
+.ldr-in::before {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 42%; width: min(72vmin, 560px); height: min(72vmin, 560px); margin: calc(min(72vmin, 560px) / -2) 0 0 calc(min(72vmin, 560px) / -2);
+  border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(216, 155, 107, .16), rgba(216, 155, 107, .05) 55%, rgba(216, 155, 107, 0));
+  opacity: 0; transform: scale(.7); transition: opacity 1s ease, transform 1.4s cubic-bezier(.2, .7, .1, 1);
+}
+.ldr.beat .ldr-in::before { opacity: 1; transform: scale(1); }
+.ldr.out .ldr-in::before { opacity: 0; transform: scale(2.4); transition: opacity .8s ease, transform .9s cubic-bezier(.7, 0, .2, 1); }
+.ldr-mark { width: clamp(96px, 12vmin, 136px); height: auto; overflow: visible; color: var(--bone); transition: transform .9s cubic-bezier(.7, 0, .2, 1), opacity .6s ease .15s, color .3s ease; }
+.ldr .lp { fill: none; stroke: currentColor; stroke-width: 6; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.ldr.beat .ldr-mark { color: var(--copper-hi); animation: wingbeat .4s cubic-bezier(.3, .6, .3, 1) 2; }
+@keyframes wingbeat { 0% { transform: scale(1); } 30% { transform: scale(1.08, .92) rotate(-2deg); } 65% { transform: scale(.97, 1.04) rotate(1deg); } 100% { transform: scale(1); } }
+.ldr.out .ldr-mark { transform: scale(3.4); opacity: 0; }
+.ldr-cap { margin: 0; display: flex; gap: 16px; font: 400 10.5px/1 var(--f-mono); font-stretch: 87.5%; letter-spacing: .2em; text-transform: uppercase; color: var(--mist); }
+.ldr-stat { color: var(--copper); }
+
+/* ---------- Header ---------- */
+.skip {
+  position: fixed; z-index: 60; left: max(16px, env(safe-area-inset-left, 0px)); top: calc(env(safe-area-inset-top, 0px) + 10px);
+  padding: 12px 18px; background: var(--bone); color: var(--ink); font-weight: 500; text-decoration: none; transform: translateY(-180%);
+}
+.skip:focus { transform: none; }
+.hdr { position: fixed; z-index: 20; top: 0; left: 0; right: 0; padding-top: env(safe-area-inset-top, 0px); background: linear-gradient(180deg, rgba(5, 12, 11, .86), rgba(5, 12, 11, 0)); }
+/* Once the page moves, a denser band sits under the header so scrolling titles never collide with the nav. */
+.hdr::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; bottom: -28px; pointer-events: none; background: linear-gradient(180deg, rgba(5, 12, 11, .95) 0%, rgba(5, 12, 11, .9) 66%, rgba(5, 12, 11, 0) 100%); opacity: 0; transition: opacity .4s ease; }
+.hdr.solid::before { opacity: 1; }
+.hdr-in {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.hdr-row { width: 100%; max-width: 1416px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-inline: clamp(0px, 2.4vw, 32px); }
+.brand { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; text-decoration: none; color: var(--bone); }
+.mark { width: 34px; height: 26px; flex: none; overflow: visible; }
+.wm { font-family: var(--f-display); font-weight: 400; font-size: 17px; letter-spacing: -.01em; font-variation-settings: "SHRP" 100; }
+.nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; color: var(--bone); text-decoration: none; font-size: 14px; letter-spacing: .02em; }
+.nav a::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 9px; height: 1px; background: var(--copper); transform: scaleX(0); transform-origin: left; transition: transform .45s var(--ease); }
+.nav a:hover::after, .nav a[aria-current]::after { transform: scaleX(1); }
+.nav a[aria-current] { color: var(--copper-hi); }
+.menu-btn { display: none; }
+
+/* ---------- Stops ---------- */
+main { position: relative; z-index: 2; }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); width: 100%; }
+.inner { max-width: 1416px; margin-inline: auto; padding-inline: clamp(0px, 2.4vw, 32px); }
+.stop { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-block: 120px 104px; overflow-x: clip; }
+.s-hero, .s-contact { justify-content: flex-end; }
+.panel { position: relative; isolation: isolate; max-width: 38rem; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+.panel::before {
+  content: ""; position: absolute; z-index: -1; inset: -120px -170px; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(5, 12, 11, .8), rgba(5, 12, 11, .62) 46%, rgba(5, 12, 11, .26) 74%, rgba(5, 12, 11, 0) 100%);
+}
+@media (min-width: 900px) {
+  [data-side="left"] .panel, [data-side="right"] .panel { max-width: min(38rem, 47%); }
+  .beat[data-side] .panel { max-width: min(46rem, 50%); }
+}
+[data-side="right"] .panel { margin-left: auto; }
+[data-side="center"] .panel { margin-inline: auto; align-items: center; text-align: center; }
+.eyebrow { margin: 0; display: flex; align-items: center; gap: 12px; font: 400 11px/1.4 var(--f-mono); font-stretch: 87.5%; letter-spacing: .16em; text-transform: uppercase; color: var(--copper); }
+.eyebrow::before { content: ""; width: 24px; height: 1px; flex: none; background: currentColor; transition: width 1.2s var(--ease); }
+.is-here .eyebrow::before { width: 48px; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); text-wrap: balance; font-variation-settings: "SHRP" 100; }
+.h1 { font-weight: 250; font-size: clamp(2.5rem, 6.1vw, 6rem); line-height: .98; letter-spacing: -.035em; }
+.h2 { font-weight: 280; font-size: clamp(2.1rem, 4.3vw, 4.1rem); line-height: 1.02; letter-spacing: -.03em; }
+.h2.xl { font-size: clamp(3rem, 8vw, 7.6rem); letter-spacing: -.045em; line-height: .92; font-weight: 240; }
+.dot { color: var(--copper); }
+.lead { margin: 0; font-size: clamp(1.05rem, 1.3vw, 1.25rem); line-height: 1.55; color: var(--mist); max-width: 36ch; text-wrap: pretty; }
+.note { margin: 0; font: 400 11px/1.6 var(--f-mono); font-stretch: 87.5%; letter-spacing: .06em; color: var(--mist); max-width: 46ch; }
+.note b { font-weight: 400; color: var(--bone); }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 20px;
+  border: 1px solid var(--bone); border-radius: 2px; background: var(--bone); color: var(--ink);
+  font: 500 15px/1.1 var(--f-body); letter-spacing: .005em; text-decoration: none; cursor: pointer;
+  transition: background-color .25s ease, border-color .25s ease, color .25s ease;
+}
+.btn:hover { background: var(--copper-hi); border-color: var(--copper-hi); }
+.btn.ghost { background: rgba(5, 12, 11, .38); color: var(--bone); border-color: var(--hair-hi); }
+.btn.ghost:hover { border-color: var(--copper); color: var(--copper-hi); }
+.btn .ar { font-family: var(--f-mono); font-size: 13px; }
+
+.make { list-style: none; margin: 4px 0 0; padding: 0; width: 100%; border-top: 1px solid var(--hair); }
+.make li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 4px 24px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--hair); }
+.make h3 { font-weight: 300; font-size: clamp(1.3rem, 2vw, 1.8rem); letter-spacing: -.02em; line-height: 1.15; }
+.make p { margin: 0; color: var(--mist); }
+.vlist { list-style: none; margin: 0; padding: 0; width: 100%; border-top: 1px solid var(--hair); }
+.vlist li { border-bottom: 1px solid var(--hair); font-family: var(--f-display); font-weight: 300; font-size: clamp(1.15rem, 1.7vw, 1.5rem); letter-spacing: -.015em; line-height: 1.2; font-variation-settings: "SHRP" 100; }
+.vlist a { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 50px; padding: 8px 0; color: var(--bone); text-decoration: none; transition: color .25s ease, padding-left .45s var(--ease); }
+.vlist a::after { content: "\2192"; font: 400 12px/1 var(--f-mono); color: var(--mist); opacity: .7; transition: transform .45s var(--ease), color .25s ease, opacity .25s ease; }
+.vlist a:hover { color: var(--copper-hi); padding-left: 6px; }
+.vlist a:hover::after { color: var(--copper-hi); opacity: 1; transform: translateX(4px); }
+.mail { margin: 0; font-family: var(--f-display); font-weight: 280; font-size: clamp(1.45rem, 3.1vw, 2.9rem); letter-spacing: -.025em; line-height: 1.1; color: var(--bone); -webkit-user-select: all; user-select: all; overflow-wrap: anywhere; font-variation-settings: "SHRP" 100; }
+.copy-st { margin: 0; min-height: 1.5em; font: 400 11px/1.5 var(--f-mono); font-stretch: 87.5%; letter-spacing: .06em; color: var(--copper-hi); }
+.cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; font: 400 10px/1 var(--f-mono); font-stretch: 87.5%; letter-spacing: .2em; text-transform: uppercase; color: var(--mist); }
+.cue::after { content: ""; width: 1px; height: 40px; background: linear-gradient(var(--copper), rgba(216, 155, 107, 0)); transform-origin: top; animation: cue 2.4s var(--ease) infinite; }
+@keyframes cue { 0% { transform: scaleY(0); opacity: 1; } 55% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* ---------- Values beats ---------- */
+.beat .panel { max-width: 46rem; gap: 26px; }
+.beat-t { font-weight: 220; font-size: clamp(3.3rem, 7.4vw, 7.2rem); line-height: .94; letter-spacing: -.04em; transition: letter-spacing 1.6s var(--ease); }
+.is-here .beat-t { letter-spacing: -.048em; }
+.beat-p { margin: 0; font-size: clamp(1.15rem, 1.7vw, 1.55rem); line-height: 1.42; max-width: 27ch; color: var(--bone); text-wrap: pretty; }
+/* Chapter index on the values title card */
+.vidx { list-style: none; margin: 4px 0 0; padding: 0; width: 100%; max-width: 30rem; border-top: 1px solid var(--hair); }
+.vidx a {
+  display: flex; align-items: center; gap: 18px; min-height: 46px; padding-right: 4px; border-bottom: 1px solid var(--hair);
+  color: var(--bone); text-decoration: none; font-size: 15px; letter-spacing: .005em; transition: color .25s ease, padding-left .45s var(--ease);
+}
+.vidx a::after { content: "\2193"; margin-left: auto; font: 400 12px/1 var(--f-mono); color: var(--mist); transition: transform .45s var(--ease), color .25s ease; }
+.vidx .n { min-width: 2.4em; font: 400 10.5px/1 var(--f-mono); font-stretch: 87.5%; letter-spacing: .14em; color: var(--copper); }
+.vidx a:hover { color: var(--copper-hi); padding-left: 6px; }
+.vidx a:hover::after { color: var(--copper-hi); transform: translateY(3px); }
+.readout { margin: 0; font: 400 11px/1.5 var(--f-mono); font-stretch: 87.5%; letter-spacing: .12em; text-transform: uppercase; color: var(--mist); font-variant-numeric: tabular-nums; }
+.readout b { font-weight: 400; color: var(--copper-hi); }
+.no3d .readout { display: none; }
+
+/* ---------- Footer ---------- */
+.foot { position: relative; z-index: 2; padding-block: 80px max(28px, env(safe-area-inset-bottom, 0px)); color: var(--mist); font-size: 14px; background: linear-gradient(180deg, rgba(5, 12, 11, 0), rgba(5, 12, 11, .94) 46%); }
+.foot-in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px 36px; align-items: center; padding-top: 24px; border-top: 1px solid var(--hair); }
+.foot p { margin: 0; }
+.foot .brand .mark { width: 28px; height: 21px; }
+.foot .wm { font-size: 15px; }
+.legal { display: flex; gap: 0 20px; list-style: none; margin: 0; padding: 0; }
+.legal a { display: inline-flex; align-items: center; min-height: 44px; color: var(--bone); text-underline-offset: 4px; }
+
+/* ---------- HUD (real, live values) + flight track ---------- */
+.hud {
+  display: flex; flex-wrap: nowrap; gap: 18px; margin: 0 auto 0 40px; min-width: 0; white-space: nowrap;
+  font: 400 10px/1.4 var(--f-mono); font-stretch: 87.5%; letter-spacing: .1em; text-transform: uppercase; color: var(--mist);
+  font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.hud b { font-weight: 400; color: var(--bone); }
+.hud .hud-st { color: var(--copper-hi); }
+.no3d .hud-3d { display: none; }
+@media (max-width: 1139px) { .hud { display: none; } }
+.track { position: fixed; z-index: 5; right: max(22px, env(safe-area-inset-right, 0px)); top: 50%; width: 11px; height: 34vh; transform: translateY(-50%); pointer-events: none; }
+.track::before { content: ""; position: absolute; left: 5px; top: 0; bottom: 0; width: 1px; background: var(--hair); }
+.track .tk { position: absolute; left: 1px; width: 9px; height: 1px; background: rgba(236, 229, 214, .5); }
+.track-dot { position: absolute; left: 2px; top: 0; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--copper); box-shadow: 0 0 12px rgba(216, 155, 107, .85); }
+
+/* ---------- Cursor (fine pointers only) ---------- */
+.cur { position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none; display: none; transition: opacity .25s ease; }
+.cc .cur { display: block; }
+.cc, .cc a, .cc button { cursor: none; }
+.cc .mail { cursor: text; }
+.cur i { position: absolute; left: 0; top: 0; border-radius: 50%; }
+.cur i:first-child { width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 1px solid rgba(236, 229, 214, .55); transition: width .3s var(--ease), height .3s var(--ease), margin .3s var(--ease), border-color .3s ease, background-color .3s ease; }
+.cur i:last-child { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: var(--copper); }
+.cur.link i:first-child { width: 58px; height: 58px; margin: -29px 0 0 -29px; border-color: var(--copper); background: rgba(216, 155, 107, .08); }
+.cur.text, .cur.away { opacity: 0; }
+
+/* ---------- Narrow screens ---------- */
+@media (max-width: 899px) {
+  .stop { justify-content: flex-end; padding-block: 44svh 64px; }
+  .s-hero { padding-top: 40svh; }
+  [data-side] .panel { margin-left: 0; max-width: 34rem; }
+  [data-side="center"] .panel { margin-inline: 0; align-items: flex-start; text-align: left; }
+  .panel::before { inset: -72px -48px -120px; background: linear-gradient(180deg, rgba(5, 12, 11, 0), rgba(5, 12, 11, .76) 22%, rgba(5, 12, 11, .84) 78%, rgba(5, 12, 11, 0)); }
+  .track, .cue { display: none; }
+  .make li { grid-template-columns: minmax(0, 1fr); }
+  .foot-in { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .menu-btn {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; min-width: 44px; padding: 0 4px 0 14px;
+    background: transparent; color: var(--bone); border: 0; font: 400 14px/1 var(--f-body); letter-spacing: .02em; cursor: pointer;
+  }
+  .menu-btn i { position: relative; width: 22px; height: 10px; }
+  .menu-btn i::before, .menu-btn i::after { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: currentColor; transition: transform .3s var(--ease); }
+  .menu-btn i::before { top: 0; } .menu-btn i::after { bottom: 0; }
+  .open .menu-btn i::before { transform: translateY(4.5px) rotate(45deg); }
+  .open .menu-btn i::after { transform: translateY(-4.5px) rotate(-45deg); }
+  .nav { display: none; position: fixed; inset: 0; z-index: -1; background: var(--ink); padding-top: calc(env(safe-area-inset-top, 0px) + 104px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow-y: auto; }
+  .open .nav { display: block; }
+  .nav ul { flex-direction: column; gap: 0; }
+  .nav a { width: 100%; min-height: 64px; padding: 0; font-family: var(--f-display); font-weight: 280; font-size: 34px; letter-spacing: -.02em; border-bottom: 1px solid var(--hair); font-variation-settings: "SHRP" 100; }
+  .nav a::after { left: 0; right: auto; width: 40px; bottom: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; transition-delay: 0s !important; }
+  .cue::after { animation: none; transform: none; }
+}
+</style>
+<meta name="description" content="Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI applications, models and agents.">
+<meta name="theme-color" content="#050c0b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050c0b'/%3E%3Cmask id='m' maskUnits='userSpaceOnUse' x='0' y='0' width='64' height='64'%3E%3Crect width='64' height='64' fill='%23fff'/%3E%3Cpath d='M30.45 40.5L41.48 17.89' stroke='%23000' stroke-width='11.6'/%3E%3C/mask%3E%3Cpath d='M20.42 26.45L47.34 31.2A8.7 8.7 0 1 0 41.03 18.82L29.05 43.39A11.9 11.9 0 1 1 20.42 26.45Z' fill='none' stroke='%23d89b6b' stroke-width='7.4' mask='url(%23m)'/%3E%3Cpath d='M30.19 41.04L41.75 17.35' stroke='%23d89b6b' stroke-width='7.4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" id="gf" media="print" href="https://fonts.googleapis.com/css2?family=Geologica:wght,SHRP@200..600,0..100&family=Martian+Mono:wdth,wght@75..112.5,300..500&display=swap">
+<script>
+(function () {
+  var R = document.documentElement; R.classList.add('js'); if (!R.getAttribute('lang')) R.setAttribute('lang', 'en');
+  try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) R.classList.add('rm'); } catch (e) {}
+  // Fonts load without blocking: the link starts as media="print" and switches on once it arrives.
+  try { var l = document.getElementById('gf'); if (l) { var on = function () { l.media = 'all'; }; if (l.sheet) on(); else { l.addEventListener('load', on); l.addEventListener('error', on); } } } catch (e) {}
+})();
+</script>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <mask id="wp-ms" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M30.45 40.5 L41.48 17.89" stroke="#000" stroke-width="11.6"/></mask>
+  </defs>
+  <symbol id="wp-s" viewBox="0 0 64 64">
+    <path d="M20.42 26.45 L47.34 31.2 A8.7 8.7 0 1 0 41.03 18.82 L29.05 43.39 A11.9 11.9 0 1 1 20.42 26.45 Z" fill="none" stroke="currentColor" stroke-width="7.4" mask="url(#wp-ms)"/>
+    <path d="M30.19 41.04 L41.75 17.35" stroke="currentColor" stroke-width="7.4"/>
+  </symbol>
+</svg>
+
+<a class="skip" id="skip" href="#main">Skip to content</a>
+<div class="sky" aria-hidden="true"></div>
+<canvas id="poster" class="layer" aria-hidden="true" hidden></canvas>
+<canvas id="gl" class="layer" aria-hidden="true"></canvas>
+<div id="veil" class="veil" aria-hidden="true"></div>
+
+<div id="ldr" class="ldr" aria-hidden="true">
+  <div class="ldr-in">
+    <svg class="ldr-mark" viewBox="4 10 56 44" focusable="false">
+      <defs><mask id="ldr-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M31.99 38.01 L40.94 19.67" stroke="#000" stroke-width="10.8"/></mask></defs>
+      <path class="lp lp-main" pathLength="1" mask="url(#ldr-m)" d="M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z"/>
+      <path class="lp lp-over" pathLength="1" d="M41.2 19.14 L31.73 38.55"/>
+    </svg>
+    <p class="ldr-cap"><span>Hummingbolt</span><span class="ldr-stat" id="ldr-stat">Loading 3D engine</span></p>
+  </div>
+</div>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <div class="hdr-row">
+      <a class="brand" href="#top" aria-label="Hummingbolt, back to the start">
+        <svg class="mark" viewBox="3 10 58 44" aria-hidden="true" focusable="false"><use href="#wp-s" x="0" y="0" width="64" height="64"/></svg>
+        <span class="wm">Hummingbolt</span>
+      </a>
+      <div class="hud" id="hud" aria-hidden="true">
+        <span class="hud-st" id="hud-st">01 / 06 Hover</span>
+        <span>fps <b id="hud-fps">--</b></span>
+        <span class="hud-3d">facets <b id="hud-n">--</b></span>
+        <span class="hud-3d">cam <b id="hud-xyz">--</b></span>
+      </div>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav"><span>Menu</span><i aria-hidden="true"></i></button>
+      <nav class="nav" id="nav" aria-label="Main">
+        <ul>
+          <li><a href="#make">Make</a></li>
+          <li><a href="#toppleton">Toppleton</a></li>
+          <li><a href="#lab">Lab</a></li>
+          <li><a href="#values">Values</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div id="v-home" class="view">
+    <section class="stop s-hero" id="top" data-stop data-name="Hover" data-side="left" aria-labelledby="h-top">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">San Francisco Bay Area</p>
+          <h1 class="h1" id="h-top" tabindex="-1">Hummingbolt is a software and AI lab<span class="dot">.</span></h1>
+          <p class="lead">We make mobile and web apps, games, and AI applications, models and agents.</p>
+          <div class="ctas">
+            <a class="btn" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="ar" aria-hidden="true">↗</span><span class="vh"> (opens in a new tab)</span></a>
+            <a class="btn ghost" href="#values">Our values</a>
+          </div>
+        </div>
+      </div></div>
+      <p class="cue" aria-hidden="true">Scroll to fly</p>
+    </section>
+
+    <section class="stop" id="make" data-stop data-name="Make" data-side="right" aria-labelledby="h-make">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">What we make</p>
+          <h2 class="h2" id="h-make" tabindex="-1">Apps, games and AI<span class="dot">.</span></h2>
+          <ul class="make">
+            <li><h3>Mobile and web apps</h3><p>For phones and for the browser.</p></li>
+            <li><h3>Games</h3><p>Toppleton is our first. It is for all ages.</p></li>
+            <li><h3>AI</h3><p>AI applications, models and agents.</p></li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="stop" id="toppleton" data-stop data-name="Toppleton" data-side="left" aria-labelledby="h-topp">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">Our first product</p>
+          <h2 class="h2 xl" id="h-topp" tabindex="-1">Toppleton<span class="dot">.</span></h2>
+          <p class="lead">A stacking game for all ages, children included. Free to play on the web.</p>
+          <div class="ctas">
+            <a class="btn" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="ar" aria-hidden="true">↗</span><span class="vh"> (opens in a new tab)</span></a>
+          </div>
+          <p class="note"><b>play.toppleton.app</b> · App Store and Google Play versions are coming later.</p>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="stop" id="lab" data-stop data-name="Lab" data-side="left" aria-labelledby="h-lab">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">The lab</p>
+          <h2 class="h2" id="h-lab" tabindex="-1">We build to find out<span class="dot">.</span></h2>
+          <p class="lead">We try ideas in working code. We test them early, keep what works and ship it. Toppleton is the first thing out of the lab.</p>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="stop" id="teaser" data-stop data-name="Values" data-side="right" aria-labelledby="h-teaser">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">Values</p>
+          <h2 class="h2" id="h-teaser" tabindex="-1">Four values we build by<span class="dot">.</span></h2>
+          <ul class="vlist">
+            <li><a href="#v-1">Be bold.</a></li>
+            <li><a href="#v-2">Tinker.</a></li>
+            <li><a href="#v-3">Fail fast. Learn faster.</a></li>
+            <li><a href="#v-4">Sweat the small stuff.</a></li>
+          </ul>
+          <div class="ctas"><a class="btn ghost" href="#values">Fly through our values <span class="ar" aria-hidden="true">→</span></a></div>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="stop s-contact" id="contact" data-stop data-name="Contact" data-side="left" aria-labelledby="h-contact">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">Contact</p>
+          <h2 class="h2" id="h-contact" tabindex="-1">Say hello<span class="dot">.</span></h2>
+          <p class="lead">Questions, ideas, or feedback on Toppleton. Write to us.</p>
+          <p class="mail" id="mail">admin@hummingbolt.com</p>
+          <div class="ctas">
+            <a class="btn" href="mailto:admin@hummingbolt.com">Email us</a>
+            <button class="btn ghost" id="copy" type="button">Copy address</button>
+          </div>
+          <p class="copy-st" id="copy-st" role="status" aria-live="polite"></p>
+        </div>
+      </div></div>
+    </section>
+  </div>
+
+  <div id="v-values" class="view" hidden>
+    <section class="stop" data-stop data-name="Values" data-side="left" aria-labelledby="h-values">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">Values</p>
+          <h1 class="h1" id="h-values" tabindex="-1">How we work<span class="dot">.</span></h1>
+          <p class="lead">Four values. Each one is a stop on the flight.</p>
+          <ol class="vidx" aria-label="Jump to a value">
+            <li><a href="#v-1" data-beat="1"><span class="n" aria-hidden="true">01</span>Be bold</a></li>
+            <li><a href="#v-2" data-beat="2"><span class="n" aria-hidden="true">02</span>Tinker</a></li>
+            <li><a href="#v-3" data-beat="3"><span class="n" aria-hidden="true">03</span>Fail fast. Learn faster.</a></li>
+            <li><a href="#v-4" data-beat="4"><span class="n" aria-hidden="true">04</span>Sweat the small stuff</a></li>
+          </ol>
+        </div>
+      </div></div>
+      <p class="cue" aria-hidden="true">Scroll to fly</p>
+    </section>
+
+    <section class="stop beat" id="v-1" data-stop data-name="Be bold" data-side="left" aria-labelledby="h-v1">
+      <div class="wrap"><div class="inner"><div class="panel">
+        <p class="eyebrow">Value 1 of 4</p>
+        <h2 class="beat-t" id="h-v1" tabindex="-1">Be bold<span class="dot">.</span></h2>
+        <p class="beat-p">Pick the hard problem. Go after it.</p>
+      </div></div></div>
+    </section>
+
+    <section class="stop beat" id="v-2" data-stop data-name="Tinker" data-side="right" aria-labelledby="h-v2">
+      <div class="wrap"><div class="inner"><div class="panel">
+        <p class="eyebrow">Value 2 of 4</p>
+        <h2 class="beat-t" id="h-v2" tabindex="-1">Tinker<span class="dot">.</span></h2>
+        <p class="beat-p">We learn by building. Prototype first, debate later.</p>
+      </div></div></div>
+    </section>
+
+    <section class="stop beat" id="v-3" data-stop data-name="Fail fast" data-side="left" aria-labelledby="h-v3">
+      <div class="wrap"><div class="inner"><div class="panel">
+        <p class="eyebrow">Value 3 of 4</p>
+        <h2 class="beat-t" id="h-v3" tabindex="-1">Fail fast. Learn faster<span class="dot">.</span></h2>
+        <p class="beat-p">Small bets. Quick tests. Honest results.</p>
+      </div></div></div>
+    </section>
+
+    <section class="stop beat" id="v-4" data-stop data-name="Small stuff" data-side="right" aria-labelledby="h-v4">
+      <div class="wrap"><div class="inner"><div class="panel">
+        <p class="eyebrow">Value 4 of 4</p>
+        <h2 class="beat-t" id="h-v4" tabindex="-1">Sweat the small stuff<span class="dot">.</span></h2>
+        <p class="beat-p">Hummingbirds are tiny and exact. Good software is too.</p>
+        <p class="readout" aria-hidden="true">Ring alignment, live: <b id="ro">--</b></p>
+      </div></div></div>
+    </section>
+
+    <section class="stop s-contact" data-stop data-name="Onward" data-side="left" aria-labelledby="h-v5">
+      <div class="wrap"><div class="inner">
+        <div class="panel">
+          <p class="eyebrow">That is the lab</p>
+          <h2 class="h2" id="h-v5">Now, back to building<span class="dot">.</span></h2>
+          <div class="ctas">
+            <a class="btn" href="#top">Back to the start</a>
+            <a class="btn ghost" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="ar" aria-hidden="true">↗</span><span class="vh"> (opens in a new tab)</span></a>
+            <a class="btn ghost" href="#contact">Contact</a>
+          </div>
+        </div>
+      </div></div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap"><div class="inner">
+    <div class="foot-in">
+      <a class="brand" href="#top" aria-label="Hummingbolt, back to the start">
+        <svg class="mark" viewBox="3 10 58 44" aria-hidden="true" focusable="false"><use href="#wp-s" x="0" y="0" width="64" height="64"/></svg>
+        <span class="wm">Hummingbolt</span>
+      </a>
+      <div>
+        <p>© 2026 Hummingbolt LLC, a California limited liability company.</p>
+        <p>2108 N St #18140, Sacramento, CA 95816</p>
+      </div>
+      <ul class="legal">
+        <li><a href="#" data-ph>Privacy</a></li>
+        <li><a href="#" data-ph>Legal notice</a></li>
+      </ul>
+    </div>
+  </div></div>
+</footer>
+
+<div class="track" id="track" aria-hidden="true"><i class="track-dot" id="track-dot"></i></div>
+<div class="cur away" id="cur" aria-hidden="true"><i></i><i></i></div>
+
+<script>
+/* Page logic. Runs without WebGL: routing, stops, loader, poster, copy, menu, cursor. */
+(function () {
+'use strict';
+var D = document, R = D.documentElement, W = window;
+function mq(q) { try { return W.matchMedia(q).matches; } catch (e) { return false; } }
+function warn(m, e) { try { console.warn('[hummingbolt] ' + m, e && e.message ? e.message : (e || '')); } catch (_) {} }
+function guard(name, fn) { try { fn(); } catch (e) { warn(name, e); } }
+function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+
+var HB = W.HB = W.HB || {};
+HB.rm = mq('(prefers-reduced-motion: reduce)');
+HB.phone = mq('(max-width: 700px)') || (mq('(pointer: coarse)') && Math.min(W.screen && W.screen.width || 9999, W.screen && W.screen.height || 9999) <= 540);
+HB.fine = mq('(hover: hover) and (pointer: fine)');
+HB.nogl = /nogl/i.test(location.hash + location.search) || W.HB_NOGL === true;
+HB.view = 'home'; HB.stops = []; HB.names = []; HB.revealed = false;
+HB.gl = { started: false, failed: false, lost: false };
+HB.pointer = { x: 0, y: 0, nx: 0, ny: 0, has: false, moved: 0, kind: 'mouse' };
+var L = {};
+HB.on = function (ev, fn) { (L[ev] = L[ev] || []).push(fn); };
+HB.emit = function (ev, d) { var a = L[ev]; if (!a) return; for (var i = 0; i < a.length; i++) { try { a[i](d); } catch (e) { warn(ev, e); } } };
+HB.param = function (y, out) {
+  var s = HB.stops, n = s.length; out.i = 0; out.t = 0;
+  if (n < 2 || y <= s[0]) return out;
+  if (y >= s[n - 1]) { out.i = n - 2; out.t = 1; return out; }
+  for (var i = 0; i < n - 1; i++) { if (y < s[i + 1]) { out.i = i; out.t = (y - s[i]) / Math.max(1, s[i + 1] - s[i]); return out; } }
+  return out;
+};
+
+var views = { home: D.getElementById('v-home'), values: D.getElementById('v-values') };
+var homeIds = { top: 1, make: 1, toppleton: 1, lab: 1, teaser: 1, contact: 1 };
+var poster = D.getElementById('poster'), glc = D.getElementById('gl');
+var hudSt = D.getElementById('hud-st'), hudFps = D.getElementById('hud-fps'), hudN = D.getElementById('hud-n'), hudXyz = D.getElementById('hud-xyz');
+var track = D.getElementById('track'), dot = D.getElementById('track-dot');
+
+/* ---------- Poster: the still world, drawn once in 2D. Used without WebGL, after a lost context, or until 3D is ready. ---------- */
+var MAIN = 'M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z';
+var OVER = 'M41.2 19.14 L31.73 38.55', GAP = 'M31.99 38.01 L40.94 19.67';
+var posterOn = false, posterT = 0;
+function drawPoster() {
+  var c = poster; if (!c) return;
+  var w = c.clientWidth || W.innerWidth, h = c.clientHeight || W.innerHeight;
+  var pr = Math.min(W.devicePixelRatio || 1, 1.5);
+  if (w * h * pr * pr > 4e6) pr = Math.sqrt(4e6 / (w * h));
+  c.width = Math.max(1, Math.round(w * pr)); c.height = Math.max(1, Math.round(h * pr));
+  var g = c.getContext('2d'); if (!g) return;
+  g.setTransform(pr, 0, 0, pr, 0, 0);
+  var portrait = w / h < 0.8, s = 20261105, i, k;
+  function r() { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }
+  var gr = g.createLinearGradient(0, 0, 0, h);
+  gr.addColorStop(0, '#081816'); gr.addColorStop(0.42, '#0d2623'); gr.addColorStop(0.68, '#091b19'); gr.addColorStop(1, '#030807');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  var gx = w * (portrait ? 0.56 : 0.62), gy = -h * 0.12, big = Math.max(w, h);
+  var rg = g.createRadialGradient(gx, gy, 0, gx, gy, big * 0.9);
+  rg.addColorStop(0, 'rgba(170,118,74,0.46)'); rg.addColorStop(0.28, 'rgba(112,82,54,0.2)'); rg.addColorStop(1, 'rgba(20,40,36,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, w, h);
+  var layers = [[34, 4, 'rgba(10,30,27,0.6)'], [18, 10, 'rgba(6,18,17,0.82)'], [6, 26, 'rgba(3,9,9,0.96)']];
+  for (k = 0; k < layers.length; k++) {
+    var Ly = layers[k];
+    for (i = 0; i < Ly[0]; i++) {
+      var x = r() * (w + 120) - 60, bw = Ly[1] * (0.6 + r() * 0.9), lean = (r() - 0.5) * h * 0.14;
+      g.beginPath(); g.moveTo(x - bw / 2, h + 10); g.lineTo(x + bw / 2, h + 10); g.lineTo(x + lean + bw * 0.16, -10); g.lineTo(x + lean - bw * 0.16, -10); g.closePath();
+      g.fillStyle = Ly[2]; g.fill();
+    }
+  }
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (k = 0; k < 7; k++) {
+    var a = Math.PI / 2 + (r() - 0.5) * 1.15, len = h * (1.1 + r() * 0.5), wd = 30 + r() * 110;
+    var ex = gx + Math.cos(a) * len, ey = gy + Math.sin(a) * len, nx = -Math.sin(a), ny = Math.cos(a);
+    var lg = g.createLinearGradient(gx, gy, ex, ey);
+    lg.addColorStop(0, 'rgba(230,196,154,0)'); lg.addColorStop(0.3, 'rgba(230,196,154,' + (0.05 + r() * 0.06).toFixed(3) + ')'); lg.addColorStop(1, 'rgba(230,196,154,0)');
+    for (var pass = 0; pass < 3; pass++) {
+      var f = 1 - pass * 0.3;
+      g.beginPath(); g.moveTo(gx + nx * 6 * f, gy + ny * 6 * f); g.lineTo(ex + nx * wd * f, ey + ny * wd * f); g.lineTo(ex - nx * wd * f, ey - ny * wd * f); g.lineTo(gx - nx * 6 * f, gy - ny * 6 * f); g.closePath();
+      g.fillStyle = lg; g.fill();
+    }
+  }
+  var n = portrait ? 100 : 170;
+  for (i = 0; i < n; i++) {
+    var fx = r() * w, fy = r() * h, z = r(), sz = 2 + z * z * 10, rot = r() * 6.283, lit = r() < 0.2;
+    g.save(); g.translate(fx, fy); g.rotate(rot);
+    g.fillStyle = lit ? (r() < 0.5 ? 'rgba(240,200,158,' : 'rgba(233,223,204,') + (0.22 + z * 0.4).toFixed(2) + ')' : 'rgba(40,88,79,' + (0.16 + z * 0.36).toFixed(2) + ')';
+    g.beginPath(); g.moveTo(0, -sz); g.lineTo(sz * 0.36, 0); g.lineTo(0, sz * 0.8); g.lineTo(-sz * 0.34, 0); g.closePath(); g.fill(); g.restore();
+  }
+  g.restore();
+  try {
+    var S = portrait ? Math.min(w * 0.78, h * 0.36) : Math.min(w * 0.36, h * 0.6);
+    var mx = portrait ? w * 0.5 : w * 0.7, my = portrait ? h * 0.27 : h * 0.46;
+    var off = D.createElement('canvas'); off.width = Math.max(1, Math.round(S * pr)); off.height = off.width;
+    var o = off.getContext('2d'), sc = off.width / 64;
+    o.setTransform(sc, 0, 0, sc, 0, 0); o.lineCap = 'butt'; o.strokeStyle = '#d89b6b'; o.lineWidth = 1.3;
+    o.stroke(new Path2D(MAIN));
+    o.globalCompositeOperation = 'destination-out'; o.lineWidth = 3.6; o.stroke(new Path2D(GAP));
+    o.globalCompositeOperation = 'source-over'; o.lineWidth = 1.3; o.stroke(new Path2D(OVER));
+    g.save(); g.shadowColor = 'rgba(240,190,140,0.8)'; g.shadowBlur = 22; g.drawImage(off, mx - S / 2, my - S / 2, S, S); g.restore();
+    g.drawImage(off, mx - S / 2, my - S / 2, S, S);
+    var hx = mx - S / 2 + (46.92 / 64) * S, hy = my - S / 2 + (30.69 / 64) * S;
+    var hg = g.createRadialGradient(hx, hy, 0, hx, hy, S * 0.08);
+    hg.addColorStop(0, 'rgba(255,236,210,0.95)'); hg.addColorStop(0.25, 'rgba(240,190,140,0.4)'); hg.addColorStop(1, 'rgba(240,190,140,0)');
+    g.globalCompositeOperation = 'lighter'; g.fillStyle = hg; g.fillRect(hx - S * 0.1, hy - S * 0.1, S * 0.2, S * 0.2); g.globalCompositeOperation = 'source-over';
+  } catch (e) { warn('poster mark', e); }
+}
+function showPoster() {
+  if (posterOn) return; posterOn = true;
+  guard('poster', function () { poster.hidden = false; drawPoster(); });
+}
+function hidePoster() { if (!posterOn) return; posterOn = false; setTimeout(function () { if (!posterOn) poster.hidden = true; }, 1200); }
+W.addEventListener('resize', function () { if (!posterOn) return; clearTimeout(posterT); posterT = setTimeout(function () { guard('poster', drawPoster); }, 160); }, { passive: true });
+
+function hudOff(label) { if (hudFps) hudFps.textContent = label; R.classList.add('no3d'); }
+HB.glReady = function () {
+  HB.gl.started = true; HB.gl.lost = false; R.classList.remove('no3d');
+  if (glc) glc.classList.add('on');
+  hidePoster(); HB.emit('gl-ready');
+};
+HB.glFail = function (why) {
+  if (HB.gl.failed) return; HB.gl.failed = true;
+  if (why === 'nogl') { try { console.info('[hummingbolt] 3D is off for this view (nogl).'); } catch (e) {} } else warn('3D unavailable, showing the still poster', why);
+  if (glc) { glc.classList.remove('on'); glc.style.display = 'none'; }
+  hudOff('3D off');
+  if (HB.revealed) showPoster();
+  HB.emit('gl-fail');
+};
+HB.glLost = function () { HB.gl.lost = true; if (glc) glc.classList.remove('on'); hudOff('3D paused'); showPoster(); };
+HB.glBack = function () { if (HB.gl.failed) return; HB.gl.lost = false; HB.gl.started = true; R.classList.remove('no3d'); if (glc) glc.classList.add('on'); hidePoster(); };
+if (HB.nogl) hudOff('3D off');
+
+/* ---------- Stops: where each station sits in the scroll ---------- */
+var stopEls = [], cur = -1, sp = { i: 0, t: 0 }, trackH = 0, ticks = [];
+function measure() {
+  var root = views[HB.view]; if (!root) return;
+  stopEls = [].slice.call(root.querySelectorAll('[data-stop]'));
+  var vh = W.innerHeight, max = Math.max(0, R.scrollHeight - vh), s = [], names = [];
+  for (var i = 0; i < stopEls.length; i++) {
+    var el = stopEls[i], r = el.getBoundingClientRect(), top = r.top + W.scrollY;
+    var c = i === 0 ? 0 : top + r.height / 2 - vh / 2;
+    c = clamp(c, 0, max);
+    if (i > 0 && c <= s[i - 1]) c = s[i - 1] + 1;
+    s.push(c); names.push(el.getAttribute('data-name') || '');
+  }
+  HB.stops = s; HB.names = names;
+  guard('track', function () {
+    if (!track) return;
+    trackH = track.clientHeight;
+    for (var k = 0; k < ticks.length; k++) ticks[k].remove();
+    ticks = [];
+    for (var j = 0; j < s.length; j++) {
+      var t = D.createElement('i'); t.className = 'tk';
+      t.style.top = (s.length > 1 ? (j / (s.length - 1)) * 100 : 0) + '%';
+      track.appendChild(t); ticks.push(t);
+    }
+  });
+  cur = -1; onScroll();
+  HB.emit('measure', s);
+}
+var mT = 0;
+function remeasure() { clearTimeout(mT); mT = setTimeout(measure, 140); }
+W.addEventListener('resize', remeasure, { passive: true });
+try { if (W.ResizeObserver) new ResizeObserver(remeasure).observe(D.getElementById('main')); } catch (e) {}
+try { if (D.fonts && D.fonts.ready) D.fonts.ready.then(remeasure, function () {}); } catch (e) {}
+
+var navLinks = [].slice.call(D.querySelectorAll('.nav a'));
+var sQueued = false, hdrEl = D.getElementById('hdr'), solid = false;
+function onScroll() {
+  sQueued = false;
+  var y = W.scrollY, n = HB.stops.length;
+  if ((y > 24) !== solid && hdrEl) { solid = y > 24; hdrEl.classList.toggle('solid', solid); }
+  if (!n) return;
+  HB.param(y, sp);
+  var near = sp.t > 0.5 ? Math.min(n - 1, sp.i + 1) : sp.i;
+  if (y >= HB.stops[n - 1] - 2) near = n - 1;
+  if (near !== cur) {
+    if (stopEls[cur]) stopEls[cur].classList.remove('is-here');
+    cur = near; if (stopEls[cur]) stopEls[cur].classList.add('is-here');
+    if (hudSt) hudSt.textContent = (cur < 9 ? '0' : '') + (cur + 1) + ' / ' + (n < 10 ? '0' : '') + n + ' ' + (HB.names[cur] || '');
+    var id = stopEls[cur] && stopEls[cur].id;
+    for (var i = 0; i < navLinks.length; i++) {
+      var t = navLinks[i].getAttribute('href').slice(1);
+      var on = HB.view === 'values' ? t === 'values' : (t === id && id !== 'top');
+      if (on) navLinks[i].setAttribute('aria-current', HB.view === 'values' ? 'page' : 'true'); else navLinks[i].removeAttribute('aria-current');
+    }
+    HB.emit('stop', cur);
+  }
+  if (dot && trackH) {
+    var p = n > 1 ? (sp.i + sp.t) / (n - 1) : 0;
+    dot.style.transform = 'translateY(' + (p * trackH).toFixed(1) + 'px)';
+  }
+}
+W.addEventListener('scroll', function () { if (!sQueued) { sQueued = true; requestAnimationFrame(onScroll); } }, { passive: true });
+
+/* ---------- Routing: #values is its own view; every home section hash shows home ---------- */
+var beatIds = { 'v-1': 1, 'v-2': 1, 'v-3': 1, 'v-4': 1 };
+function viewFor(h) { if (h === 'values' || beatIds[h]) return 'values'; if (!h || homeIds[h]) return 'home'; return null; }
+function jump(y) { try { W.scrollTo({ top: y, left: 0, behavior: 'instant' }); } catch (e) { W.scrollTo(0, y); } }
+function applyRoute(initial) {
+  var h = (location.hash || '').replace(/^#/, '');
+  var v = viewFor(h) || HB.view, prev = HB.view, changed = v !== prev;
+  HB.view = v;
+  views.home.hidden = v !== 'home'; views.values.hidden = v !== 'values';
+  R.setAttribute('data-view', v);
+  if (changed || initial) {
+    var target = ((v === 'home' && homeIds[h] && h !== 'top') || (v === 'values' && beatIds[h])) ? D.getElementById(h) : null;
+    if (changed) jump(target ? target.getBoundingClientRect().top + W.scrollY : 0);
+    if (changed && !initial) {
+      var head = target ? target.querySelector('h1, h2') : views[v].querySelector('h1');
+      if (head) { try { head.focus({ preventScroll: true }); } catch (e) {} }
+    }
+  }
+  measure();
+  HB.emit('route', { view: v, prev: prev, changed: changed, initial: !!initial });
+}
+W.addEventListener('hashchange', function () { applyRoute(false); });
+D.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+  if (a.hasAttribute('data-ph')) { e.preventDefault(); return; }
+  var h = a.getAttribute('href').slice(1);
+  if (h === 'values' && HB.view === 'values' && location.hash === '#values') { e.preventDefault(); W.scrollTo({ top: 0, behavior: HB.rm ? 'auto' : 'smooth' }); }
+  if (h === 'top' && HB.view === 'home' && location.hash === '#top') { e.preventDefault(); W.scrollTo({ top: 0, behavior: HB.rm ? 'auto' : 'smooth' }); }
+  // Chapter index: fly to that value's stop without changing the route, then hand focus to its title.
+  var k = +a.getAttribute('data-beat');
+  if (k && HB.view === 'values' && HB.stops[k] != null) {
+    e.preventDefault();
+    try { W.scrollTo({ top: HB.stops[k], left: 0, behavior: HB.rm ? 'auto' : 'smooth' }); } catch (x) { W.scrollTo(0, HB.stops[k]); }
+    var t = D.getElementById('h-v' + k); if (t) { try { t.focus({ preventScroll: true }); } catch (x) {} }
+  }
+});
+guard('skip', function () {
+  D.getElementById('skip').addEventListener('click', function (e) {
+    e.preventDefault();
+    var head = views[HB.view].querySelector('h1');
+    if (head) { try { head.focus({ preventScroll: true }); } catch (x) { head.focus(); } jump(0); }
+  });
+});
+applyRoute(true);
+
+/* ---------- Loader ---------- */
+guard('loader', function () {
+  var ldr = D.getElementById('ldr'), stat = D.getElementById('ldr-stat');
+  var reveal = function () {
+    if (HB.revealed) return; HB.revealed = true;
+    if (ldr) { ldr.classList.remove('beat'); ldr.classList.add('out'); setTimeout(function () { ldr.hidden = true; }, 950); }
+    if (!HB.gl.started || HB.gl.failed) { if (HB.rm && !HB.nogl && !HB.gl.failed) setTimeout(function () { if (!HB.gl.started || HB.gl.failed) showPoster(); }, 900); else showPoster(); }
+    HB.emit('reveal');
+  };
+  HB.reveal = reveal;
+  if (!ldr || HB.rm) { if (ldr) ldr.hidden = true; reveal(); return; }
+  var main = ldr.querySelector('.lp-main'), over = ldr.querySelector('.lp-over');
+  var a = 0.443, b = 0.6, drawn = false, t0 = performance.now(), DRAW = 950;
+  try {
+    var tmp = D.createElementNS('http://www.w3.org/2000/svg', 'path');
+    tmp.setAttribute('d', 'M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3');
+    ldr.querySelector('svg').appendChild(tmp);
+    var L0 = tmp.getTotalLength(), L1 = main.getTotalLength(), Lo = over.getTotalLength(); tmp.remove();
+    if (L1 > 0) { a = L0 / L1; b = a + Lo / L1; }
+  } catch (e) {}
+  function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function step(now) {
+    var k = Math.min(1, (now - t0) / DRAW), p = ease(k);
+    main.style.strokeDashoffset = (1 - p).toFixed(4);
+    over.style.strokeDashoffset = (1 - clamp((p - a) / (b - a), 0, 1)).toFixed(4);
+    if (k < 1) requestAnimationFrame(step); else { drawn = true; ldr.classList.add('beat'); maybe(); }
+  }
+  requestAnimationFrame(step);
+  function maybe() {
+    if (HB.revealed) return;
+    if (drawn && performance.now() - t0 > 1400 && (HB.gl.started || HB.gl.failed)) reveal();
+  }
+  HB.on('gl-ready', function () { if (stat) stat.textContent = 'Ready'; maybe(); });
+  HB.on('gl-fail', function () { if (stat) stat.textContent = 'Still mode'; maybe(); });
+  setTimeout(maybe, 1450); setTimeout(maybe, 1700);
+  setTimeout(reveal, Math.max(900, 2200 - performance.now()));
+  ldr.addEventListener('click', reveal);
+});
+
+/* ---------- Copy address ---------- */
+guard('copy', function () {
+  var btn = D.getElementById('copy'), mail = D.getElementById('mail'), st = D.getElementById('copy-st'), ADDR = 'admin@hummingbolt.com', tm = 0;
+  function say(t) { st.textContent = t; clearTimeout(tm); tm = setTimeout(function () { st.textContent = ''; }, 6000); }
+  function selectMail() { try { var r = D.createRange(); r.selectNodeContents(mail); var s = W.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
+  function legacy() {
+    var ok = false; selectMail();
+    try { ok = !!(D.execCommand && D.execCommand('copy')); } catch (e) { ok = false; }
+    if (ok) say('Copied to your clipboard.'); else { selectMail(); say('Copy is blocked here. The address is selected, so press Ctrl+C or Cmd+C.'); }
+  }
+  btn.addEventListener('click', function () {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ADDR).then(function () { say('Copied to your clipboard.'); }, legacy);
+        return;
+      }
+    } catch (e) {}
+    legacy();
+  });
+});
+
+/* ---------- Menu (narrow screens) ---------- */
+guard('menu', function () {
+  var hdr = D.getElementById('hdr'), btn = D.getElementById('menu-btn'), nav = D.getElementById('nav');
+  function set(open) {
+    hdr.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.querySelector('span').textContent = open ? 'Close' : 'Menu';
+    if (open) { var a = nav.querySelector('a'); if (a) a.focus(); }
+  }
+  btn.addEventListener('click', function () { set(!hdr.classList.contains('open')); });
+  nav.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+  D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && hdr.classList.contains('open')) { set(false); btn.focus(); } });
+  hdr.addEventListener('focusout', function (e) { if (hdr.classList.contains('open') && e.relatedTarget && !hdr.contains(e.relatedTarget)) set(false); });
+  W.addEventListener('resize', function () { if (W.innerWidth > 760 && hdr.classList.contains('open')) set(false); }, { passive: true });
+});
+
+/* ---------- Pointer and touch (for the 3D wake). Passive: native scrolling is never blocked. ---------- */
+function pmove(x, y, kind) { var P = HB.pointer; P.x = x; P.y = y; P.nx = x / W.innerWidth * 2 - 1; P.ny = -(y / W.innerHeight * 2 - 1); P.has = true; P.moved++; P.kind = kind; }
+// Browsers can send one synthetic move at (0, 0) on load; ignore it until a real one arrives.
+W.addEventListener('pointermove', function (e) { if (!HB.pointer.has && e.clientX === 0 && e.clientY === 0) return; pmove(e.clientX, e.clientY, e.pointerType || 'mouse'); }, { passive: true });
+W.addEventListener('touchstart', function (e) { var t = e.touches && e.touches[0]; if (t) pmove(t.clientX, t.clientY, 'touch'); }, { passive: true });
+W.addEventListener('touchmove', function (e) { var t = e.touches && e.touches[0]; if (t) pmove(t.clientX, t.clientY, 'touch'); }, { passive: true });
+
+/* ---------- Cursor ---------- */
+guard('cursor', function () {
+  if (!HB.fine || HB.rm) return;
+  var c = D.getElementById('cur'), ring = c.firstElementChild, pt = c.lastElementChild;
+  var x = -100, y = -100, rx = -100, ry = -100, raf = 0, last = 0, seen = false;
+  R.classList.add('cc');
+  ring.style.transform = pt.style.transform = 'translate3d(-100px,-100px,0)';
+  function loop(t) {
+    raf = 0; var dt = last ? Math.min(0.05, (t - last) / 1000) : 0.016; last = t;
+    var k = 1 - Math.exp(-dt * 16); rx += (x - rx) * k; ry += (y - ry) * k;
+    ring.style.transform = 'translate3d(' + rx.toFixed(1) + 'px,' + ry.toFixed(1) + 'px,0)';
+    pt.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+    if (Math.abs(x - rx) + Math.abs(y - ry) > 0.25) raf = requestAnimationFrame(loop); else last = 0;
+  }
+  W.addEventListener('pointermove', function (e) {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    if (!seen && e.clientX === 0 && e.clientY === 0) return;
+    if (!seen) { seen = true; rx = e.clientX; ry = e.clientY; }
+    x = e.clientX; y = e.clientY; c.classList.remove('away');
+    var t = e.target, link = t && t.closest && t.closest('a, button');
+    c.classList.toggle('link', !!link); c.classList.toggle('text', !!(t && t.closest && t.closest('.mail')));
+    if (!raf) raf = requestAnimationFrame(loop);
+  }, { passive: true });
+  D.addEventListener('mouseout', function (e) { if (!e.relatedTarget) c.classList.add('away'); });
+});
+
+/* ---------- Film grain, generated here ---------- */
+guard('grain', function () {
+  var c = D.createElement('canvas'); c.width = c.height = 128;
+  var g = c.getContext('2d'), im = g.createImageData(128, 128), d = im.data;
+  for (var i = 0; i < d.length; i += 4) { var v = (Math.random() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 14; }
+  g.putImageData(im, 0, 0);
+  D.getElementById('veil').style.setProperty('--grain', 'url(' + c.toDataURL('image/png') + ')');
+});
+})();
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" } }
+</script>
+<script type="module">
+/* Flight: one continuous world. Scroll is the flight; each stop is a hover. */
+const HB = window.HB || {};
+(async () => {
+  if (HB.nogl) { if (HB.glFail) HB.glFail('nogl'); return; }
+  let THREE;
+  try { THREE = await import('three'); } catch (e) { if (HB.glFail) HB.glFail(e); return; }
+  try { boot(THREE); } catch (e) { if (HB.glFail) HB.glFail(e); }
+})();
+
+function boot(THREE) {
+'use strict';
+const D = document, W = window;
+const canvas = D.getElementById('gl');
+const PHONE = !!HB.phone;
+const cores = navigator.hardwareConcurrency || 4;
+const DPR_CAP = PHONE ? 1.25 : 1.75;
+const LEVELS = [
+  { facets: 1300, motes: 520, stems: 120, pr: 1.0 },
+  { facets: 2600, motes: 900, stems: 160, pr: 1.25 },
+  { facets: 4200, motes: 1300, stems: 200, pr: 1.5 },
+  { facets: 6400, motes: 1900, stems: 240, pr: 1.75 }
+];
+let level = PHONE ? 1 : (cores >= 8 ? 3 : 2);
+if (cores <= 2) level = 0;
+const ALLOC = LEVELS[level];
+let prScale = 1;
+let still = !!HB.rm;
+let stillQ = 0, dead = false, lost = false, running = false, raf = 0, firstDone = false, errs = 0;
+
+THREE.ColorManagement.enabled = false;
+let shaderBad = false;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !PHONE && level >= 2, alpha: false, depth: true, stencil: false, powerPreference: 'high-performance' });
+renderer.debug.onShaderError = function (gl, program, vs, fs) {
+  shaderBad = true;
+  try { console.warn('[hummingbolt] shader', gl.getShaderInfoLog(vs), gl.getShaderInfoLog(fs), gl.getProgramInfoLog(program)); } catch (e) {}
+};
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+const glx = renderer.getContext();
+renderer.setClearColor(0x050c0b, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.08, 330);
+const keep = [];
+const track = (x) => { keep.push(x); return x; };
+const V3 = (h) => { const c = new THREE.Color(h); return new THREE.Vector3(c.r, c.g, c.b); };
+const vec = (a) => new THREE.Vector3(a[0], a[1], a[2]);
+const UP = new THREE.Vector3(0, 1, 0), ZAX = new THREE.Vector3(0, 0, 1);
+let seed = 1337;
+function rnd() { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const smoother = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+const lerp = (a, b, t) => a + (b - a) * t;
+const eInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const eOut = (t) => 1 - Math.pow(1 - t, 3);
+
+/* ---------------- Shared uniforms ---------------- */
+const NS = 16, NW = 16;
+const SUN = new THREE.Vector3(0.2, 0.62, -0.76).normalize();
+const GLOW_BASE = V3(0x6e4a2b), GLOW_WARM = V3(0x9a5f2c), GLOW_COOL = V3(0x3b5a52);
+// Each stop has its own light: warm amber for the bold beats, cool sage for the calm ones. Tonal, never neon.
+const SKY_MID = V3(0x0e2724), SKY_MID_W = V3(0x1a2a21), SKY_MID_C = V3(0x0b2427);
+const SKY_HIGH = V3(0x091a18), SKY_HIGH_W = V3(0x14201a), SKY_HIGH_C = V3(0x08191b);
+const SH_COL = V3(0xe6c49a), SH_COL_W = V3(0xf0b77e), SH_COL_C = V3(0xcfd9c8);
+const U = {
+  uTime: { value: 0 },
+  uSkyLow: { value: V3(0x05100e) }, uSkyMid: { value: V3(0x0e2724) }, uSkyHigh: { value: V3(0x091a18) },
+  uGlow: { value: GLOW_BASE.clone() }, uSunDir: { value: SUN.clone() }, uFog: { value: 0.026 },
+  uShA: { value: Array.from({ length: NS }, () => new THREE.Vector4(0, 0, 0, 0)) },
+  uShB: { value: Array.from({ length: NS }, () => new THREE.Vector4(0, 0, 0, 0)) },
+  uShDir: { value: SUN.clone().negate() },
+  uWake: { value: Array.from({ length: NW }, () => new THREE.Vector4(0, 0, 0, -100)) },
+  uCamFwd: { value: new THREE.Vector3(0, 0, -1) },
+  uPx: { value: 600 },
+  uDeep: { value: V3(0x0b1f1c) }, uTeal: { value: V3(0x25544b) }, uCopper: { value: V3(0xc98552) },
+  uCopperHi: { value: V3(0xf3c99d) }, uBone: { value: V3(0xe9dfcc) }, uStem: { value: V3(0x040d0c) }, uShCol: { value: V3(0xe6c49a) }
+};
+
+const COMMON = `
+#define NS ${NS}
+#define NW ${NW}
+uniform float uTime;
+uniform vec3 uSkyLow; uniform vec3 uSkyMid; uniform vec3 uSkyHigh; uniform vec3 uGlow; uniform vec3 uSunDir;
+uniform float uFog;
+uniform vec4 uShA[NS]; uniform vec4 uShB[NS]; uniform vec3 uShDir;
+uniform vec3 uDeep; uniform vec3 uTeal; uniform vec3 uCopper; uniform vec3 uCopperHi; uniform vec3 uBone; uniform vec3 uStem; uniform vec3 uShCol;
+uniform float uPx;
+vec3 skyCol(vec3 d){
+  vec3 c = mix(uSkyMid, uSkyHigh, smoothstep(0.02, 0.75, d.y));
+  c = mix(uSkyLow, c, smoothstep(-0.62, 0.04, d.y));
+  float g = max(dot(d, uSunDir), 0.0);
+  c += uGlow * (0.5 * pow(g, 5.0) + 0.55 * pow(g, 32.0));
+  return c;
+}
+float fogF(float dist){ float f = uFog * dist; return 1.0 - exp(-f * f); }
+float shaftLight(vec3 p){
+  float L = 0.0;
+  for (int i = 0; i < NS; i++){
+    vec4 a = uShA[i];
+    if (a.w <= 0.0) continue;
+    vec3 q = p - a.xyz;
+    float al = dot(q, uShDir);
+    vec3 pr = q - al * uShDir;
+    float d2 = dot(pr, pr) / (a.w * a.w);
+    float lf = 1.0 - smoothstep(uShB[i].y * 0.3, uShB[i].y * 0.55, abs(al));
+    L += exp(-d2 * 1.4) * uShB[i].x * lf;
+  }
+  return L;
+}
+mat3 rotAxis(vec3 a, float ang){
+  float s = sin(ang), c = cos(ang), oc = 1.0 - c;
+  return mat3(oc*a.x*a.x + c, oc*a.x*a.y + a.z*s, oc*a.z*a.x - a.y*s,
+              oc*a.x*a.y - a.z*s, oc*a.y*a.y + c, oc*a.y*a.z + a.x*s,
+              oc*a.z*a.x + a.y*s, oc*a.y*a.z - a.x*s, oc*a.z*a.z + c);
+}
+`;
+const WAKE = `
+uniform vec4 uWake[NW]; uniform vec3 uCamFwd;
+vec3 wakeOff(vec3 p, out float amt){
+  vec3 off = vec3(0.0); amt = 0.0;
+  for (int i = 0; i < NW; i++){
+    vec4 w = uWake[i];
+    float age = uTime - w.w;
+    if (age < 0.0 || age > 2.4) continue;
+    float s = 1.0 - age / 2.4; s *= s;
+    vec3 d = p - w.xyz; float l2 = dot(d, d);
+    float f = s * exp(-l2 * 0.5);
+    vec3 dn = d * inversesqrt(l2 + 1e-4);
+    off += dn * f * 0.9 + cross(dn, uCamFwd) * f * 0.7;
+    amt += f;
+  }
+  return off;
+}
+`;
+const FRAG_VC = `
+varying vec3 vCol; varying float vFog; varying vec3 vFogC;
+void main(){ gl_FragColor = vec4(mix(vCol, vFogC, vFog), 1.0); }
+`;
+function mat(o) {
+  const m = new THREE.ShaderMaterial(Object.assign({
+    uniforms: Object.assign({}, U, o.uniforms || {}),
+    vertexShader: COMMON + (o.wake ? WAKE : '') + o.vs,
+    fragmentShader: COMMON + o.fs
+  }, o.opts || {}));
+  return track(m);
+}
+const ADD = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending };
+
+/* ---------------- Stations ---------------- */
+// F = what the camera looks at, C = where it hovers (landscape), s = lens shift [x,y] landscape, p = portrait, k = portrait pull-back
+// mood = [fog density, shaft strength, sky glow, warmth: -1 cool sage .. 0 base .. +1 low amber sun]
+const HOME = [
+  { F: [0.8, 2.7, 0], C: [0, 2.4, 9.6], s: [0.3, 0.02], p: [0, 0.48], k: 1.32, mood: [0.025, 1.0, 1.0, 0.2] },
+  { F: [-9, 3.8, -40], C: [-4.8, 3.3, -31.5], s: [-0.36, 0.04], p: [0, 0.42], k: 1.15, mood: [0.03, 0.95, 0.85, -0.25] },
+  { F: [7, 1.4, -66], C: [3.2, 2.1, -58.4], s: [0.3, 0.0], p: [0, 0.44], k: 1.3, mood: [0.027, 1.0, 1.0, 0.3] },
+  { F: [0, 11, -108], C: [0, 4.5, -92], s: [0.16, -0.04], p: [0, 0.3], k: 1.08, mood: [0.02, 1.2, 1.15, 0.7] },
+  { F: [-30, 3.2, -150], C: [-6, 6.4, -124], s: [-0.3, 0.02], p: [0, 0.4], k: 1.0, mood: [0.029, 0.85, 0.85, -0.2] },
+  { F: [4, 0.9, -158], C: [1.6, 1.6, -149.5], s: [0.3, 0.06], p: [0, 0.44], k: 1.3, mood: [0.034, 0.75, 0.65, 0.35] }
+];
+const VAL = [
+  { F: [-34, 5, -146], C: [-16, 4.2, -127], s: [0.22, -0.04], p: [0, 0.36], k: 1.0, mood: [0.026, 0.9, 1.0, 0.0] },
+  { F: [-42, 4.2, -160], C: [-34.5, 3.8, -152.5], s: [0.3, 0.02], p: [0, 0.44], k: 1.3, mood: [0.026, 1.1, 1.1, 0.85] },
+  { F: [-62, 3.2, -172], C: [-55.8, 3.0, -165], s: [-0.34, 0.02], p: [0, 0.44], k: 1.3, mood: [0.027, 1.0, 0.95, -0.45] },
+  { F: [-80, 1.6, -190], C: [-73.6, 2.5, -183.6], s: [0.3, 0.0], p: [0, 0.42], k: 1.35, mood: [0.027, 1.0, 1.0, 0.4] },
+  { F: [-98, 2.8, -206], C: [-94.9, 2.9, -202.9], s: [-0.45, 0.02], p: [0, 0.44], k: 1.35, mood: [0.023, 1.1, 1.0, -0.55] },
+  { F: [-100, 17, -236], C: [-90, 6, -215], s: [0.4, 0.13], p: [0, 0.32], k: 1.0, mood: [0.021, 1.2, 1.22, 0.9] }
+];
+const FOCI = [
+  { p: vec(HOME[0].F), r: 2.6 }, { p: vec(HOME[1].F), r: 3.0 }, { p: vec(HOME[2].F), r: 1.9 }, { p: vec(HOME[5].F), r: 1.0 },
+  { p: vec(VAL[1].F), r: 2.2 }, { p: vec(VAL[2].F), r: 2.1 }, { p: vec(VAL[3].F), r: 2.2 }, { p: vec(VAL[4].F), r: 1.5 }
+];
+function clearance(p) { let b = 1e9; for (const o of FOCI) b = Math.min(b, p.distanceTo(o.p) - o.r); return b; }
+function camOf(d, portrait) {
+  const F = vec(d.F), C = vec(d.C);
+  if (portrait) C.sub(F).multiplyScalar(d.k || 1.2).add(F);
+  return C;
+}
+function midPoint(a, b) {
+  const m = a.clone().add(b).multiplyScalar(0.5);
+  const dlt = b.clone().sub(a), len = dlt.length();
+  const side = new THREE.Vector3().crossVectors(dlt, UP); if (side.lengthSq() < 1e-6) side.set(1, 0, 0); side.normalize();
+  const sw = Math.min(4.5, len * 0.12);
+  const m1 = m.clone().addScaledVector(side, sw), m2 = m.clone().addScaledVector(side, -sw);
+  const pick = clearance(m1) >= clearance(m2) ? m1 : m2;
+  pick.y += Math.min(2.0, len * 0.04);
+  return pick;
+}
+function buildPath(defs, portrait, start) {
+  const cams = defs.map((d) => camOf(d, portrait));
+  const all = start ? [start.clone()].concat(cams) : cams;
+  const pts = [], idx = [];
+  for (let i = 0; i < all.length; i++) { if (i > 0) pts.push(midPoint(all[i - 1], all[i])); idx.push(pts.length); pts.push(all[i].clone()); }
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal');
+  const DIV = 60; curve.arcLengthDivisions = (pts.length - 1) * DIV;
+  const lens = curve.getLengths(curve.arcLengthDivisions), total = lens[lens.length - 1];
+  const off = start ? 1 : 0;
+  const st = defs.map((d, k) => ({ u: lens[idx[k + off] * DIV] / total, F: vec(d.F), sx: portrait ? d.p[0] : d.s[0], sy: portrait ? d.p[1] : d.s[1], mood: d.mood }));
+  return { curve, st, total };
+}
+const PATHS = {};
+for (const o of ['l', 'p']) {
+  const home = buildPath(HOME, o === 'p');
+  const values = buildPath(VAL, o === 'p', camOf(HOME[4], o === 'p'));
+  PATHS[o] = { home, values };
+}
+let orient = 'l';
+
+/* ---------------- Exclusion for scattered things ---------------- */
+const SIGHT = [];
+for (const o of ['l', 'p']) {
+  [[HOME, 0], [HOME, 1], [HOME, 2], [HOME, 5], [VAL, 1], [VAL, 2], [VAL, 3], [VAL, 4]].forEach(([arr, i]) => SIGHT.push({ a: camOf(arr[i], o === 'p'), b: vec(arr[i].F) }));
+}
+const _q = new THREE.Vector3(), _ab = new THREE.Vector3();
+function segDist(p, a, b) { _ab.subVectors(b, a); const t = clamp(_q.subVectors(p, a).dot(_ab) / _ab.lengthSq(), 0, 1); return _q.copy(a).addScaledVector(_ab, t).distanceTo(p); }
+const _pp = new THREE.Vector3();
+function blocked(x, y, z, pad) {
+  _pp.set(x, y, z);
+  for (const o of FOCI) if (_pp.distanceTo(o.p) < o.r + 1.3 + pad) return true;
+  for (const s of SIGHT) if (segDist(_pp, s.a, s.b) < 0.9 + pad) return true;
+  return false;
+}
+const CURVES = [PATHS.l.home.curve, PATHS.l.values.curve, PATHS.p.home.curve, PATHS.p.values.curve];
+const SAMPLES = [];
+CURVES.forEach((c) => { c.getSpacedPoints(260).forEach((p) => SAMPLES.push(p)); });
+function pathDistXZ(x, z) { let b = 1e9; for (let i = 0; i < SAMPLES.length; i++) { const s = SAMPLES[i]; const dx = s.x - x, dz = s.z - z; const d = dx * dx + dz * dz; if (d < b) b = d; } return Math.sqrt(b); }
+
+/* ---------------- Sky ---------------- */
+const sky = new THREE.Mesh(track(new THREE.SphereGeometry(240, 32, 16)), mat({
+  vs: `varying vec3 vDir; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vDir = w.xyz - cameraPosition; vec4 p = projectionMatrix * viewMatrix * w; gl_Position = p.xyww; }`,
+  fs: `varying vec3 vDir; void main(){ vec3 d = normalize(vDir); vec3 c = skyCol(d); float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453); c += (n - 0.5) * (1.8 / 255.0); gl_FragColor = vec4(c, 1.0); }`,
+  opts: { side: THREE.BackSide, depthWrite: false, depthTest: false }
+}));
+sky.renderOrder = -10; sky.frustumCulled = false; scene.add(sky);
+
+/* ---------------- Light shafts ---------------- */
+const SH = [
+  [0.8, 2.7, 0, 1.2, 1.0, 46], [-9, 4, -40, 1.6, 0.9, 50], [-15, 4, -31, 0.7, 0.5, 44], [7, 1.4, -66, 1.1, 0.95, 46],
+  [-2, 9, -106, 1.4, 0.9, 52], [3.5, 10, -101, 0.9, 0.7, 52], [0, 13, -114, 2.0, 0.65, 56], [-26, 5, -147, 1.2, 0.6, 46],
+  [4, 0.9, -158, 0.8, 0.5, 40]
+];
+VAL.slice(1, -1).forEach((d) => SH.push([d.F[0] + 0.4, d.F[1], d.F[2] - 0.4, 1.1, 0.85, 44]));
+SH.push([-99, 12, -233, 2.2, 1.0, 60], [-60, 8, -160, 0.8, 0.45, 50]);
+const SHBASE = new Float32Array(NS);
+SH.slice(0, NS).forEach((s, i) => { U.uShA.value[i].set(s[0], s[1], s[2], s[3]); U.uShB.value[i].set(s[4], s[5], 0, 0); SHBASE[i] = s[4]; });
+const shaftGeo = track(new THREE.InstancedBufferGeometry());
+{
+  const pl = new THREE.PlaneGeometry(1, 1, 1, 10);
+  shaftGeo.index = pl.index; shaftGeo.setAttribute('position', pl.attributes.position);
+  const nA = Math.min(SH.length, NS), A = new Float32Array(nA * 4), B = new Float32Array(nA * 4);
+  for (let i = 0; i < nA; i++) { A.set([SH[i][0], SH[i][1], SH[i][2], SH[i][3]], i * 4); B.set([i, SH[i][5], 0, 0], i * 4); }
+  shaftGeo.setAttribute('aA', new THREE.InstancedBufferAttribute(A, 4));
+  shaftGeo.setAttribute('aB', new THREE.InstancedBufferAttribute(B, 4));
+  shaftGeo.instanceCount = nA; pl.dispose();
+}
+const shaftMat = mat({
+  vs: `
+  attribute vec4 aA; attribute vec4 aB;
+  varying vec2 vQ; varying float vI;
+  void main(){
+    vec3 Dd = uShDir; vec3 c = aA.xyz;
+    vec3 toC = cameraPosition - c;
+    vec3 side = normalize(cross(Dd, toC));
+    float s = position.y + 0.5;
+    float w = aA.w * 2.4 * mix(1.3, 0.55, s);
+    vec3 p = c - Dd * (position.y * aB.y) + side * position.x * w;
+    float dax = length(cross(cameraPosition - p, Dd));
+    float face = length(cross(normalize(toC), Dd));
+    float d = length(cameraPosition - p);
+    int id = int(aB.x + 0.5);
+    float inten = 0.0;
+    for (int i = 0; i < NS; i++) { if (i == id) inten = uShB[i].x; }
+    vI = inten * smoothstep(0.6, 3.6, dax - aA.w * 0.5) * smoothstep(0.12, 0.5, face) * (1.0 - 0.82 * fogF(d));
+    vQ = vec2(position.x * 2.0, s);
+    gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+  }`,
+  fs: `
+  varying vec2 vQ; varying float vI;
+  void main(){
+    float x = vQ.x;
+    float across = exp(-x * x * 3.0) * (1.0 - x * x);
+    float along = smoothstep(0.0, 0.42, vQ.y) * (1.0 - smoothstep(0.72, 1.0, vQ.y));
+    float rays = 0.76 + 0.24 * sin(x * 9.0 + vQ.y * 3.0 + uTime * 0.21) * sin(x * 23.0 - uTime * 0.13 + vQ.y * 7.0);
+    gl_FragColor = vec4(uShCol * across * along * rays * vI * 0.15, 1.0);
+  }`,
+  opts: Object.assign({ side: THREE.DoubleSide }, ADD)
+});
+const shafts = new THREE.Mesh(shaftGeo, shaftMat); shafts.frustumCulled = false; shafts.renderOrder = 5; scene.add(shafts);
+
+/* ---------------- Stems: tall dark forms that give the fog depth ---------------- */
+const stemGeo = track(new THREE.InstancedBufferGeometry());
+{
+  const cy = new THREE.CylinderGeometry(1, 1, 1, 7, 14, true);
+  stemGeo.index = cy.index; stemGeo.setAttribute('position', cy.attributes.position);
+  const n = ALLOC.stems, Bs = new Float32Array(n * 4), Sh = new Float32Array(n * 4);
+  let made = 0, guardN = 0;
+  while (made < n && guardN++ < n * 40) {
+    const cv = CURVES[rnd() < 0.55 ? 0 : 1], u = rnd(), P = cv.getPointAt(u), T = cv.getTangentAt(u);
+    const side = new THREE.Vector3().crossVectors(T, UP).normalize();
+    const far = rnd() < 0.18;
+    const dist = far ? 45 + rnd() * 70 : 4.5 + Math.pow(rnd(), 1.25) * 34;
+    const r = (0.16 + Math.pow(rnd(), 2) * 0.5) + dist * 0.01;
+    const x = P.x + side.x * dist * (rnd() < 0.5 ? -1 : 1) + T.x * (rnd() - 0.5) * 8;
+    const z = P.z + side.z * dist * (rnd() < 0.5 ? -1 : 1) + T.z * (rnd() - 0.5) * 8;
+    if (pathDistXZ(x, z) < 3.4 + r * 2) continue;
+    let bad = false;
+    for (const o of FOCI) { const dx = o.p.x - x, dz = o.p.z - z; if (Math.sqrt(dx * dx + dz * dz) < o.r + 2.4 + r) { bad = true; break; } }
+    if (!bad) for (const s of SIGHT) { _pp.set(x, s.b.y, z); if (segDist(_pp, s.a, s.b) < 1.8 + r) { bad = true; break; } }
+    if (bad) continue;
+    const H = 38 + rnd() * 42;
+    Bs.set([x, -16, z, H], made * 4);
+    Sh.set([r, (rnd() - 0.5) * 0.5, (rnd() - 0.5) * 0.5, rnd()], made * 4);
+    made++;
+  }
+  stemGeo.setAttribute('aBase', new THREE.InstancedBufferAttribute(Bs, 4));
+  stemGeo.setAttribute('aShape', new THREE.InstancedBufferAttribute(Sh, 4));
+  stemGeo.instanceCount = made; stemGeo.userData.made = made; cy.dispose();
+}
+const stemMat = mat({
+  vs: `
+  attribute vec4 aBase; attribute vec4 aShape;
+  varying vec3 vCol; varying float vFog; varying vec3 vFogC;
+  void main(){
+    float h = position.y + 0.5;
+    float r = aShape.x * mix(1.0, 0.3, h);
+    vec3 p = aBase.xyz + vec3(position.x * r, h * aBase.w, position.z * r);
+    float b = h * h;
+    p.x += aShape.y * b * aBase.w * 0.16 + sin(uTime * 0.21 + aShape.w * 6.283) * b * 0.4;
+    p.z += aShape.z * b * aBase.w * 0.16;
+    vec3 n = normalize(vec3(position.x, 0.12, position.z));
+    vec3 V = normalize(cameraPosition - p);
+    float rim = pow(1.0 - abs(dot(n, V)), 3.0);
+    float sh = shaftLight(p);
+    float dif = max(dot(n, uSunDir), 0.0);
+    vCol = uStem * (0.6 + 0.8 * dif) + uCopper * rim * (0.035 + sh * 0.8) + uTeal * rim * 0.16 + uCopper * dif * sh * 0.1;
+    float d = length(p - cameraPosition);
+    vFog = fogF(d); vFogC = skyCol(-V);
+    gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+  }`,
+  fs: FRAG_VC
+});
+const stems = new THREE.Mesh(stemGeo, stemMat); stems.frustumCulled = false; scene.add(stems);
+
+/* ---------------- Facets: folded petals that drift, glint, part and swirl ---------------- */
+const facetGeo = track(new THREE.InstancedBufferGeometry());
+{
+  const k = new THREE.BufferGeometry();
+  const top = [0, 0.62, 0], le = [-0.2, 0.02, 0.08], ri = [0.22, -0.02, 0.08], bo = [0, -0.48, 0];
+  k.setAttribute('position', new THREE.Float32BufferAttribute([].concat(top, le, bo, top, bo, ri), 3));
+  k.computeVertexNormals();
+  facetGeo.setAttribute('position', k.attributes.position); facetGeo.setAttribute('normal', k.attributes.normal);
+  const n = ALLOC.facets, O = new Float32Array(n * 4), Rt = new Float32Array(n * 4), Se = new Float32Array(n * 4);
+  const P = new THREE.Vector3(), T = new THREE.Vector3(), N1 = new THREE.Vector3(), B1 = new THREE.Vector3(), ax = new THREE.Vector3();
+  const curtain = vec(HOME[1].F), lab = vec(HOME[3].F);
+  for (let i = 0; i < n; i++) {
+    let x = 0, y = 0, z = 0;
+    for (let tries = 0; tries < 14; tries++) {
+      const r0 = rnd();
+      if (r0 < 0.03) { x = curtain.x + (rnd() - 0.5) * 12; y = curtain.y + (rnd() - 0.5) * 8; z = curtain.z + (rnd() - 0.5) * 12; }
+      else if (r0 < 0.1) { x = lab.x + (rnd() - 0.5) * 14; y = lab.y + (rnd() - 0.6) * 12; z = lab.z + (rnd() - 0.5) * 12; }
+      else {
+        const cv = CURVES[rnd() < 0.56 ? 0 : 1], u = rnd(); cv.getPointAt(u, P); cv.getTangentAt(u, T);
+        N1.crossVectors(T, UP).normalize(); B1.crossVectors(N1, T).normalize();
+        const a = rnd() * Math.PI * 2, rr = 1.4 + Math.pow(rnd(), 1.5) * 15;
+        x = P.x + (N1.x * Math.cos(a) + B1.x * Math.sin(a) * 0.7) * rr;
+        y = P.y + (N1.y * Math.cos(a) + B1.y * Math.sin(a) * 0.7) * rr;
+        z = P.z + (N1.z * Math.cos(a) + B1.z * Math.sin(a) * 0.7) * rr;
+      }
+      if (y > -6 && y < 20 && !blocked(x, y, z, 0.5)) break;
+    }
+    O.set([x, y, z, 0.07 + Math.pow(rnd(), 2.2) * 0.27], i * 4);
+    ax.set(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).normalize();
+    Rt.set([ax.x, ax.y, ax.z, (0.15 + rnd() * 0.75) * (rnd() < 0.5 ? -1 : 1)], i * 4);
+    Se.set([rnd(), Math.pow(rnd(), 1.6), 0.15 + rnd() * 0.55, rnd()], i * 4);
+  }
+  facetGeo.setAttribute('aOff', new THREE.InstancedBufferAttribute(O, 4));
+  facetGeo.setAttribute('aRot', new THREE.InstancedBufferAttribute(Rt, 4));
+  facetGeo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(Se, 4));
+  facetGeo.instanceCount = n;
+}
+const facetMat = mat({
+  wake: true,
+  vs: `
+  attribute vec4 aOff; attribute vec4 aRot; attribute vec4 aSeed;
+  varying vec3 vCol; varying float vFog; varying vec3 vFogC;
+  void main(){
+    float ph = aSeed.x;
+    vec3 c = aOff.xyz + vec3(sin(uTime * 0.11 + ph * 6.28), sin(uTime * 0.17 + ph * 4.1) * 0.7, cos(uTime * 0.09 + ph * 5.3)) * aSeed.z;
+    vec3 dc = c - cameraPosition; float dist = length(dc);
+    c += dc / max(dist, 1e-3) * max(3.2 - dist, 0.0) * 0.9;
+    float wk; c += wakeOff(c, wk);
+    float ang = uTime * aRot.w + ph * 6.2831 + wk * 2.6;
+    mat3 R = rotAxis(aRot.xyz, ang);
+    float sc = aOff.w * smoothstep(0.35, 1.7, dist);
+    vec3 wp = c + R * (position * sc);
+    vec3 n = normalize(R * normal);
+    vec3 V = normalize(cameraPosition - wp);
+    float sh = shaftLight(c);
+    float ndl = abs(dot(n, uSunDir));
+    vec3 H = normalize(uSunDir + V);
+    float sp = pow(abs(dot(n, H)), 40.0);
+    vec3 base = mix(uDeep, uTeal, aSeed.y);
+    vec3 col = base * (0.35 + 0.95 * ndl * (0.3 + sh));
+    col += mix(uCopper, uBone, aSeed.w) * sp * (0.16 + sh * 1.7);
+    col += uCopper * min(wk, 1.5) * 0.4;
+    float d = length(wp - cameraPosition);
+    vFog = fogF(d); vFogC = skyCol(-V); vCol = col;
+    gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
+  }`,
+  fs: FRAG_VC,
+  opts: { side: THREE.DoubleSide }
+});
+const facets = new THREE.Mesh(facetGeo, facetMat); facets.frustumCulled = false; scene.add(facets);
+
+/* ---------------- Motes: dust in the light, bokeh up close ---------------- */
+const moteGeo = track(new THREE.BufferGeometry());
+{
+  const n = ALLOC.motes, Pp = new Float32Array(n * 3), Sz = new Float32Array(n), Ms = new Float32Array(n * 2);
+  const P = new THREE.Vector3();
+  for (let i = 0; i < n; i++) {
+    const cv = CURVES[rnd() < 0.56 ? 0 : 1], u = rnd(); cv.getPointAt(u, P);
+    const a = rnd() * Math.PI * 2, rr = 0.6 + Math.pow(rnd(), 1.3) * 12;
+    Pp.set([P.x + Math.cos(a) * rr, P.y + Math.sin(a) * rr * 0.7, P.z + (rnd() - 0.5) * 6], i * 3);
+    Sz[i] = 0.018 + rnd() * 0.035; Ms[i * 2] = rnd(); Ms[i * 2 + 1] = Math.pow(rnd(), 2.0);
+  }
+  moteGeo.setAttribute('position', new THREE.BufferAttribute(Pp, 3));
+  moteGeo.setAttribute('aSize', new THREE.BufferAttribute(Sz, 1));
+  moteGeo.setAttribute('aMs', new THREE.BufferAttribute(Ms, 2));
+  moteGeo.setDrawRange(0, n);
+}
+const moteMat = mat({
+  wake: true,
+  vs: `
+  attribute float aSize; attribute vec2 aMs;
+  varying vec3 vC; varying float vA;
+  void main(){
+    vec3 p = position + vec3(sin(uTime * 0.07 + aMs.x * 30.0), cos(uTime * 0.05 + aMs.x * 17.0) * 0.6, sin(uTime * 0.06 + aMs.x * 11.0)) * 0.9;
+    float wk; p += wakeOff(p, wk) * 1.2;
+    vec4 mv = viewMatrix * vec4(p, 1.0);
+    float d = -mv.z;
+    float sh = shaftLight(p);
+    float near = 1.0 - smoothstep(0.6, 5.0, d);
+    gl_PointSize = clamp(aSize * uPx / max(d, 0.1) * (1.0 + near * 4.0), 1.0, 72.0);
+    vA = (0.1 + sh * 0.95 + wk * 0.5) * (1.0 - fogF(d)) * mix(1.0, 0.3, near) * smoothstep(0.15, 0.7, d);
+    vC = mix(uBone, uCopper, aMs.y);
+    gl_Position = projectionMatrix * mv;
+  }`,
+  fs: `
+  varying vec3 vC; varying float vA;
+  void main(){ vec2 q = gl_PointCoord - 0.5; float r2 = dot(q, q) * 4.0; if (r2 > 1.0) discard; float a = 1.0 - r2; gl_FragColor = vec4(vC * vA * a * a, 1.0); }`,
+  opts: ADD
+});
+const motes = new THREE.Points(moteGeo, moteMat); motes.frustumCulled = false; motes.renderOrder = 6; scene.add(motes);
+
+/* ---------------- Generic lit solid ---------------- */
+const SOLID_V = `
+varying vec3 vN; varying vec3 vW; varying vec2 vUv;
+void main(){
+  vec4 lp = vec4(position, 1.0); vec3 ln = normal;
+  #ifdef USE_INSTANCING
+    lp = instanceMatrix * lp; ln = mat3(instanceMatrix) * ln;
+  #endif
+  vec4 w = modelMatrix * lp;
+  vW = w.xyz; vN = normalize(mat3(modelMatrix) * ln); vUv = uv;
+  gl_Position = projectionMatrix * viewMatrix * w;
+}`;
+const SOLID_F = `
+uniform vec3 uBase; uniform vec3 uRim; uniform vec3 uEmis; uniform float uEdge; uniform float uGlowAmt;
+uniform float uHit; uniform float uHitT; uniform vec3 uHitPos;
+varying vec3 vN; varying vec3 vW; varying vec2 vUv;
+void main(){
+  vec3 N = normalize(vN); if (!gl_FrontFacing) N = -N;
+  vec3 V = normalize(cameraPosition - vW);
+  float sh = shaftLight(vW);
+  float ndl = max(dot(N, uSunDir), 0.0);
+  float amb = 0.26 + 0.1 * N.y;
+  float fr = pow(1.0 - max(dot(N, V), 0.0), 2.5);
+  vec3 H = normalize(uSunDir + V); float sp = pow(max(dot(N, H), 0.0), 30.0);
+  vec3 col = uBase * (amb + ndl * (0.42 + sh * 1.0)) + uRim * fr * (0.2 + sh * 0.8) + uRim * sp * (0.12 + sh * 0.7) + uEmis;
+  if (uEdge > 0.0) { vec2 e = min(vUv, 1.0 - vUv); float ed = 1.0 - smoothstep(0.0, uEdge, min(e.x, e.y)); col += uRim * ed * (0.1 + uGlowAmt * 0.85); }
+  if (uHit > 0.0) {
+    float dd = distance(vW, uHitPos);
+    float ring = exp(-pow((dd - uHitT * 2.0) * 7.0, 2.0)) * exp(-uHitT * 1.5);
+    float spot = exp(-dd * dd * 18.0) * exp(-uHitT * 3.2);
+    col += uRim * (ring * 1.2 + spot * 1.1) * uHit;
+  }
+  float d = length(vW - cameraPosition);
+  col = mix(col, skyCol(-V), fogF(d));
+  gl_FragColor = vec4(col, 1.0);
+}`;
+function solid(o) {
+  return mat({
+    vs: SOLID_V, fs: SOLID_F,
+    uniforms: {
+      uBase: { value: V3(o.base) }, uRim: { value: V3(o.rim != null ? o.rim : 0xf3c99d) }, uEmis: { value: V3(o.emis || 0) },
+      uEdge: { value: o.edge || 0 }, uGlowAmt: { value: 0 }, uHit: { value: 0 }, uHitT: { value: 0 }, uHitPos: { value: new THREE.Vector3() }
+    },
+    opts: { side: o.side || THREE.FrontSide }
+  });
+}
+const lineMat = (col, a) => mat({
+  vs: `
+  attribute float aAng; uniform float uLA; uniform float uSweep; uniform float uSweepOn; varying float vA;
+  void main(){
+    vec4 w = modelMatrix * vec4(position, 1.0);
+    float dd = fract(aAng - uSweep + 0.5) - 0.5;
+    vA = uLA * (1.0 + exp(-dd * dd * 500.0) * uSweepOn * 3.0) * (1.0 - fogF(length(w.xyz - cameraPosition)));
+    gl_Position = projectionMatrix * viewMatrix * w;
+  }`,
+  fs: `uniform vec3 uLCol; varying float vA; void main(){ gl_FragColor = vec4(uLCol * vA, 1.0); }`,
+  uniforms: { uLCol: { value: V3(col) }, uLA: { value: a }, uSweep: { value: 0 }, uSweepOn: { value: 0 } },
+  opts: ADD
+});
+
+/* ---------------- Glow points (beacons, the light on the path, the dart) ---------------- */
+const NG = 16, gPos = new Float32Array(NG * 3), gSize = new Float32Array(NG), gCol = new Float32Array(NG * 3);
+const glowGeo = track(new THREE.BufferGeometry());
+glowGeo.setAttribute('position', new THREE.BufferAttribute(gPos, 3));
+glowGeo.setAttribute('aSize', new THREE.BufferAttribute(gSize, 1));
+glowGeo.setAttribute('aCol', new THREE.BufferAttribute(gCol, 3));
+const GLOW_VS = `
+attribute float aSize; attribute vec3 aCol; varying vec3 vC;
+void main(){
+  vec4 mv = viewMatrix * vec4(position, 1.0); float d = -mv.z;
+  gl_PointSize = clamp(aSize * uPx / max(d, 0.2), 0.0, 220.0);
+  vC = aCol * (1.0 - fogF(d) * 0.72) * step(0.0001, aSize);
+  gl_Position = projectionMatrix * mv;
+}`;
+const GLOW_FS = `
+varying vec3 vC;
+void main(){ vec2 q = gl_PointCoord - 0.5; float r2 = dot(q, q) * 4.0; if (r2 > 1.0) discard;
+  float a = exp(-r2 * 18.0) * 1.25 + exp(-r2 * 4.5) * 0.32 + (1.0 - r2) * 0.05; gl_FragColor = vec4(vC * a, 1.0); }`;
+const glowMat = mat({ vs: GLOW_VS, fs: GLOW_FS, opts: ADD });
+const glows = new THREE.Points(glowGeo, glowMat); glows.frustumCulled = false; glows.renderOrder = 8; scene.add(glows);
+function setGlow(i, p, size, r, g, b) { gPos[i * 3] = p.x; gPos[i * 3 + 1] = p.y; gPos[i * 3 + 2] = p.z; gSize[i] = size; gCol[i * 3] = r; gCol[i * 3 + 1] = g; gCol[i * 3 + 2] = b; }
+
+/* ---------------- Hero: the wingpath as a copper line in a shaft of light ---------------- */
+function arcPts(x1, y1, r, fa, fs, x2, y2, n, out) {
+  const dx = (x1 - x2) / 2, dy = (y1 - y2) / 2;
+  let rr = r; const lam = (dx * dx + dy * dy) / (rr * rr); if (lam > 1) rr *= Math.sqrt(lam);
+  const sign = fa === fs ? -1 : 1;
+  const co = sign * Math.sqrt(Math.max(0, (rr * rr - dx * dx - dy * dy) / (dx * dx + dy * dy)));
+  const cxp = co * dy, cyp = -co * dx, cx = cxp + (x1 + x2) / 2, cy = cyp + (y1 + y2) / 2;
+  const ang = (ux, uy, vx, vy) => Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy);
+  const t1 = ang(1, 0, (dx - cxp) / rr, (dy - cyp) / rr);
+  let dt = ang((dx - cxp) / rr, (dy - cyp) / rr, (-dx - cxp) / rr, (-dy - cyp) / rr);
+  if (!fs && dt > 0) dt -= Math.PI * 2; else if (fs && dt < 0) dt += Math.PI * 2;
+  for (let i = 1; i <= n; i++) { const t = t1 + dt * i / n; out.push([cx + rr * Math.cos(t), cy + rr * Math.sin(t), 0]); }
+}
+const ribbon = (() => {
+  const P1 = [21.31, 26.17], P2 = [46.92, 30.69], P3 = [41.12, 19.3], P4 = [29.72, 42.68], X = [36.47, 28.85];
+  const pts = [];
+  const line = (a, b, n, seg) => { for (let i = 1; i <= n; i++) { const t = i / n; pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, seg]); } };
+  pts.push([P1[0], P1[1], 1]);
+  line(P1, P2, 26, 1);
+  const a1 = []; arcPts(P2[0], P2[1], 8, 1, 0, P3[0], P3[1], 44, a1); a1.forEach((p) => pts.push([p[0], p[1], 0]));
+  line(P3, P4, 26, 2);
+  const a2 = []; arcPts(P4[0], P4[1], 11.6, 1, 1, P1[0], P1[1], 60, a2); a2.forEach((p) => pts.push([p[0], p[1], 0]));
+  pts.pop();
+  const v3 = pts.map((p, i) => {
+    const dxx = p[0] - X[0], dyy = p[1] - X[1], bump = Math.exp(-(dxx * dxx + dyy * dyy) / 40);
+    const z = (p[2] === 2 ? 1 : p[2] === 1 ? -1 : 0) * 0.17 * bump + Math.sin(i / pts.length * Math.PI * 2) * 0.08;
+    return new THREE.Vector3((p[0] - 34) * 0.1, -(p[1] - 31) * 0.1, z);
+  });
+  const curve = new THREE.CatmullRomCurve3(v3, true, 'centripetal');
+  const geo = track(new THREE.TubeGeometry(curve, 420, 0.048, 8, true));
+  const mk = () => mat({
+    vs: `varying vec3 vN; varying vec3 vW; varying float vU;
+      void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix) * normal); vU = uv.x; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fs: `uniform float uDraw; uniform float uHead; uniform float uLift; varying vec3 vN; varying vec3 vW; varying float vU;
+      void main(){
+        if (vU > uDraw) discard;
+        vec3 N = normalize(vN); vec3 V = normalize(cameraPosition - vW);
+        float ndl = max(dot(N, uSunDir), 0.0);
+        float fr = pow(1.0 - max(dot(N, V), 0.0), 3.0);
+        vec3 H = normalize(uSunDir + V); float sp = pow(max(dot(N, H), 0.0), 60.0);
+        float sh = shaftLight(vW);
+        vec3 col = uCopper * (0.2 + 0.75 * ndl * (0.4 + sh)) + uCopperHi * (sp * (0.6 + sh) + fr * 0.35);
+        col += uCopper * uLift * (0.3 + fr * 0.9);
+        float tr = fract(uHead - vU);
+        float head = exp(-tr * 13.0);
+        float tip = exp(-max(uDraw - vU, 0.0) * 40.0) * (1.0 - step(0.999, uDraw));
+        col += uCopperHi * (head * 1.25 + tip * 1.6);
+        col = mix(col, skyCol(-V), fogF(length(vW - cameraPosition)));
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+    uniforms: { uDraw: { value: 0 }, uHead: { value: 0 }, uLift: { value: 0 } }
+  });
+  const m = mk();
+  const mesh = new THREE.Mesh(geo, m);
+  const g = new THREE.Group(); g.position.copy(vec(HOME[0].F)); g.rotation.y = -0.32; g.add(mesh); scene.add(g);
+  const hp = new THREE.Vector3();
+  let draw = 0;
+  return {
+    g, curve, geo, mk,
+    setDraw(v) { draw = v; m.uniforms.uDraw.value = v; },
+    update(T) {
+      g.position.y = HOME[0].F[1] + Math.sin(T * 0.8) * 0.06;
+      g.rotation.y = -0.32 + Math.sin(T * 0.3) * 0.08; g.rotation.x = Math.sin(T * 0.23) * 0.04;
+      const h = (((T * 0.11) % 1) + 1) % 1; m.uniforms.uHead.value = h;
+      curve.getPointAt(clamp(Math.min(h, draw), 0, 1), hp); g.updateMatrixWorld(); hp.applyMatrix4(mesh.matrixWorld);
+      setGlow(0, hp, draw > 0.02 ? 0.55 : 0, 1.0, 0.8, 0.6);
+    }
+  };
+})();
+
+/* ---------------- Toppleton: a stack in balance, the top slab being placed ---------------- */
+const SLAB = solid({ base: 0x7b7363, rim: 0xf3c99d, edge: 0.04 });
+const stack = (() => {
+  const g = new THREE.Group(); g.position.set(HOME[2].F[0], HOME[2].F[1] - 1.25, HOME[2].F[2]); scene.add(g);
+  const geo = track(new THREE.BoxGeometry(1.5, 0.26, 0.55));
+  const mesh = new THREE.InstancedMesh(geo, SLAB, 7); mesh.frustumCulled = false; g.add(mesh);
+  const rest = [];
+  for (let i = 0; i < 7; i++) rest.push({ p: new THREE.Vector3((rnd() - 0.5) * 0.22, 0.13 + i * 0.27, (rnd() - 0.5) * 0.16), y: (i % 2) * Math.PI / 2 + (rnd() - 0.5) * 0.22 });
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), s = new THREE.Vector3(1, 1, 1);
+  return {
+    g,
+    update(T) {
+      const ph = (T / 5.4) % 1;
+      g.rotation.z = Math.sin(T * 0.7) * 0.012; g.rotation.x = Math.sin(T * 0.53) * 0.008;
+      for (let i = 0; i < 7; i++) {
+        const r = rest[i]; p.copy(r.p); let yaw = r.y;
+        if (i === 6) {
+          let lift = 0;
+          if (ph < 0.36) { const k = ph / 0.36; lift = (1 - eOut(k)) * 1.2 - Math.sin(clamp((k - 0.72) / 0.28, 0, 1) * Math.PI) * 0.025; }
+          else if (ph > 0.8) { const k = (ph - 0.8) / 0.2; lift = eInOut(k) * 1.2; }
+          p.y += lift; yaw += lift * 0.5;
+        }
+        q.setFromAxisAngle(UP, yaw); mesh.setMatrixAt(i, m4.compose(p, q, s));
+      }
+      mesh.instanceMatrix.needsUpdate = true;
+    }
+  };
+})();
+
+/* ---------------- Contact: a single beacon, rings on still air ---------------- */
+const beacon = (() => {
+  const g = new THREE.Group(); g.position.copy(vec(HOME[5].F)); scene.add(g);
+  const rg = new THREE.RingGeometry(0.986, 1.0, 128); rg.rotateX(-Math.PI / 2);
+  const geo = track(new THREE.InstancedBufferGeometry());
+  geo.index = rg.index; geo.setAttribute('position', rg.attributes.position);
+  geo.setAttribute('aPh', new THREE.InstancedBufferAttribute(new Float32Array([0, 1 / 3, 2 / 3]), 1)); geo.instanceCount = 3;
+  const m = mat({
+    vs: `attribute float aPh; uniform float uRT; varying float vA;
+      void main(){ float f = fract(uRT * 0.2 + aPh); vec3 p = position * (0.3 + f * 4.2); vec4 w = modelMatrix * vec4(p, 1.0);
+        vA = (1.0 - f) * (1.0 - f) * smoothstep(0.0, 0.06, f) * 0.85 * (1.0 - fogF(length(w.xyz - cameraPosition)));
+        gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fs: `varying float vA; void main(){ gl_FragColor = vec4(uCopper * vA, 1.0); }`,
+    uniforms: { uRT: { value: 0 } },
+    opts: Object.assign({ side: THREE.DoubleSide }, ADD)
+  });
+  const mesh = new THREE.Mesh(geo, m); mesh.position.y = -0.4; mesh.frustumCulled = false; g.add(mesh);
+  const bp = vec(HOME[5].F);
+  return { g, update(T) { m.uniforms.uRT.value = T; setGlow(1, bp, 0.6 + Math.sin(T * 1.6) * 0.05, 1.0, 0.78, 0.55); } };
+})();
+
+/* ---------------- Values gestures ---------------- */
+function faceGroup(d, keepLevel) {
+  const g = new THREE.Group(); g.position.copy(vec(d.F));
+  const C = vec(d.C);
+  if (keepLevel) g.rotation.y = Math.atan2(C.x - g.position.x, C.z - g.position.z); else g.lookAt(C);
+  scene.add(g); g.updateMatrixWorld(true); return g;
+}
+const tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3(), tmpC = new THREE.Vector3();
+
+// 1. Be bold: a dart circles the hard problem, then goes straight at it.
+const bold = (() => {
+  const d = VAL[1], g = faceGroup(d);
+  const rockGeo = track(new THREE.IcosahedronGeometry(1.45, 1));
+  const pa = rockGeo.attributes.position;
+  for (let i = 0; i < pa.count; i++) {
+    const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i);
+    const h = Math.sin(Math.round(x * 1000) * 0.0129898 + Math.round(y * 1000) * 0.078233 + Math.round(z * 1000) * 0.037719) * 43758.5453;
+    const k = 1 + ((h - Math.floor(h)) - 0.5) * 0.28; pa.setXYZ(i, x * k, y * k * 0.9, z * k);
+  }
+  rockGeo.computeVertexNormals();
+  const rockMat = solid({ base: 0x163a34, rim: 0xe9b483 });
+  const rock = new THREE.Mesh(rockGeo, rockMat); g.add(rock);
+  const dartGeo = track(new THREE.ConeGeometry(0.06, 0.44, 6)); dartGeo.rotateX(Math.PI / 2);
+  const dart = new THREE.Mesh(dartGeo, solid({ base: 0xc98552, rim: 0xffe2c2, emis: 0x8c5a34 })); g.add(dart);
+  const NT = 26, tPos = new Float32Array(NT * 3), tSize = new Float32Array(NT), tCol = new Float32Array(NT * 3);
+  const tGeo = track(new THREE.BufferGeometry());
+  tGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3)); tGeo.setAttribute('aSize', new THREE.BufferAttribute(tSize, 1)); tGeo.setAttribute('aCol', new THREE.BufferAttribute(tCol, 3));
+  const trail = new THREE.Points(tGeo, glowMat); trail.frustumCulled = false; trail.renderOrder = 8; scene.add(trail);
+  const HIT = new THREE.Vector3(-0.55, 0.35, 0.76).normalize().multiplyScalar(1.34), hitW = new THREE.Vector3();
+  const CYC = 4.8, ORB = 0.62, ATK = 0.74;
+  const pend = new THREE.Vector3();
+  function orbit(k, out) { const e = k * k * (3 - 2 * k), th = 0.6 + e * Math.PI * 2.2, r = 4.1 - 0.7 * e; return out.set(Math.cos(th) * r, 0.4 + Math.sin(th * 2) * 0.5 + 0.9 * (1 - e), Math.sin(th) * r * 0.8); }
+  orbit(1, pend);
+  function pos(ph, out) {
+    ph -= Math.floor(ph);
+    if (ph < ORB) return orbit(ph / ORB, out);
+    if (ph < ATK) { const k = (ph - ORB) / (ATK - ORB); return out.lerpVectors(pend, HIT, Math.pow(k, 2.2)); }
+    return out.copy(HIT);
+  }
+  const dp = new THREE.Vector3(), dq = new THREE.Vector3(), dir = new THREE.Vector3();
+  return {
+    g, trail,
+    update(T, ph) {
+      if (ph == null) ph = (T / CYC) % 1;
+      pos(ph, dp); pos(ph + 0.004, dq); dir.subVectors(dq, dp);
+      if (dir.lengthSq() > 1e-9) dart.quaternion.setFromUnitVectors(ZAX, dir.normalize());
+      dart.position.copy(dp); dart.visible = ph < ATK;
+      for (let k = 0; k < NT; k++) {
+        let pk = ph - k * 0.0058; let vis = 1;
+        if (pk < 0) { pk += 1; }
+        if (pk >= ATK) vis = 0;
+        pos(pk, tmpA); g.localToWorld(tmpA);
+        tPos[k * 3] = tmpA.x; tPos[k * 3 + 1] = tmpA.y; tPos[k * 3 + 2] = tmpA.z;
+        const f = 1 - k / NT; tSize[k] = vis * 0.3 * f; tCol[k * 3] = 0.95 * f; tCol[k * 3 + 1] = 0.62 * f; tCol[k * 3 + 2] = 0.38 * f;
+      }
+      tGeo.attributes.position.needsUpdate = true; tGeo.attributes.aSize.needsUpdate = true; tGeo.attributes.aCol.needsUpdate = true;
+      if (ph >= ATK) { rockMat.uniforms.uHit.value = 1; rockMat.uniforms.uHitT.value = (ph - ATK) * CYC; } else rockMat.uniforms.uHit.value = 0;
+      hitW.copy(HIT); g.localToWorld(hitW); rockMat.uniforms.uHitPos.value.copy(hitW);
+      const kick = ph >= ATK ? Math.exp(-(ph - ATK) * CYC * 3.0) * Math.sin((ph - ATK) * CYC * 14) * 0.05 : 0;
+      rock.rotation.set(T * 0.05 + kick, T * 0.07, kick * 0.6);
+      tmpB.copy(dp); g.localToWorld(tmpB); setGlow(8, tmpB, dart.visible ? 0.5 : 0, 1.0, 0.75, 0.5);
+    }
+  };
+})();
+
+// 2. Tinker: scattered facets snap together into an exact form, one by one.
+const tinker = (() => {
+  const d = VAL[2], g = faceGroup(d);
+  const base = new THREE.IcosahedronGeometry(0.95, 0);
+  const pos = base.attributes.position, nrm = base.attributes.normal, n = pos.count, faces = n / 3;
+  const C = new Float32Array(n * 3), S = new Float32Array(n * 3), A = new Float32Array(n * 4), Dl = new Float32Array(n), Bc = new Float32Array(n * 3);
+  const order = [];
+  for (let f = 0; f < faces; f++) {
+    const cx = (pos.getX(f * 3) + pos.getX(f * 3 + 1) + pos.getX(f * 3 + 2)) / 3, cy = (pos.getY(f * 3) + pos.getY(f * 3 + 1) + pos.getY(f * 3 + 2)) / 3, cz = (pos.getZ(f * 3) + pos.getZ(f * 3 + 1) + pos.getZ(f * 3 + 2)) / 3;
+    order.push({ f, key: -cy * 2 + Math.atan2(cx, cz) * 0.3, c: [cx, cy, cz] });
+  }
+  order.sort((a, b) => a.key - b.key);
+  order.forEach((o, rank) => {
+    const c = new THREE.Vector3().fromArray(o.c), out = c.clone().normalize();
+    const sc = out.multiplyScalar(0.6 + rnd() * 0.9).add(new THREE.Vector3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).multiplyScalar(0.7));
+    const ax = new THREE.Vector3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).normalize(), an = 2 + rnd() * 3;
+    for (let v = 0; v < 3; v++) {
+      const i = o.f * 3 + v;
+      C.set(o.c, i * 3); S.set([sc.x, sc.y, sc.z], i * 3); A.set([ax.x, ax.y, ax.z, an], i * 4); Dl[i] = rank / faces;
+      Bc.set(v === 0 ? [1, 0, 0] : v === 1 ? [0, 1, 0] : [0, 0, 1], i * 3);
+    }
+  });
+  const geo = track(new THREE.BufferGeometry());
+  geo.setAttribute('position', pos); geo.setAttribute('normal', nrm);
+  geo.setAttribute('aCenter', new THREE.BufferAttribute(C, 3)); geo.setAttribute('aScatter', new THREE.BufferAttribute(S, 3));
+  geo.setAttribute('aAxis', new THREE.BufferAttribute(A, 4)); geo.setAttribute('aDelay', new THREE.BufferAttribute(Dl, 1)); geo.setAttribute('aBary', new THREE.BufferAttribute(Bc, 3));
+  const m = mat({
+    vs: `
+    attribute vec3 aCenter; attribute vec3 aScatter; attribute vec4 aAxis; attribute float aDelay; attribute vec3 aBary;
+    uniform float uP; uniform float uT2;
+    varying vec3 vN; varying vec3 vW; varying vec3 vB; varying float vFlash; varying float vK;
+    float backOut(float x){ float c1 = 1.70158; float c3 = c1 + 1.0; float t = x - 1.0; return 1.0 + c3 * t * t * t + c1 * t * t; }
+    void main(){
+      float s = 0.05 + aDelay * 0.4;
+      float kin = clamp((uP - s) / 0.075, 0.0, 1.0);
+      float kout = smoothstep(0.86, 1.0, uP);
+      float k = backOut(kin) * (1.0 - kout);
+      float rest = 1.0 - clamp(k, 0.0, 1.0);
+      mat3 R = rotAxis(aAxis.xyz, aAxis.w * (1.0 - k));
+      vec3 drift = vec3(sin(uT2 * 0.6 + aDelay * 17.0), cos(uT2 * 0.5 + aDelay * 11.0), sin(uT2 * 0.4 + aDelay * 7.0)) * 0.14 * rest;
+      vec3 c = mix(aCenter + aScatter, aCenter, k) + drift;
+      vec3 lp = c + R * (position - aCenter);
+      vec4 w = modelMatrix * vec4(lp, 1.0);
+      vW = w.xyz; vN = normalize(mat3(modelMatrix) * (R * normal)); vB = aBary;
+      float since = uP - (s + 0.075);
+      vFlash = since > 0.0 ? exp(-since * 24.0) * (1.0 - kout) : 0.0;
+      vK = clamp(k, 0.0, 1.0);
+      gl_Position = projectionMatrix * viewMatrix * w;
+    }`,
+    fs: `
+    varying vec3 vN; varying vec3 vW; varying vec3 vB; varying float vFlash; varying float vK;
+    void main(){
+      vec3 N = normalize(vN); if (!gl_FrontFacing) N = -N;
+      vec3 V = normalize(cameraPosition - vW);
+      float ndl = max(dot(N, uSunDir), 0.0); float fr = pow(1.0 - max(dot(N, V), 0.0), 2.0);
+      float sh = shaftLight(vW);
+      vec3 col = uDeep * 1.5 * (0.45 + ndl * (0.8 + sh)) + uTeal * fr * 0.55;
+      float m = min(vB.x, min(vB.y, vB.z));
+      float edge = 1.0 - smoothstep(0.0, 0.025 + fwidth(m) * 1.2, m);
+      col += uCopper * edge * (0.35 + 0.75 * vK) + uCopperHi * edge * vFlash * 1.6 + uCopper * vFlash * 0.5;
+      col = mix(col, skyCol(-V), fogF(length(vW - cameraPosition)));
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+    uniforms: { uP: { value: 0.7 }, uT2: { value: 0 } },
+    opts: { side: THREE.DoubleSide, extensions: { derivatives: true } }
+  });
+  const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; g.add(mesh);
+  return { g, update(T, ph) { m.uniforms.uP.value = ph == null ? (T / 6.8) % 1 : ph; m.uniforms.uT2.value = T; mesh.rotation.y = T * 0.22; mesh.rotation.x = 0.3 + Math.sin(T * 0.3) * 0.1; } };
+})();
+
+// 3. Fail fast: a tall, risky tower falls; the slabs come back as a lower, sturdier build.
+const failFast = (() => {
+  const d = VAL[3], g = faceGroup(d, true); g.position.y -= 1.35; g.updateMatrixWorld(true);
+  const m = solid({ base: 0x857b6a, rim: 0xf3c99d, edge: 0.06 });
+  const geo = track(new THREE.BoxGeometry(1.25, 0.24, 0.42));
+  const mesh = new THREE.InstancedMesh(geo, m, 9); mesh.frustumCulled = false; g.add(mesh);
+  const N = 9, A = [], B = [], VEL = [], AX = [], SPR = [], EP = [], EQ = [];
+  for (let i = 0; i < N; i++) A.push({ p: new THREE.Vector3(i * 0.05 + (rnd() - 0.5) * 0.06, 0.12 + i * 0.245, (rnd() - 0.5) * 0.05), q: new THREE.Quaternion().setFromAxisAngle(UP, (i % 2) * Math.PI / 2 + (rnd() - 0.5) * 0.12) });
+  const layer = [[0, 0, -0.42], [0, 0, 0], [0, 0, 0.42], [1, -0.42, 0], [1, 0, 0], [1, 0.42, 0], [2, 0, -0.21], [2, 0, 0.21], [3, 0, 0]];
+  layer.forEach((l) => B.push({ p: new THREE.Vector3(l[1], 0.12 + l[0] * 0.24, l[2]), q: new THREE.Quaternion().setFromAxisAngle(UP, (l[0] % 2) ? Math.PI / 2 : 0) }));
+  for (let i = 0; i < N; i++) {
+    VEL.push(new THREE.Vector3(0.55 + (i / 8) * 0.7 + rnd() * 0.3, 0.3 + rnd() * 0.7, (rnd() - 0.5) * 1.4));
+    AX.push(new THREE.Vector3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).normalize()); SPR.push((1.5 + rnd() * 3.5) * (rnd() < 0.5 ? -1 : 1));
+  }
+  // The fall is quick and stays in frame (fail fast); the rebuild takes longer (learn faster).
+  const CYC = 8.2, P0 = 0.22, P1 = 0.38, P2 = 0.5, P3 = 0.76, P4 = 0.93, G = 3.2, TC = (P2 - P1) * CYC;
+  const qz = new THREE.Quaternion(), qs = new THREE.Quaternion(), m4 = new THREE.Matrix4(), sc = new THREE.Vector3(), pp = new THREE.Vector3(), qq = new THREE.Quaternion();
+  function lean(ph) { if (ph < P0) return 0; const k = Math.min(1, (ph - P0) / (P1 - P0)); return -(Math.sin(k * Math.PI * 3.5) * 0.05 * k * k + k * k * k * 0.12); }
+  const LEND = lean(P1);
+  function collapse(i, tc, outP, outQ) {
+    qz.setFromAxisAngle(ZAX, LEND);
+    outP.copy(A[i].p).applyQuaternion(qz).addScaledVector(VEL[i], tc); outP.y -= 0.5 * G * tc * tc;
+    qs.setFromAxisAngle(AX[i], SPR[i] * tc); outQ.copy(qz).multiply(A[i].q).premultiply(qs);
+  }
+  for (let i = 0; i < N; i++) { EP.push(new THREE.Vector3()); EQ.push(new THREE.Quaternion()); collapse(i, TC, EP[i], EQ[i]); }
+  return {
+    g,
+    update(T, phase) {
+      const ph = phase == null ? (T / CYC) % 1 : phase;
+      let glow = 0;
+      for (let i = 0; i < N; i++) {
+        let s = 1;
+        if (ph < P0) {
+          const k = clamp((ph - i * 0.02) / 0.07, 0, 1), e = eOut(k);
+          pp.copy(A[i].p); pp.y += (1 - e) * 1.8; qq.copy(A[i].q); s = Math.max(0.001, Math.min(1, k * 3));
+        } else if (ph < P1) {
+          qz.setFromAxisAngle(ZAX, lean(ph)); pp.copy(A[i].p).applyQuaternion(qz); qq.copy(qz).multiply(A[i].q);
+        } else if (ph < P2) {
+          collapse(i, (ph - P1) * CYC, pp, qq);
+        } else if (ph < P3) {
+          const k = clamp((ph - P2 - i * 0.012) / (P3 - P2 - 0.11), 0, 1), e = eInOut(k);
+          pp.lerpVectors(EP[i], B[i].p, e); qq.slerpQuaternions(EQ[i], B[i].q, e);
+        } else if (ph < P4) {
+          pp.copy(B[i].p); qq.copy(B[i].q); glow = sstep(P3, P3 + 0.05, ph) * (1 - sstep(P4 - 0.04, P4, ph));
+        } else {
+          const k = (ph - P4) / (1 - P4); pp.copy(B[i].p); pp.y += k * 0.5; qq.copy(B[i].q); s = Math.max(0.001, 1 - eInOut(k));
+        }
+        sc.set(s, s, s); mesh.setMatrixAt(i, m4.compose(pp, qq, sc));
+      }
+      mesh.instanceMatrix.needsUpdate = true; m.uniforms.uGlowAmt.value = glow;
+    }
+  };
+})();
+
+// 4. Sweat the small stuff: three fine rings that come into exact alignment.
+const small = (() => {
+  const d = VAL[4], g = faceGroup(d);
+  const ringMat = solid({ base: 0xc98552, rim: 0xffe2c2, emis: 0x2a1a10 });
+  const rings = [1.0, 0.84, 0.68].map((r) => { const m = new THREE.Mesh(track(new THREE.TorusGeometry(r, 0.012, 6, 180)), ringMat); g.add(m); return m; });
+  const axes = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(1, 1, 0).normalize()], turns = [1, -2, 1];
+  const tp = [], ta = [];
+  for (let k = 0; k < 60; k++) { const a = k / 60 * Math.PI * 2, r0 = k % 5 ? 1.2 : 1.13, r1 = 1.27; tp.push(Math.cos(a) * r0, Math.sin(a) * r0, 0, Math.cos(a) * r1, Math.sin(a) * r1, 0); ta.push(k / 60, k / 60); }
+  tp.push(-1.55, 0, 0, 1.55, 0, 0, 0, -1.55, 0, 0, 1.55, 0); ta.push(0.25, 0.25, 0.5, 0.5);
+  const dGeo = track(new THREE.BufferGeometry());
+  dGeo.setAttribute('position', new THREE.Float32BufferAttribute(tp, 3)); dGeo.setAttribute('aAng', new THREE.Float32BufferAttribute(ta, 1));
+  const dMat = lineMat(0xe9dfcc, 0.32);
+  const dial = new THREE.LineSegments(dGeo, dMat); g.add(dial);
+  const cen = new THREE.Vector3();
+  let offDeg = 0;
+  return {
+    g,
+    get off() { return offDeg; },
+    update(T, phase) {
+      const p = phase == null ? (T / 7.5) % 1 : phase;
+      const e = smoother(clamp(p / 0.74, 0, 1));
+      let worst = 0;
+      for (let k = 0; k < 3; k++) {
+        const th = Math.PI * 2 * turns[k] * e;
+        rings[k].quaternion.setFromAxisAngle(axes[k], th);
+        const c = Math.abs(Math.cos(th)); worst = Math.max(worst, Math.acos(Math.min(1, c)));
+      }
+      offDeg = worst * 180 / Math.PI;
+      dMat.uniforms.uSweep.value = clamp((p - 0.74) / 0.22, 0, 1);
+      dMat.uniforms.uSweepOn.value = sstep(0.74, 0.77, p) * (1 - sstep(0.94, 0.98, p));
+      dMat.uniforms.uLA.value = 0.3 + 0.25 * sstep(0.74, 0.8, p) * (1 - sstep(0.94, 1.0, p));
+      cen.set(0, 0, 0); g.localToWorld(cen); setGlow(9, cen, 0.16, 1.0, 0.85, 0.65);
+    }
+  };
+})();
+
+// Make: a swarm of petals tracing the wingpath's figure-eight in the light.
+const swarm = (() => {
+  const d = HOME[1], g = faceGroup(d);
+  const n = level >= 2 ? 720 : 400;
+  const geo = track(new THREE.InstancedBufferGeometry());
+  geo.setAttribute('position', facetGeo.attributes.position); geo.setAttribute('normal', facetGeo.attributes.normal);
+  const Ob = new Float32Array(n * 4), Ax = new Float32Array(n * 4), ax = new THREE.Vector3();
+  for (let i = 0; i < n; i++) {
+    Ob.set([rnd(), 0.55 + rnd() * 0.6, (rnd() - 0.5) * 2, (rnd() - 0.5) * 2], i * 4);
+    ax.set(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).normalize();
+    Ax.set([ax.x, ax.y, ax.z, 0.08 + Math.pow(rnd(), 2) * 0.16], i * 4);
+  }
+  geo.setAttribute('aOb', new THREE.InstancedBufferAttribute(Ob, 4));
+  geo.setAttribute('aAx', new THREE.InstancedBufferAttribute(Ax, 4));
+  geo.instanceCount = n;
+  const m = mat({
+    wake: true,
+    vs: `
+    attribute vec4 aOb; attribute vec4 aAx;
+    varying vec3 vCol; varying float vFog; varying vec3 vFogC;
+    vec3 lem(float t){ float s = sin(t), c = cos(t); float dd = 1.0 + s * s; return vec3(2.4 * c / dd, 1.9 * s * c / dd, 0.5 * s); }
+    void main(){
+      float t = aOb.x * 6.2831 + uTime * aOb.y * 0.32;
+      vec3 L = lem(t);
+      vec3 Tn = normalize(lem(t + 0.02) - L);
+      vec3 N = normalize(cross(Tn, vec3(0.0, 0.0, 1.0)));
+      vec3 B = cross(Tn, N);
+      float breathe = 0.75 + 0.25 * sin(uTime * 0.6 + aOb.x * 40.0);
+      vec3 lp = L + (N * aOb.z * 0.3 + B * aOb.w * 0.28) * breathe;
+      vec3 c = (modelMatrix * vec4(lp, 1.0)).xyz;
+      float wk; c += wakeOff(c, wk);
+      float dist = length(c - cameraPosition);
+      mat3 R = rotAxis(aAx.xyz, uTime * 2.2 + aOb.x * 50.0 + wk * 2.0);
+      vec3 wp = c + R * (position * aAx.w * smoothstep(0.35, 1.7, dist) * length(modelMatrix[0].xyz));
+      vec3 n = normalize(R * normal);
+      vec3 V = normalize(cameraPosition - wp);
+      float sh = shaftLight(c);
+      float ndl = abs(dot(n, uSunDir));
+      vec3 H = normalize(uSunDir + V);
+      float sp = pow(abs(dot(n, H)), 36.0);
+      vec3 col = mix(uDeep, uTeal, fract(aOb.x * 7.13)) * (0.4 + ndl * (0.45 + sh)) + mix(uCopper, uBone, fract(aOb.x * 3.7)) * sp * (0.3 + sh * 1.6) + uCopper * min(wk, 1.5) * 0.4;
+      float d = length(wp - cameraPosition);
+      vFog = fogF(d); vFogC = skyCol(-V); vCol = col;
+      gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
+    }`,
+    fs: FRAG_VC,
+    opts: { side: THREE.DoubleSide }
+  });
+  const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; mesh.rotation.z = 0.2; g.add(mesh);
+  return { g, update(T) { mesh.rotation.z = 0.2 + Math.sin(T * 0.21) * 0.06; mesh.rotation.y = Math.sin(T * 0.17) * 0.22; } };
+})();
+
+// Onward: the values flight ends where the home flight began, on the mark. It draws itself as the camera arrives.
+const endMark = (() => {
+  const d = VAL[VAL.length - 1], F = vec(d.F), C = vec(d.C);
+  const g = new THREE.Group(); g.position.copy(C).lerp(F, 0.72); g.lookAt(C); g.scale.setScalar(1.85); scene.add(g);
+  const m = ribbon.mk(), mesh = new THREE.Mesh(ribbon.geo, m); mesh.rotation.z = 0.16; g.add(mesh);
+  m.uniforms.uLift.value = 0.55;
+  const hp = new THREE.Vector3();
+  let k = 0, lastT = -1;
+  function paint(T) {
+    const e = eInOut(k); m.uniforms.uDraw.value = e;
+    const h = (((T * 0.11) % 1) + 1) % 1; m.uniforms.uHead.value = h;
+    ribbon.curve.getPointAt(clamp(Math.min(h, e), 0, 1), hp); g.updateMatrixWorld(); hp.applyMatrix4(mesh.matrixWorld);
+    setGlow(10, hp, e > 0.02 ? 1.0 : 0, 1.0, 0.8, 0.6);
+  }
+  return {
+    g,
+    update(T) {
+      const dt = lastT < 0 ? 0 : clamp(T - lastT, 0, 0.1); lastT = T;
+      k = clamp(k + (endNear ? dt / 1.9 : -dt / 0.6), 0, 1);
+      g.position.y = C.y + (F.y - C.y) * 0.72 + Math.sin(T * 0.8) * 0.08; mesh.rotation.z = 0.16 + Math.sin(T * 0.3) * 0.05;
+      g.scale.setScalar(orient === 'p' ? 1.25 : 1.85);
+      paint(T);
+    },
+    still() { k = endNear ? 1 : 0; g.scale.setScalar(orient === 'p' ? 1.25 : 1.85); paint(12); },
+    hide() { k = 0; lastT = -1; m.uniforms.uDraw.value = 0; }
+  };
+})();
+
+// The values route, drawn as a dotted line of light with pulses running forward.
+const route = {};
+for (const o of ['l', 'p']) {
+  const cv = PATHS[o].values.curve, n = Math.max(2, Math.floor(cv.getLength() / 1.1));
+  const P = new Float32Array(n * 3), A = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const u = i / (n - 1); cv.getPointAt(u, tmpA); P.set([tmpA.x, tmpA.y - 0.4, tmpA.z], i * 3); A[i] = u; }
+  const geo = track(new THREE.BufferGeometry());
+  geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); geo.setAttribute('aU', new THREE.BufferAttribute(A, 1));
+  const pts = new THREE.Points(geo, route.mat || (route.mat = mat({
+    vs: `attribute float aU; varying float vA;
+      void main(){ vec4 mv = viewMatrix * vec4(position, 1.0); float d = -mv.z;
+        gl_PointSize = clamp(0.11 * uPx / max(d, 0.2), 1.0, 7.0);
+        float wave = 0.4 + 0.6 * pow(0.5 + 0.5 * sin(aU * 90.0 - uTime * 2.2), 4.0);
+        vA = wave * smoothstep(5.0, 16.0, d) * (1.0 - fogF(d) * 0.8);
+        gl_Position = projectionMatrix * mv; }`,
+    fs: `varying float vA; void main(){ vec2 q = gl_PointCoord - 0.5; float r2 = dot(q, q) * 4.0; if (r2 > 1.0) discard; gl_FragColor = vec4(uCopperHi * vA * (1.0 - r2) * 0.85, 1.0); }`,
+    opts: ADD
+  })));
+  pts.frustumCulled = false; pts.renderOrder = 7; pts.visible = o === 'l'; scene.add(pts); route[o] = pts;
+}
+
+const GROUPS = [
+  { o: ribbon, g: ribbon.g, still: () => ribbon.update(12.0), slots: [0] },
+  { o: swarm, g: swarm.g, still: () => swarm.update(12.0), fade: true },
+  { o: stack, g: stack.g, still: () => stack.update(0.6 * 5.4), fade: true },
+  { o: beacon, g: beacon.g, still: () => beacon.update(1.2), slots: [1] },
+  { o: bold, g: bold.g, still: () => bold.update(12.0, 0.69), fade: true, slots: [8], extra: bold.trail },
+  { o: tinker, g: tinker.g, still: () => tinker.update(12.0, 0.72), fade: true },
+  { o: failFast, g: failFast.g, still: () => failFast.update(12.0, 0.86), fade: true },
+  { o: small, g: small.g, still: () => small.update(12.0, 0.86), fade: true, slots: [9] },
+  { o: endMark, g: endMark.g, still: () => endMark.still(), slots: [10] }
+];
+function showGroups(stillMode, Tn) {
+  for (let i = 0; i < GROUPS.length; i++) {
+    const G = GROUPS[i], dd = G.g.position.distanceTo(camera.position);
+    const s = G.fade ? sstep(31, 15, dd) : (dd < 95 ? 1 : 0), vis = s > 0.002;
+    G.g.visible = vis; if (G.extra) G.extra.visible = vis;
+    if (!vis && G.o.hide) G.o.hide();
+    if (G.fade) { G.g.scale.setScalar(Math.max(0.002, eOut(s))); G.g.updateMatrixWorld(); }
+    if (vis) { if (stillMode) G.still(); else G.o.update(Tn); }
+    if (G.slots) for (let j = 0; j < G.slots.length; j++) { const k = G.slots[j]; gSize[k] = vis ? gSize[k] * (G.fade ? s : 1) : 0; }
+  }
+  for (let k = 0; k < BEA.length; k++) setGlow(2 + k, BEA[k], 1.25 * sstep(4, 16, BEA[k].distanceTo(camera.position)), 0.95, 0.66, 0.42);
+  glowGeo.attributes.position.needsUpdate = true; glowGeo.attributes.aSize.needsUpdate = true; glowGeo.attributes.aCol.needsUpdate = true;
+}
+// Beacons above each value, visible down the corridor.
+const BEA = VAL.slice(1, -1).map((d) => new THREE.Vector3(d.F[0], d.F[1] + 2.7, d.F[2]));
+
+/* ---------------- Camera rig ---------------- */
+const sp = { i: 0, t: 0 };
+const pos = new THREE.Vector3(), look = new THREE.Vector3(), tgtPos = new THREE.Vector3(), tgtLook = new THREE.Vector3();
+const ahead = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3(), up2 = new THREE.Vector3();
+const prevPos = new THREE.Vector3(), vel = new THREE.Vector3(), curLook = new THREE.Vector3(), endFix = new THREE.Vector3();
+let ys = W.scrollY, baseFov = 40, tgtSX = 0, tgtSY = 0, tgtFov = 40, curSX = 0, curSY = 0, curFov = 40, curU = 0;
+let yaw = 0, pitch = 0, roll = 0, T = 0, last = 0, t0 = performance.now();
+let dartiness = 0;
+const tr = { active: false, pending: false, t0: 0, dur: 1, curve: null, mode: 'ahead', fromLook: new THREE.Vector3(), fromSX: 0, fromSY: 0, fromFov: 40, end: new THREE.Vector3(), entrance: false };
+let drawT0 = -1;
+const MOODS = { fog: 0.026, sh: 1, glow: 1, warm: 0 };
+let endNear = false;
+
+function pathNow() { return PATHS[orient][HB.view === 'values' ? 'values' : 'home']; }
+function poseAt(y) {
+  const P = pathNow(), st = P.st, n = st.length;
+  if (HB.stops.length === n) HB.param(y, sp); else { sp.i = 0; sp.t = 0; }
+  const i = Math.min(sp.i, n - 2), t = sp.t;
+  const e = smoother(clamp((t - 0.18) / 0.64, 0, 1));
+  const w = Math.sin(Math.PI * e);
+  const A = st[i], B = st[i + 1];
+  const u = A.u + (B.u - A.u) * e; curU = u;
+  P.curve.getPointAt(u, tgtPos);
+  tgtLook.lerpVectors(A.F, B.F, sstep(0.2, 0.9, e));
+  P.curve.getPointAt(Math.min(1, u + 0.03), ahead);
+  ahead.sub(tgtPos); if (ahead.lengthSq() > 1e-6) { ahead.normalize().multiplyScalar(12).add(tgtPos); tgtLook.lerp(ahead, w * 0.6); }
+  const ks = sstep(0.35, 0.95, e);
+  // Mid-flight the lens recentres (fully on portrait screens, where the hover shift points the view at the floor of the fog).
+  tgtSX = lerp(A.sx, B.sx, ks) * (1 - w * 0.85); tgtSY = lerp(A.sy, B.sy, ks) * (1 - w * (orient === 'p' ? 0.95 : 0.6));
+  tgtFov = baseFov + 7 * w;
+  MOODS.fog = lerp(A.mood[0], B.mood[0], e); MOODS.sh = lerp(A.mood[1], B.mood[1], e); MOODS.glow = lerp(A.mood[2], B.mood[2], e);
+  MOODS.warm = lerp(A.mood[3], B.mood[3], e);
+  endNear = HB.view === 'values' && i === n - 2 && t > 0.7;
+  dartiness = w;
+  return i;
+}
+function stillPose() {
+  const P = pathNow(), st = P.st, n = st.length;
+  let idx = 0;
+  if (HB.stops.length === n) { HB.param(W.scrollY, sp); idx = sp.t > 0.5 ? Math.min(n - 1, sp.i + 1) : sp.i; if (W.scrollY >= HB.stops[n - 1] - 2) idx = n - 1; }
+  const S = st[idx]; curU = S.u;
+  P.curve.getPointAt(S.u, tgtPos); tgtLook.copy(S.F); tgtSX = S.sx; tgtSY = S.sy; tgtFov = baseFov;
+  MOODS.fog = S.mood[0]; MOODS.sh = S.mood[1]; MOODS.glow = S.mood[2]; MOODS.warm = S.mood[3]; dartiness = 0;
+  endNear = HB.view === 'values' && idx === n - 1;
+  return idx;
+}
+function applyShift(sx, sy) {
+  camera.updateProjectionMatrix();
+  const e = camera.projectionMatrix.elements; e[8] = -sx; e[9] = -sy;
+  camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+}
+function applyMood() {
+  U.uFog.value = MOODS.fog;
+  const wa = clamp(MOODS.warm, 0, 1), co = clamp(-MOODS.warm, 0, 1);
+  U.uGlow.value.copy(GLOW_BASE).lerp(GLOW_WARM, wa).lerp(GLOW_COOL, co).multiplyScalar(MOODS.glow);
+  U.uSkyMid.value.copy(SKY_MID).lerp(SKY_MID_W, wa).lerp(SKY_MID_C, co);
+  U.uSkyHigh.value.copy(SKY_HIGH).lerp(SKY_HIGH_W, wa).lerp(SKY_HIGH_C, co);
+  U.uShCol.value.copy(SH_COL).lerp(SH_COL_W, wa).lerp(SH_COL_C, co);
+  for (let i = 0; i < NS; i++) U.uShB.value[i].x = SHBASE[i] * MOODS.sh;
+}
+function pushAlong(curve, u0, u1, arr) {
+  const L = curve.getLength() * Math.abs(u1 - u0), n = Math.max(1, Math.ceil(L / 9));
+  for (let k = 1; k <= n; k++) arr.push(curve.getPointAt(clamp(u0 + (u1 - u0) * k / n, 0, 1)));
+}
+function startTransition(fromView, toView) {
+  poseAt(W.scrollY);
+  const P = PATHS[orient], pts = [camera.position.clone()];
+  if (fromView === 'home' && toView === 'values') { pushAlong(P.home.curve, prevU, P.home.st[4].u, pts); pushAlong(P.values.curve, 0, curU, pts); }
+  else if (fromView === 'values' && toView === 'home') { pushAlong(P.values.curve, prevU, 0, pts); pushAlong(P.home.curve, P.home.st[4].u, curU, pts); }
+  else pts.push(tgtPos.clone());
+  const clean = [pts[0]];
+  for (let i = 1; i < pts.length; i++) if (pts[i].distanceTo(clean[clean.length - 1]) > 0.6) clean.push(pts[i]);
+  if (clean.length < 2) clean.push(tgtPos.clone().add(new THREE.Vector3(0, 0.01, 0)));
+  tr.curve = new THREE.CatmullRomCurve3(clean, false, 'centripetal');
+  const L = tr.curve.getLength();
+  tr.dur = clamp(1.3 + L / 95, 1.6, 3.2) * 1000; tr.t0 = performance.now(); tr.active = true; tr.mode = 'ahead'; tr.entrance = false;
+  tr.fromLook.copy(curLook); tr.fromSX = curSX; tr.fromSY = curSY; tr.fromFov = curFov; tr.end.copy(clean[clean.length - 1]);
+}
+function startEntrance() {
+  poseAt(W.scrollY);
+  const start = tgtPos.clone().add(new THREE.Vector3(1.5, 3.6, 30));
+  const mid = tgtPos.clone().add(new THREE.Vector3(-1.2, 1.4, 13));
+  tr.curve = new THREE.CatmullRomCurve3([start, mid, tgtPos.clone()], false, 'centripetal');
+  tr.dur = 2600; tr.t0 = performance.now(); tr.active = true; tr.pending = true; tr.mode = 'focus'; tr.entrance = true;
+  tr.fromLook.copy(tgtLook); tr.fromSX = tgtSX * 0.4; tr.fromSY = tgtSY * 0.4; tr.fromFov = baseFov + 6; tr.end.copy(tgtPos);
+  camera.position.copy(start); prevPos.copy(start);
+}
+let prevU = 0;
+
+/* ---------------- Wake from the pointer ---------------- */
+let wakeIdx = 0, lastMoved = -1, lastWake = 0;
+const ndc = new THREE.Vector3();
+function wake(now) {
+  const P = HB.pointer;
+  if (!P.has || P.moved === lastMoved || now - lastWake < 40) return;
+  lastMoved = P.moved; lastWake = now;
+  ndc.set(P.nx, P.ny, 0.5).unproject(camera).sub(camera.position).normalize();
+  const w = U.uWake.value[wakeIdx];
+  w.set(camera.position.x + ndc.x * 6.5, camera.position.y + ndc.y * 6.5, camera.position.z + ndc.z * 6.5, T);
+  wakeIdx = (wakeIdx + 1) % NW;
+}
+
+/* ---------------- Size, tiers, probe ---------------- */
+let cw = 0, ch = 0;
+function applySize(force) {
+  if (dead) return;
+  const w = canvas.clientWidth || W.innerWidth, h = canvas.clientHeight || W.innerHeight;
+  if (!force && w === cw && h === ch) return;
+  cw = w; ch = h;
+  const asp = w / Math.max(1, h);
+  orient = asp < 0.8 ? 'p' : 'l';
+  route.l.visible = orient === 'l'; route.p.visible = orient === 'p';
+  baseFov = asp < 0.8 ? 56 : asp < 1.2 ? 48 : 40;
+  camera.aspect = asp;
+  let pr = Math.min(W.devicePixelRatio || 1, DPR_CAP, LEVELS[level].pr) * prScale;
+  const budget = PHONE ? 1.6e6 : 3.2e6;
+  if (w * h * pr * pr > budget) pr = Math.sqrt(budget / (w * h));
+  pr = Math.max(0.5, pr);
+  renderer.setPixelRatio(pr); renderer.setSize(w, h, false);
+  U.uPx.value = (h * pr) * 0.5 / Math.tan(THREE.MathUtils.degToRad(baseFov) * 0.5);
+  if (still) requestStill();
+}
+function setLevel(l) {
+  level = l;
+  facetGeo.instanceCount = Math.min(LEVELS[l].facets, ALLOC.facets);
+  moteGeo.setDrawRange(0, Math.min(LEVELS[l].motes, ALLOC.motes));
+  stemGeo.instanceCount = Math.min(LEVELS[l].stems, stemGeo.userData.made);
+  applySize(true);
+}
+setLevel(level);
+let pT0 = 0, pN = 0, pSlow = 0, pVery = 0, pHold = 0, pCrawl = 0;
+function probe(dt, now) {
+  if (!HB.revealed || still) return;
+  if (!pHold) pHold = now + 700;
+  if (now < pHold) return;
+  if (!pN) pT0 = now;
+  pN++; if (dt > 1 / 36) pSlow++; if (dt > 1 / 26) pVery++;
+  pCrawl = dt >= 0.099 ? pCrawl + 1 : 0;
+  if (pCrawl < 3 && (now - pT0 < 1100 || pN < 5)) return;
+  if (pCrawl >= 3) pVery = pN;
+  const slow = pSlow * 2 > pN, very = pVery * 2 > pN;
+  pN = 0; pSlow = 0; pVery = 0; pCrawl = 0;
+  if (!(very || (slow && level > 1))) return;
+  if (level > 0) setLevel(level - 1);
+  else if (prScale > 0.7) { prScale *= 0.8; applySize(true); }
+  else return;
+  pHold = now + 500;
+}
+
+/* ---------------- HUD (real values) ---------------- */
+const hF = D.getElementById('hud-fps'), hN = D.getElementById('hud-n'), hX = D.getElementById('hud-xyz'), ro = D.getElementById('ro');
+let hudT = 0, fpsN = 0, lastTxt = '', roT = 0;
+function hud(now, force) {
+  fpsN++;
+  if (!hudT && !force) { hudT = now; fpsN = 0; return; }
+  if (!force && now - hudT < 300) return;
+  const fps = fpsN * 1000 / Math.max(1, now - hudT); hudT = now; fpsN = 0;
+  if (hF) hF.textContent = still ? 'still' : String(Math.round(fps));
+  if (hN) hN.textContent = facetGeo.instanceCount.toLocaleString('en-US');
+  const p = camera.position, txt = p.x.toFixed(1) + ' ' + p.y.toFixed(1) + ' ' + p.z.toFixed(1);
+  if (hX && txt !== lastTxt) { hX.textContent = txt; lastTxt = txt; }
+}
+function readout(now, force) {
+  if (!ro || (!force && now - roT < 120)) return; roT = now;
+  ro.textContent = small.off.toFixed(2) + '°';
+}
+
+/* ---------------- Frame ---------------- */
+let visible = !D.hidden, onscreen = true;
+function updateGroups(Tn) { showGroups(false, Tn); }
+function frame(now) {
+  raf = 0;
+  if (!running || dead) return;
+  if (glx.isContextLost()) { stop(); return; }
+  raf = requestAnimationFrame(frame);
+  const dt = Math.min(0.1, Math.max(0.001, (now - (last || now)) / 1000)); last = now;
+  // Behind the loader only the first frame is drawn (it links every program). The world then waits, so the loader
+  // never competes with the GPU, and the fly-in starts when the page is revealed.
+  if (firstDone && !HB.revealed) return;
+  try {
+    T = Math.max(0, (now - t0) / 1000); U.uTime.value = T;
+    const sy = W.scrollY;
+    ys += (sy - ys) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(sy - ys) < 0.3) ys = sy;
+    poseAt(ys);
+    let k = 1;
+    if (tr.pending && HB.revealed) { tr.pending = false; tr.t0 = now; drawT0 = now + 450; }
+    if (tr.active) {
+      k = clamp((now - tr.t0) / tr.dur, 0, 1);
+      const ek = tr.entrance ? eOut(k) : eInOut(k);
+      tr.curve.getPointAt(ek, pos);
+      pos.addScaledVector(endFix.subVectors(tgtPos, tr.end), sstep(0.5, 1, k));
+      if (tr.mode === 'ahead') { tr.curve.getPointAt(Math.min(1, ek + 0.05), look); if (look.distanceToSquared(pos) < 1e-4) look.copy(tgtLook); }
+      else look.copy(tgtLook);
+      look.lerp(tgtLook, sstep(0.6, 1.0, k));
+      look.lerpVectors(tr.fromLook, look, sstep(0, 0.22, k));
+      curSX = lerp(tr.fromSX, tgtSX, sstep(0.45, 1, k)); curSY = lerp(tr.fromSY, tgtSY, sstep(0.45, 1, k));
+      curFov = lerp(tr.fromFov, tgtFov, k) + Math.sin(Math.PI * k) * (tr.entrance ? 4 : 9);
+      if (k >= 1) tr.active = false;
+    } else {
+      pos.copy(tgtPos); look.copy(tgtLook); curSX = tgtSX; curSY = tgtSY; curFov = tgtFov;
+    }
+    curLook.copy(look);
+    applyMood();
+    fwd.subVectors(look, pos).normalize(); right.crossVectors(fwd, UP).normalize(); up2.crossVectors(right, fwd);
+    const calm = (1 - dartiness) * (tr.active ? sstep(0.7, 1, k) : 1);
+    const bob = 0.065 * calm;
+    pos.addScaledVector(right, Math.sin(T * 1.9) * bob).addScaledVector(up2, Math.sin(T * 3.8 + 0.7) * bob * 0.6);
+    const P = HB.pointer, steer = P.has && P.kind === 'mouse' && HB.fine;
+    yaw += ((steer ? -P.nx * 0.06 : 0) - yaw) * (1 - Math.exp(-dt * 2.6));
+    pitch += ((steer ? P.ny * 0.035 : 0) - pitch) * (1 - Math.exp(-dt * 2.6));
+    pos.addScaledVector(right, -yaw * 1.4).addScaledVector(up2, pitch * 1.0);
+    camera.position.copy(pos); camera.lookAt(look);
+    vel.subVectors(pos, prevPos).divideScalar(dt); prevPos.copy(pos);
+    const rollT = clamp(-vel.dot(right) * 0.006, -0.16, 0.16);
+    roll += (rollT - roll) * (1 - Math.exp(-dt * 3.5));
+    camera.rotateZ(roll + Math.sin(T * 1.9) * 0.006 * calm);
+    camera.rotateY(yaw); camera.rotateX(pitch);
+    camera.fov = curFov; applyShift(curSX, curSY);
+    camera.updateMatrixWorld();
+    U.uCamFwd.value.copy(fwd);
+    sky.position.copy(camera.position);
+    if (drawT0 > 0) { const dk = clamp((now - drawT0) / 1500, 0, 1); ribbon.setDraw(eInOut(dk)); if (dk >= 1) drawT0 = -1; }
+    updateGroups(T);
+    wake(now);
+    renderer.render(scene, camera);
+    if (shaderBad) throw new Error('shader compile failed');
+    if (!firstDone) { firstDone = true; HB.glReady(); }
+    probe(dt, now); hud(now); if (HB.view === 'values') readout(now);
+    prevU = curU; errs = 0;
+  } catch (e) {
+    errs++; try { console.warn('[hummingbolt] frame', e && e.message); } catch (_) {}
+    if (errs > 2 || shaderBad) die(e);
+  }
+}
+function requestStill() { if (stillQ || dead || lost) return; stillQ = requestAnimationFrame(renderStill); }
+function renderStill() {
+  stillQ = 0;
+  if (dead || lost || glx.isContextLost()) return;
+  try {
+    T = 12; U.uTime.value = T;
+    stillPose(); applyMood();
+    camera.position.copy(tgtPos); camera.lookAt(tgtLook); camera.fov = tgtFov; applyShift(tgtSX, tgtSY); camera.updateMatrixWorld();
+    fwd.subVectors(tgtLook, tgtPos).normalize(); U.uCamFwd.value.copy(fwd);
+    sky.position.copy(camera.position); curLook.copy(tgtLook); curSX = tgtSX; curSY = tgtSY; curFov = tgtFov; prevPos.copy(tgtPos); prevU = curU;
+    ribbon.setDraw(1);
+    showGroups(true, T);
+    renderer.render(scene, camera);
+    if (shaderBad) throw new Error('shader compile failed');
+    if (!firstDone) { firstDone = true; HB.glReady(); }
+    hud(performance.now(), true); readout(0, true);
+  } catch (e) { die(e); }
+}
+function start() {
+  if (dead || lost || still) { if (still) requestStill(); return; }
+  if (!visible || !onscreen) return;
+  if (running) return;
+  running = true; last = 0; raf = requestAnimationFrame(frame);
+}
+function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+function die(e) {
+  if (dead) return; dead = true; stop();
+  try { console.warn('[hummingbolt] 3D stopped, poster shown', e && e.message); } catch (_) {}
+  try {
+    for (const x of keep) { try { x.dispose(); } catch (_) {} }
+    scene.traverse((o) => { if (o.geometry) { try { o.geometry.dispose(); } catch (_) {} } });
+    renderer.dispose();
+  } catch (_) {}
+  if (HB.glFail) HB.glFail(e);
+}
+
+/* ---------------- Events ---------------- */
+D.addEventListener('visibilitychange', () => { visible = !D.hidden; if (visible) start(); else stop(); });
+try {
+  new IntersectionObserver((ents) => { onscreen = ents[ents.length - 1].isIntersecting; if (onscreen) start(); else stop(); }).observe(canvas);
+} catch (e) {}
+canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; stop(); if (HB.glLost) HB.glLost(); }, false);
+canvas.addEventListener('webglcontextrestored', () => { if (dead) return; lost = false; errs = 0; firstDone = true; if (HB.glBack) HB.glBack(); if (still) requestStill(); else start(); }, false);
+let rT = 0;
+W.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => applySize(false), 120); }, { passive: true });
+W.addEventListener('scroll', () => { if (still) requestStill(); }, { passive: true });
+HB.on('measure', () => { if (still) requestStill(); });
+HB.on('route', (d) => {
+  if (!d.changed) return;
+  ys = W.scrollY;
+  if (still) { requestStill(); return; }
+  if (firstDone) startTransition(d.prev, d.view);
+});
+try {
+  const mm = W.matchMedia('(prefers-reduced-motion: reduce)');
+  const onRM = () => { still = mm.matches; HB.rm = still; if (still) { stop(); tr.active = false; drawT0 = -1; requestStill(); } else { ys = W.scrollY; start(); } };
+  if (mm.addEventListener) mm.addEventListener('change', onRM);
+} catch (e) {}
+
+/* ---------------- Go ---------------- */
+try { const st = D.getElementById('ldr-stat'); if (st && !HB.revealed) st.textContent = 'Compiling shaders'; } catch (e) {}
+applySize(true);
+poseAt(W.scrollY); camera.position.copy(tgtPos); camera.lookAt(tgtLook); applyShift(tgtSX, tgtSY); camera.updateMatrixWorld();
+// Compile every program (in parallel where the browser can), then draw once with everything visible so no shader
+// links mid-flight. The entrance clock starts on the first real frame after that.
+let compiling;
+try {
+  const par = !!(renderer.compileAsync && renderer.extensions && renderer.extensions.has && renderer.extensions.has('KHR_parallel_shader_compile'));
+  compiling = par ? renderer.compileAsync(scene, camera) : Promise.resolve(renderer.compile(scene, camera));
+} catch (e) { die(e); return; }
+Promise.resolve(compiling).then(() => {
+  if (dead) return;
+  if (shaderBad) { die(new Error('shader compile failed')); return; }
+  try { renderer.render(scene, camera); } catch (e) { die(e); return; }
+  if (shaderBad) { die(new Error('shader compile failed')); return; }
+  if (still) requestStill(); else { startEntrance(); start(); }
+}, (e) => die(e));
+}
+</script>
