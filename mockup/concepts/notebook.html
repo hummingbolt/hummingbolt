@@ -1,0 +1,1793 @@
+<title>Hummingbolt — Notebook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI applications, models and agents.">
+<link rel="canonical" href="https://hummingbolt.com/">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Hummingbolt — Software and AI lab">
+<meta property="og:description" content="Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI applications, models and agents.">
+<meta property="og:url" content="https://hummingbolt.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hummingbolt">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hummingbolt — Software and AI lab">
+<meta name="twitter:description" content="Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI applications, models and agents.">
+<meta name="theme-color" content="#F4F0E6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F4F0E6'/%3E%3Cpath d='M51.13 16.78A21 21 0 0 0 21.88 11.62A21 21 0 0 0 16.72 40.87Z' fill='%2318202C'/%3E%3Cpath d='M47.28 23.13A21 21 0 0 1 42.12 52.38A21 21 0 0 1 12.87 47.22Z' fill='%23A3283A'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://hummingbolt.com/#organization",
+      "name": "Hummingbolt LLC",
+      "alternateName": "Hummingbolt",
+      "url": "https://hummingbolt.com/",
+      "email": "admin@hummingbolt.com",
+      "description": "Hummingbolt is a software and AI lab in the San Francisco Bay Area. We make mobile and web apps, games, and AI: AI applications, models and agents.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "2108 N St #18140",
+        "addressLocality": "Sacramento",
+        "addressRegion": "CA",
+        "postalCode": "95816",
+        "addressCountry": "US"
+      },
+      "areaServed": "San Francisco Bay Area"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://hummingbolt.com/#website",
+      "url": "https://hummingbolt.com/",
+      "name": "Hummingbolt",
+      "inLanguage": "en-US",
+      "publisher": { "@id": "https://hummingbolt.com/#organization" }
+    },
+    {
+      "@type": "VideoGame",
+      "@id": "https://play.toppleton.app/#game",
+      "name": "Toppleton",
+      "url": "https://play.toppleton.app",
+      "description": "A stacking game for all ages, children included. Free to play on the web.",
+      "gamePlatform": "Web browser",
+      "isAccessibleForFree": true,
+      "publisher": { "@id": "https://hummingbolt.com/#organization" }
+    }
+  ]
+}
+</script>
+<style>
+/* ------------------------------------------------------------------
+   NOTEBOOK — Hummingbolt as a lab notebook.
+   Warm grid paper, blue-black ink, one ruby accent. Every figure is a
+   small working program; captions print the numbers it computes.
+   ------------------------------------------------------------------ */
+@font-face{font-family:"Newsreader Fallback";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Liberation Serif");size-adjust:105.7%;ascent-override:69.5%;descent-override:25.1%;line-gap-override:0%}
+@font-face{font-family:"Newsreader Fallback";font-style:italic;src:local("Times New Roman Italic"),local("TimesNewRomanPS-ItalicMT"),local("Liberation Serif Italic");size-adjust:103%;ascent-override:71%;descent-override:25.7%;line-gap-override:0%}
+@font-face{font-family:"Inter Tight Fallback";font-weight:500 700;src:local("Arial Bold"),local("Arial-BoldMT"),local("Liberation Sans Bold"),local("Arial");size-adjust:93.7%;ascent-override:103.4%;descent-override:25.7%;line-gap-override:0%}
+@font-face{font-family:"Plex Mono Fallback";src:local("Courier New"),local("CourierNewPSMT"),local("Liberation Mono");size-adjust:100%;ascent-override:102.5%;descent-override:27.5%;line-gap-override:0%}
+:root{
+  color-scheme:light;
+  --paper:#F4F0E6; --paper-2:#ECE6D8; --paper-3:#E2D9C6;
+  --ink:#18202C;   /* 14.4:1 on paper */
+  --ink-2:#4A5260; /* 6.9:1 */
+  --ink-3:#5A616C; /* 5.5:1 */
+  --rule:rgba(24,32,44,.15); --rule-2:rgba(24,32,44,.32);
+  --grid:rgba(40,78,122,.065); --grid-2:rgba(40,78,122,.115);
+  --ruby:#A3283A;  /* 6.3:1 */
+  --teal:#1D6352;  /* 6.2:1 */
+  --f-head:"Inter Tight","Inter Tight Fallback","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Newsreader","Newsreader Fallback",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono","Plex Mono Fallback",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --hdr:56px; --cell:20px;
+  --ease:cubic-bezier(.2,.7,.1,1);
+}
+@media (min-width:900px){:root{--hdr:64px;--cell:24px}}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--paper);-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:clip}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{
+  margin:0;color:var(--ink);font:400 1.125rem/1.55 var(--f-body);font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip;touch-action:pan-y pinch-zoom;
+  background-color:var(--paper);
+  /* grid paper: four repeating gradients over the whole page (one shader each; no small tiles, no image decode) */
+  background-image:
+    repeating-linear-gradient(90deg,var(--grid-2) 0 1px,transparent 1px calc(var(--cell)*5)),
+    repeating-linear-gradient(180deg,var(--grid-2) 0 1px,transparent 1px calc(var(--cell)*5)),
+    repeating-linear-gradient(90deg,var(--grid) 0 1px,transparent 1px var(--cell)),
+    repeating-linear-gradient(180deg,var(--grid) 0 1px,transparent 1px var(--cell));
+  background-position:50% 0;
+}
+a{color:inherit;text-underline-offset:.18em;text-decoration-thickness:1px}
+p,h1,h2,h3,figure,ol,ul,dl,dd{margin:0}
+h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.022em;line-height:1.05;text-wrap:balance}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ruby);outline-offset:3px;border-radius:2px}
+::selection{background:rgba(163,40,58,.18)}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:fixed;left:12px;top:-60px;z-index:100;background:var(--ink);color:var(--paper);padding:12px 16px;font:600 .9375rem/1 var(--f-head);text-decoration:none;border-radius:2px}
+.skip:focus{top:12px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+@media (min-width:900px){.wrap{padding-left:max(40px, env(safe-area-inset-left, 0px));padding-right:max(40px, env(safe-area-inset-right, 0px))}}
+.mono{font-family:var(--f-mono)}
+.lab{font:500 .75rem/1.2 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- Header ---------- */
+.hdr{position:sticky;top:0;z-index:30;background:var(--paper);border-bottom:1px solid var(--rule)}
+.hdr-in{min-height:var(--hdr);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:inline-flex;align-items:center;gap:10px;min-height:44px;text-decoration:none;font:600 1.0625rem/1 var(--f-head);letter-spacing:-.012em}
+.mark{width:28px;height:28px;flex:none;display:block}
+.mark .a{fill:var(--ink)} .mark .b{fill:var(--ruby)}
+.nav ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:2px}
+.nav a{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 11px;font:500 .9375rem/1 var(--f-head);text-decoration:none;border-radius:2px}
+.nav a .n{font:500 .6875rem/1 var(--f-mono);color:var(--ink-3)}
+.nav a:hover .t,.nav a[aria-current="page"] .t{text-decoration:underline;text-decoration-color:var(--ruby);text-decoration-thickness:1.5px;text-underline-offset:7px}
+.menu-btn{display:none;align-items:center;gap:8px;min-height:44px;padding:0 12px;margin-right:-8px;background:none;border:0;border-radius:2px;font:500 .8125rem/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.menu-btn i{display:block;width:16px;height:9px;border-top:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transition:transform .25s var(--ease)}
+.menu-open .menu-btn i{transform:scaleY(.25)}
+@media (max-width:899px){
+  .js .menu-btn{display:inline-flex}
+  .js .nav{position:absolute;left:0;right:0;top:100%;background:var(--paper);border-bottom:1px solid var(--rule-2);box-shadow:0 18px 30px -24px rgba(24,32,44,.45);display:none}
+  .js.menu-open .nav{display:block}
+  .js .nav ul{flex-direction:column;gap:0;padding:6px max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px))}
+  .js .nav li+li{border-top:1px solid var(--rule)}
+  .js .nav a{display:flex;min-height:52px;padding:0 2px;font-size:1.0625rem;gap:14px}
+  .js .nav a .n{width:22px}
+}
+
+/* ---------- Page head (the notebook's running header) ---------- */
+.pagehead{display:flex;justify-content:space-between;gap:16px;padding:14px 0 10px;border-bottom:1px solid var(--rule-2);position:relative}
+.pagehead::after{content:"";position:absolute;left:0;right:0;bottom:-4px;border-bottom:1px solid var(--rule)}
+.pagehead .lab{white-space:nowrap}
+.pagehead .opt{display:none}
+@media (min-width:640px){.pagehead .opt{display:inline}}
+
+/* ---------- Shared bits ---------- */
+.kicker{font:500 .75rem/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ruby)}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;background:var(--ink);color:var(--paper);text-decoration:none;font:600 1rem/1 var(--f-head);letter-spacing:-.005em;border-radius:2px;border:0;cursor:pointer;transition:background-color .2s}
+.btn:hover{background:#2A3444}
+.btn svg{width:15px;height:15px;transition:transform .25s var(--ease)}
+.btn:hover svg{transform:translate(2px,-2px)}
+.tlink{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 4px;font:600 1rem/1 var(--f-head);text-decoration:none;border-bottom:0}
+.tlink .t{border-bottom:1.5px solid var(--ruby);padding-bottom:3px}
+.tlink svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+.tlink:hover svg{transform:translateX(3px)}
+.note{font:italic 400 .9688rem/1.5 var(--f-body);color:var(--ink-2);border-left:1px solid var(--ruby);padding:2px 0 2px 14px;max-width:34ch}
+.note b{display:block;font:normal 500 .6875rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ruby);margin-bottom:7px}
+.hl{background:linear-gradient(transparent 58%,rgba(234,190,72,.42) 58%,rgba(234,190,72,.42) 92%,transparent 92%);padding:0 .08em}
+
+/* hand-ruled line under headings (decorative) */
+.rule{display:block;width:100%;height:8px;margin-top:16px;overflow:visible}
+.rule path{fill:none;stroke:var(--ink);stroke-width:1.25;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:0}
+.motion .rule:not(.drawn) path{stroke-dashoffset:1}
+.motion .rule.drawn path{transition:stroke-dashoffset 1.2s var(--ease)}
+
+/* sections */
+.sec{padding:clamp(72px,10vw,132px) 0 0;scroll-margin-top:var(--hdr)}
+.sec-head{display:grid;grid-template-columns:auto 1fr;column-gap:16px;align-items:baseline;margin-bottom:clamp(28px,4vw,48px)}
+.sec-no{font:500 .8125rem/1 var(--f-mono);color:var(--ruby);letter-spacing:.04em}
+.sec-head h2{font-size:clamp(2rem,1.3rem + 2.4vw,3rem)}
+.sec-head .rule{grid-column:1 / -1}
+
+/* ---------- Hero ---------- */
+.hero{padding-bottom:8px}
+.hero-grid{display:grid;gap:28px;padding-top:26px}
+.hero h1{font-size:clamp(2.125rem,1.35rem + 3.4vw,3.5rem);line-height:1.03;letter-spacing:-.03em;max-width:14em;margin-top:14px}
+.lede{font-size:clamp(1.1875rem,1.05rem + .5vw,1.375rem);line-height:1.45;color:var(--ink-2);max-width:31ch;margin-top:20px}
+.ctas{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin-top:28px}
+.hero .note{margin-top:34px}
+@media (max-width:999px){
+  .hero-grid{gap:0}
+  .hero-copy{display:contents}
+  .hero-grid>.fig,.hero-copy>.fig{order:2;margin-top:34px}
+  .hero .note{order:3;margin-top:26px}
+}
+@media (min-width:1000px){
+  .hero-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start;padding-top:30px}
+  .hero-copy{padding-top:6px}
+}
+
+/* ---------- Figures ---------- */
+.fig{position:relative;min-width:0}
+.fig-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:9px;border-bottom:1px solid var(--rule-2)}
+.fig-head .no{font:600 .8125rem/1 var(--f-mono);color:var(--ink);letter-spacing:.02em}
+.fig-head .ttl{font:500 .75rem/1.2 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);text-align:right}
+.stage{position:relative;width:100%;aspect-ratio:4 / 3;margin-top:14px;--m:12px;
+  background:
+    linear-gradient(var(--ink),var(--ink)) 0 0/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 0/1px var(--m) no-repeat,
+    linear-gradient(var(--ink),var(--ink)) 100% 0/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 0/1px var(--m) no-repeat,
+    linear-gradient(var(--ink),var(--ink)) 0 100%/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 100%/1px var(--m) no-repeat,
+    linear-gradient(var(--ink),var(--ink)) 100% 100%/var(--m) 1px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 100%/1px var(--m) no-repeat;
+}
+.stage>canvas,.stage>svg,.stage>.fallback{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage>canvas,.stage>svg{will-change:transform}
+.stage{contain:layout paint}
+.stage svg{overflow:hidden;user-select:none;-webkit-user-select:none}
+.stage .fallback svg{position:absolute;inset:0;width:100%;height:100%}
+.stage-hover{aspect-ratio:1 / .86}
+@media (min-width:640px){.stage-hover{aspect-ratio:3 / 2}}
+.stage-wide{aspect-ratio:640 / 280}
+.stage-loop{aspect-ratio:640 / 300}
+.stage-hill{aspect-ratio:640 / 330}
+.stage-bis{aspect-ratio:640 / 330}
+.stage-px{aspect-ratio:640 / 360}
+.stage-link{aspect-ratio:640 / 470}
+figcaption{margin-top:12px;font:italic 400 1rem/1.5 var(--f-body);color:var(--ink-2);max-width:62ch;min-height:3em}
+figcaption b{font:normal 600 .8125rem/1 var(--f-mono);color:var(--ink);margin-right:6px;letter-spacing:.02em}
+figcaption .v{font:normal 500 .8438rem/1 var(--f-mono);color:var(--ink);letter-spacing:-.01em;white-space:nowrap}
+figcaption .bad{color:var(--ruby)} figcaption .good{color:var(--teal)}
+
+/* controls */
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:10px;padding-top:4px;border-top:1px solid var(--rule)}
+.range{flex:1 1 220px;min-width:0;display:grid;grid-template-columns:1fr auto;align-items:end;column-gap:12px;position:relative;padding-top:8px}
+.range .lab{grid-column:1;grid-row:1}
+.range output{grid-column:2;grid-row:1;font:500 .8125rem/1.2 var(--f-mono);color:var(--ink)}
+.range input{grid-column:1 / -1;grid-row:2}
+.range .ticks{grid-column:1 / -1;grid-row:3;position:relative;height:14px;margin:0 9px}
+.range .ticks i{position:absolute;top:0;transform:translateX(-50%);font:400 .6875rem/1 var(--f-mono);font-style:normal;color:var(--ink-3);white-space:nowrap}
+.range .ticks i::before{content:"";position:absolute;left:50%;top:-9px;width:1px;height:5px;background:var(--ink-3)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--ink)}
+input[type=range]::-moz-range-track{height:1px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink);box-shadow:0 0 0 3px var(--paper),inset 0 0 0 4px var(--paper),inset 0 0 0 10px var(--ink)}
+input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:var(--ink);border:4px solid var(--paper);box-shadow:0 0 0 1.5px var(--ink)}
+input[type=range]:focus-visible{outline:none}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--ruby),inset 0 0 0 4px var(--paper),inset 0 0 0 10px var(--ink)}
+input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 1.5px var(--ink),0 0 0 4px var(--ruby)}
+input[type=range]:disabled{opacity:.45;cursor:not-allowed}
+.bset{display:flex;flex-wrap:wrap;gap:6px}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:44px;padding:0 14px;background:transparent;border:1px solid var(--rule-2);border-radius:2px;font:500 .8125rem/1 var(--f-mono);letter-spacing:.03em;cursor:pointer;transition:background-color .2s,border-color .2s}
+.b:hover{background:rgba(24,32,44,.05);border-color:var(--ink)}
+.b[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.b:disabled{opacity:.45;cursor:not-allowed}
+.b svg{width:12px;height:12px}
+.sw{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 4px;font:500 .8125rem/1 var(--f-mono);letter-spacing:.03em;cursor:pointer;position:relative}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw .tr{width:30px;height:16px;border:1.25px solid var(--ink);border-radius:9px;position:relative;flex:none;transition:background-color .2s}
+.sw .tr::after{content:"";position:absolute;top:2px;left:2px;width:9.5px;height:9.5px;border-radius:50%;background:var(--ink);transition:transform .25s var(--ease),background-color .2s}
+.sw input:checked+.tr{background:var(--ink)}
+.sw input:checked+.tr::after{transform:translateX(14px);background:var(--paper)}
+.sw input:focus-visible+.tr{outline:2px solid var(--ruby);outline-offset:3px}
+.sw input:disabled~*{opacity:.45}
+.hint{font:400 .75rem/1.3 var(--f-mono);color:var(--ink-3);letter-spacing:.02em}
+.fig svg text{font-family:var(--f-mono);font-size:12px;fill:var(--ink-3)}
+.fig svg .nl{font-family:var(--f-head);font-size:14px;font-weight:600}
+.fig svg .sm{font-size:11px}
+@media (max-width:700px){.fig svg text{font-size:16px}.fig svg .nl{font-size:18px}.fig svg .sm{font-size:15px}}
+@media (max-width:480px){.fig svg text{font-size:19px}.fig svg .nl{font-size:21px}.fig svg .sm{font-size:18px}.fig svg .status{display:none}}
+.fig svg .tk{fill:var(--ink)}
+
+/* ---------- What we make ---------- */
+.make-grid{display:grid;gap:44px}
+.make-list{list-style:none;padding:0;display:grid;gap:0;border-top:1px solid var(--rule-2)}
+.make-list li{display:grid;grid-template-columns:52px 1fr;gap:4px 16px;padding:22px 0 24px;border-bottom:1px solid var(--rule)}
+.make-list .idx{font:500 .8125rem/1.6 var(--f-mono);color:var(--ruby);padding-top:6px}
+.make-list h3{font-size:clamp(1.5rem,1.2rem + 1vw,1.875rem);display:flex;align-items:center;gap:14px}
+.make-list h3 svg{width:28px;height:28px;flex:none;stroke:var(--ink);fill:none;stroke-width:1.4}
+.make-list p{grid-column:2;font-size:1.1875rem;color:var(--ink-2);max-width:34ch}
+.make-list .note{grid-column:2;margin-top:12px}
+@media (min-width:1000px){.make-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}}
+
+/* ---------- Toppleton ---------- */
+.top-grid{display:grid;gap:40px}
+.top-copy h3{font-size:clamp(2.5rem,1.6rem + 3vw,4rem);letter-spacing:-.035em;margin-top:12px}
+.top-copy p.big{font-size:clamp(1.25rem,1.1rem + .5vw,1.5rem);line-height:1.4;max-width:24ch;margin-top:18px}
+.top-copy p.sub{color:var(--ink-2);max-width:34ch;margin-top:14px}
+.top-copy .ctas{margin-top:26px}
+.url{font:500 .8125rem/1 var(--f-mono);color:var(--ink-2)}
+.top-copy .note{margin-top:30px}
+@media (min-width:1000px){.top-grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:56px;align-items:start}.top-grid .fig{order:-1}}
+
+/* ---------- Lab statement ---------- */
+.lab-grid{display:grid;gap:28px}
+.statement{font:400 clamp(1.625rem,1.1rem + 2.2vw,2.75rem)/1.22 var(--f-body);letter-spacing:-.012em;max-width:26ch;font-variation-settings:"opsz" 60}
+.statement em{font-style:italic;color:var(--ruby)}
+.lab-meta{display:grid;gap:14px;align-content:start}
+.lab-meta dl{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;border-top:1px solid var(--rule-2);padding-top:14px}
+.lab-meta dt{font:500 .75rem/1.6 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.lab-meta dd{font-size:1.0625rem;line-height:1.45}
+@media (min-width:1000px){.lab-grid{grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:56px;align-items:end}}
+
+/* ---------- Values teaser ---------- */
+.vt-intro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 40px;margin-bottom:28px}
+.vt-intro p{color:var(--ink-2);max-width:38ch}
+.vt-list{list-style:none;padding:0;display:grid;gap:0;border-top:1px solid var(--rule-2)}
+.vt-list a{display:grid;grid-template-columns:44px 1fr 56px;gap:4px 14px;align-items:center;padding:20px 0;min-height:64px;text-decoration:none;border-bottom:1px solid var(--rule);transition:background-color .25s}
+.vt-list a:hover{background:rgba(24,32,44,.035)}
+.vt-list .n{font:500 .8125rem/1 var(--f-mono);color:var(--ruby)}
+.vt-list h3{font-size:clamp(1.375rem,1.15rem + .9vw,1.875rem)}
+.vt-list .ln{grid-column:2;font-size:1.0625rem;color:var(--ink-2)}
+.vt-list svg{grid-column:3;grid-row:1 / span 2;width:56px;height:36px;fill:none;stroke:var(--ink);stroke-width:1.25;justify-self:end}
+@media (min-width:900px){.vt-list{grid-template-columns:1fr 1fr;column-gap:40px}.vt-list li:nth-child(-n+2) a{border-top:0}}
+
+/* ---------- Contact ---------- */
+.contact{padding-bottom:clamp(72px,10vw,132px)}
+.contact-box{display:grid;gap:22px}
+.email{font:600 clamp(1.5rem,.9rem + 3.6vw,3.25rem)/1.1 var(--f-head);letter-spacing:-.03em;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+.contact-box .bset{gap:10px}
+.copy-st{min-height:1.5em;font:400 .8125rem/1.5 var(--f-mono);color:var(--ink-2)}
+
+/* ---------- Footer ---------- */
+.ftr{border-top:1px solid var(--rule-2);padding:30px 0 calc(30px + env(safe-area-inset-bottom, 0px));background:var(--paper)}
+.ftr-in{display:grid;gap:22px}
+.ftr .brand{font-size:1rem}
+.ftr p,.ftr address{font:400 .8125rem/1.6 var(--f-mono);color:var(--ink-2);font-style:normal}
+.ftr ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:0 18px}
+.ftr ul a{display:inline-flex;align-items:center;min-height:44px;font:500 .8125rem/1 var(--f-mono);color:var(--ink)}
+@media (min-width:900px){.ftr-in{grid-template-columns:auto 1fr auto;align-items:center;gap:40px}}
+
+/* ---------- Values view ---------- */
+.vnav{position:sticky;top:var(--hdr);z-index:20;background:var(--paper);border-bottom:1px solid var(--rule)}
+.vnav-in{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
+.vnav-t{font:500 .75rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.vnav ol{list-style:none;margin:0;padding:0;display:flex;gap:2px}
+.vnav ol a{display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:44px;justify-content:center;padding:0 10px;text-decoration:none;font:500 .8125rem/1 var(--f-mono);color:var(--ink-3);border-bottom:1.5px solid transparent;transition:color .2s,border-color .2s}
+.vnav ol a .t{font-family:var(--f-head);font-size:.875rem;color:var(--ink)}
+.vnav ol a[aria-current="true"]{color:var(--ruby);border-bottom-color:var(--ruby)}
+@media (max-width:759px){.vnav ol a .t{display:none}}
+.spread{position:relative;display:grid;gap:30px;padding:48px 0 56px;border-bottom:1px solid var(--rule)}
+.spread .folio{display:none;font:500 .6875rem/1 var(--f-mono);letter-spacing:.08em;color:var(--ink-3)}
+.page{min-width:0;position:relative}
+.page-r .folio{text-align:right}
+@media (min-width:1000px){
+  .spread{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:112px;min-height:calc(100svh - var(--hdr) - 49px);align-items:center;padding:56px 0}
+  .spread::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:96px;margin-left:-48px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(24,32,44,0),rgba(24,32,44,.035) 38%,rgba(24,32,44,.10) 50%,rgba(24,32,44,.035) 62%,rgba(24,32,44,0))}
+  .page{position:static}
+  .spread .folio{display:block;position:absolute;bottom:22px;left:0}
+  .page-r .folio{left:auto;right:0}
+}
+.v-title h1{font-size:clamp(4rem,2rem + 9vw,9.5rem);letter-spacing:-.05em;line-height:.9;margin-top:18px}
+.v-title .lede{margin-top:26px}
+.toc{list-style:none;padding:0;counter-reset:toc;border-top:1px solid var(--rule-2)}
+.toc a{display:grid;grid-template-columns:36px auto 1fr auto;align-items:baseline;gap:12px;min-height:60px;padding:18px 0 14px;text-decoration:none;border-bottom:1px solid var(--rule)}
+.toc .n{font:500 .8125rem/1 var(--f-mono);color:var(--ruby)}
+.toc .t{font:600 clamp(1.25rem,1.05rem + .8vw,1.625rem)/1.15 var(--f-head);letter-spacing:-.02em}
+.toc .d{border-bottom:1.5px dotted var(--rule-2);transform:translateY(-4px);min-width:16px}
+.toc .f{font:500 .75rem/1 var(--f-mono);color:var(--ink-3);letter-spacing:.04em;white-space:nowrap}
+.toc a:hover .t{text-decoration:underline;text-decoration-color:var(--ruby);text-decoration-thickness:1.5px;text-underline-offset:6px}
+.entry{scroll-margin-top:calc(var(--hdr) + 48px)}
+.e-no{display:flex;align-items:baseline;gap:12px;font:500 .8125rem/1 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.e-no .big{font:600 clamp(3.5rem,2.4rem + 4vw,6rem)/.8 var(--f-head);letter-spacing:-.05em;color:var(--ruby);text-transform:none}
+.entry h2{font-size:clamp(2.5rem,1.5rem + 4vw,4.75rem);letter-spacing:-.04em;line-height:.98;margin-top:22px;max-width:9em}
+.e-line{font-size:clamp(1.3125rem,1.1rem + .8vw,1.75rem);line-height:1.35;margin-top:22px;max-width:22ch}
+.entry .note{margin-top:30px}
+.v-end{padding:56px 0 8px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="gf" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><style>.view[hidden]{display:block!important}</style></noscript>
+<script>
+(function(){var d=document.documentElement,l=document.getElementById('gf');d.classList.add('js');
+if(l){if(l.sheet){l.media='all'}else{l.addEventListener('load',function(){l.media='all'})}}
+try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!/nogl/.test(location.hash+location.search))d.classList.add('motion')}catch(e){}})();
+</script>
+
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="mk" viewBox="0 0 64 64"><path class="a" d="M51.13 16.78A21 21 0 0 0 21.88 11.62A21 21 0 0 0 16.72 40.87Z"/><path class="b" d="M47.28 23.13A21 21 0 0 1 42.12 52.38A21 21 0 0 1 12.87 47.22Z"/></symbol>
+    <symbol id="arr-ne" viewBox="0 0 16 16"><path d="M4 12 L12 4 M5.5 4 H12 V10.5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="arr-e" viewBox="0 0 16 16"><path d="M2 8 H13 M8.5 3.5 L13 8 L8.5 12.5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#18202C" stroke-opacity=".38" stroke-width="1"/></pattern>
+    <pattern id="hatch-l" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#18202C" stroke-opacity=".14" stroke-width="1"/></pattern>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr" id="top">
+  <div class="wrap hdr-in">
+    <a class="brand" href="#top" aria-label="Hummingbolt, home"><svg class="mark" aria-hidden="true"><use href="#mk"/></svg><span>Hummingbolt</span></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><i aria-hidden="true"></i>Contents</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="#make"><span class="n">01</span><span class="t">What we make</span></a></li>
+        <li><a href="#toppleton"><span class="n">02</span><span class="t">Toppleton</span></a></li>
+        <li><a href="#lab"><span class="n">03</span><span class="t">Lab</span></a></li>
+        <li><a href="#values"><span class="n">04</span><span class="t">Values</span></a></li>
+        <li><a href="#contact"><span class="n">05</span><span class="t">Contact</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- ======================= HOME VIEW ======================= -->
+<div class="view" id="home">
+
+  <section class="hero" aria-labelledby="home-h1">
+    <div class="wrap">
+      <div class="pagehead">
+        <span class="lab">Lab notebook <span class="opt">· Hummingbolt</span></span>
+        <span class="lab"><span data-today-wrap hidden>Opened <time data-today></time> · </span>p. 1</span>
+      </div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="kicker">Software and AI lab</p>
+          <h1 id="home-h1" tabindex="-1">Hummingbolt is a software and AI lab in the San Francisco Bay Area.</h1>
+          <p class="lede">We make mobile and web apps, games, and AI: AI applications, models and agents.</p>
+          <div class="ctas">
+            <a class="btn" href="https://play.toppleton.app" rel="noopener">Play Toppleton <svg aria-hidden="true"><use href="#arr-ne"/></svg></a>
+            <a class="tlink" href="#values"><span class="t">Read our values</span><svg aria-hidden="true"><use href="#arr-e"/></svg></a>
+          </div>
+          <aside class="note" aria-label="Note on Fig. 1"><b>Note</b>Fig. 1 is live code, not a video. Slow it down to see the wing.</aside>
+        </div>
+
+        <figure class="fig" data-fig="hover" aria-labelledby="f1-cap">
+          <div class="fig-head"><span class="no">Fig. 1</span><span class="ttl">Hover, slowed down</span></div>
+          <div class="stage stage-hover">
+            <canvas aria-hidden="true"></canvas>
+            <div class="fallback" aria-hidden="true" hidden></div>
+          </div>
+          <div class="ctl">
+            <label class="range">
+              <span class="lab">Playback speed</span><output data-o="speed">1/40×</output>
+              <input type="range" min="0" max="1000" step="1" value="696" aria-valuetext="1/40 speed" data-k="speed">
+              <span class="ticks" aria-hidden="true"><i style="left:0%">1×</i><i style="left:43.4%">1/10</i><i style="left:86.9%">1/100</i></span>
+            </label>
+            <div class="bset">
+              <button class="b" type="button" data-k="pause">Pause</button>
+              <label class="sw"><input type="checkbox" checked data-k="strobe"><span class="tr" aria-hidden="true"></span><span>Strobe</span></label>
+            </div>
+          </div>
+          <figcaption id="f1-cap"><b>Fig. 1</b>A model wing that beats 50 times a second. At <span class="v" data-c="speed">1/40</span> speed one beat takes <span class="v" data-c="beat">0.80 s</span>, and each frame catches <span class="v" data-c="frame">0.02</span> of a beat<span data-c="tail">, so the wing looks sharp</span>.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="make" aria-labelledby="make-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">§ 1</span>
+        <h2 id="make-h">What we make</h2>
+        <svg class="rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 4.6 C 140 3.2, 320 5.6, 599 3.8"/></svg>
+      </div>
+      <div class="make-grid">
+        <ol class="make-list">
+          <li>
+            <span class="idx">1.1</span>
+            <h3><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="8" y="3" width="12" height="22" rx="2.5"/><path d="M12.5 21.5h3"/></svg>Apps</h3>
+            <p>Mobile and web apps.</p>
+          </li>
+          <li>
+            <span class="idx">1.2</span>
+            <h3><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="5" y="19" width="16" height="5"/><rect x="8" y="13" width="16" height="5"/><rect x="6" y="7" width="13" height="5"/></svg>Games</h3>
+            <p>Games. Our first is <a href="#toppleton">Toppleton</a>, a stacking game.</p>
+          </li>
+          <li>
+            <span class="idx">1.3</span>
+            <h3><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="9"/><circle cx="14" cy="5" r="2.4" fill="#F4F0E6"/><circle cx="21.8" cy="18.5" r="2.4" fill="#F4F0E6"/><circle cx="6.2" cy="18.5" r="2.4" fill="#F4F0E6"/></svg>AI</h3>
+            <p>AI applications, models and agents.</p>
+            <aside class="note" aria-label="Note on Fig. 2"><b>See Fig. 2</b>A tiny agent loop: plan a move, act on it, check the result. Repeat until the check passes.</aside>
+          </li>
+        </ol>
+
+        <figure class="fig" data-fig="loop" aria-labelledby="f2-cap">
+          <div class="fig-head"><span class="no">Fig. 2</span><span class="ttl">Plan, act, check</span></div>
+          <div class="stage stage-loop">
+            <svg viewBox="0 0 640 300" aria-hidden="true">
+              <circle cx="150" cy="150" r="96" fill="none" stroke="#18202C" stroke-opacity=".5" stroke-width="1"/>
+              <g class="arrows" fill="none" stroke="#18202C" stroke-width="1.3">
+                <path d="M-5 -5 L0 0 L-5 5" transform="translate(233.1 102) rotate(60)"/>
+                <path d="M-5 -5 L0 0 L-5 5" transform="translate(150 246) rotate(180)"/>
+                <path d="M-5 -5 L0 0 L-5 5" transform="translate(66.9 102) rotate(300)"/>
+              </g>
+              <g class="nodes">
+                <g data-n="0" transform="translate(150 54)"><circle r="34" fill="#F4F0E6" stroke="#18202C" stroke-width="1.3"/><text class="tk nl" text-anchor="middle" y="5">Plan</text></g>
+                <g data-n="1" transform="translate(233.1 198)"><circle r="34" fill="#F4F0E6" stroke="#18202C" stroke-width="1.3"/><text class="tk nl" text-anchor="middle" y="5">Act</text></g>
+                <g data-n="2" transform="translate(66.9 198)"><circle r="34" fill="#F4F0E6" stroke="#18202C" stroke-width="1.3"/><text class="tk nl" text-anchor="middle" y="5">Check</text></g>
+              </g>
+              <circle class="token" r="5.5" cx="150" cy="54" fill="#A3283A" opacity="0"/>
+              <text x="330" y="34">Task: sort by height</text>
+              <line x1="326" y1="232" x2="612" y2="232" stroke="#18202C" stroke-width="1"/>
+              <g class="bars"></g>
+              <path class="bracket" d="" fill="none" stroke="#A3283A" stroke-width="1.6"/>
+              <path class="swap" d="" fill="none" stroke="#A3283A" stroke-width="1.3" stroke-dasharray="3 3"/>
+              <text class="status tk" x="330" y="290">Loop 1 · plan</text>
+            </svg>
+          </div>
+          <div class="ctl">
+            <div class="bset">
+              <button class="b" type="button" data-k="run">Pause</button>
+              <button class="b" type="button" data-k="step">Step</button>
+              <button class="b" type="button" data-k="shuffle">Shuffle</button>
+            </div>
+          </div>
+          <figcaption id="f2-cap"><b>Fig. 2</b>An agent loop sorting six bars. <span data-c="txt">Loop <span class="v">1</span>: plan the next swap.</span></figcaption>
+          <p class="sr" aria-live="polite" data-live></p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="toppleton" aria-labelledby="top-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">§ 2</span>
+        <h2 id="top-h">Our first product</h2>
+        <svg class="rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 3.6 C 180 5.4, 360 2.8, 599 4.4"/></svg>
+      </div>
+      <div class="top-grid">
+        <div class="top-copy">
+          <p class="kicker">Game · Free on the web</p>
+          <h3>Toppleton</h3>
+          <p class="big">A stacking game for all ages, children included.</p>
+          <p class="sub">Free to play on the web. App Store and Google Play versions are coming later.</p>
+          <div class="ctas">
+            <a class="btn" href="https://play.toppleton.app" rel="noopener">Play Toppleton <svg aria-hidden="true"><use href="#arr-ne"/></svg></a>
+            <span class="url">play.toppleton.app</span>
+          </div>
+          <aside class="note" aria-label="Note on Fig. 3"><b>See Fig. 3</b>Stacking is a balance problem. Each slab’s load must have its centre of mass over the slab below.</aside>
+        </div>
+
+        <figure class="fig" data-fig="stack" aria-labelledby="f3-cap">
+          <div class="fig-head"><span class="no">Fig. 3</span><span class="ttl">How far can a stack reach?</span></div>
+          <div class="stage stage-wide">
+            <svg viewBox="0 90 640 280" role="group" aria-label="Stack of four slabs. Use the arrow keys on a slab to slide it.">
+              <rect x="-2" y="300" width="270" height="70" fill="url(#hatch-l)"/>
+              <path d="M-2 300 H268 V362" fill="none" stroke="#18202C" stroke-width="1.5"/>
+              <text x="276" y="345">table edge</text>
+              <g class="slabs"></g>
+              <g class="coms"></g>
+              <g class="dim" opacity="0"><path class="dl" d="" fill="none" stroke="#18202C" stroke-width="1"/><text class="dt tk sm" x="0" y="0" text-anchor="middle"></text></g>
+              <text class="hint-t" x="632" y="114" text-anchor="end">drag a slab sideways</text>
+            </svg>
+          </div>
+          <div class="ctl">
+            <div class="bset">
+              <button class="b" type="button" data-k="best">Best stack</button>
+              <button class="b" type="button" data-k="reset">Restack</button>
+            </div>
+            <span class="hint">Slabs on top ride along.</span>
+          </div>
+          <figcaption id="f3-cap"><b>Fig. 3</b><span data-c="txt">Overhang <span class="v">0.57</span> of a slab. The best possible with four slabs, one per level, is <span class="v">1.04</span>.</span></figcaption>
+          <p class="sr" aria-live="polite" data-live></p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="lab" aria-labelledby="lab-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">§ 3</span>
+        <h2 id="lab-h">The lab</h2>
+        <svg class="rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 4 C 200 2.8, 380 5.2, 599 3.6"/></svg>
+      </div>
+      <div class="lab-grid">
+        <p class="statement">We learn by building. So this notebook is made of <em>working figures</em>, not pictures. Each one computes what it shows.</p>
+        <div class="lab-meta">
+          <dl>
+            <dt>Where</dt><dd>San Francisco Bay Area</dd>
+            <dt>Makes</dt><dd>Mobile and web apps, games, and AI: AI applications, models and agents</dd>
+            <dt>First</dt><dd><a href="https://play.toppleton.app" rel="noopener">Toppleton</a></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="values-teaser" aria-labelledby="vt-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">§ 4</span>
+        <h2 id="vt-h">Values</h2>
+        <svg class="rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 3.8 C 160 5.2, 400 2.6, 599 4.2"/></svg>
+      </div>
+      <div class="vt-intro">
+        <p>Four entries. Each one has its own working figure.</p>
+        <a class="tlink" href="#values"><span class="t">Open the values</span><svg aria-hidden="true"><use href="#arr-e"/></svg></a>
+      </div>
+      <ol class="vt-list">
+        <li><a href="#value-1"><span class="n">01</span><h3>Be bold.</h3><span class="ln">Pick the hard problem. Go after it.</span>
+          <svg viewBox="0 0 56 36" aria-hidden="true"><path d="M1 33 C 8 33, 9 21, 15 21 S 21 31, 27 31 S 36 5, 43 5 S 52 33, 55 33"/><circle cx="43" cy="5" r="2.2" fill="#A3283A" stroke="none"/></svg></a></li>
+        <li><a href="#value-2"><span class="n">02</span><h3>Tinker.</h3><span class="ln">We learn by building. Prototype first, debate later.</span>
+          <svg viewBox="0 0 56 36" aria-hidden="true"><path d="M10 25 C 12 8, 36 3, 47 12 S 40 33, 25 31 S 8 33, 10 25 Z"/><path d="M14 33 L22 18 L38 22 L44 33" stroke-opacity=".55"/></svg></a></li>
+        <li><a href="#value-3"><span class="n">03</span><h3>Fail fast. Learn faster.</h3><span class="ln">Small bets. Quick tests. Honest results.</span>
+          <svg viewBox="0 0 56 36" aria-hidden="true"><path d="M2 5 H54 M2 13 H28 M15 21 H28 M15 29 H21"/><circle cx="18" cy="29" r="2.2" fill="#A3283A" stroke="none"/></svg></a></li>
+        <li><a href="#value-4"><span class="n">04</span><h3>Sweat the small stuff.</h3><span class="ln">Hummingbirds are tiny and exact. Good software is too.</span>
+          <svg viewBox="0 0 56 36" aria-hidden="true"><rect x="8" y="4" width="10" height="28" fill="#18202C" fill-opacity=".5" stroke="none"/><rect x="18" y="4" width="10" height="28" fill="#18202C" fill-opacity=".5" stroke="none"/><path d="M8 4 H48 M8 32 H48 M8 4 V32 M18 4 V32 M28 4 V32 M38 4 V32 M48 4 V32" stroke-opacity=".55"/></svg></a></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec contact" id="contact" aria-labelledby="contact-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">§ 5</span>
+        <h2 id="contact-h">Contact</h2>
+        <svg class="rule" aria-hidden="true" viewBox="0 0 600 8" preserveAspectRatio="none"><path pathLength="1" d="M1 4.2 C 220 3, 380 5.4, 599 3.8"/></svg>
+      </div>
+      <div class="contact-box">
+        <p class="lede" style="margin-top:0">Write to us.</p>
+        <p class="email" id="email-addr">admin@hummingbolt.com</p>
+        <div class="bset">
+          <a class="btn" href="mailto:admin@hummingbolt.com">Email admin@hummingbolt.com</a>
+          <button class="b" type="button" id="copy-btn" style="min-height:48px">Copy address</button>
+        </div>
+        <p class="copy-st" id="copy-st" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= VALUES VIEW ======================= -->
+<div class="view" id="values" hidden>
+  <nav class="vnav" aria-label="Values entries">
+    <div class="wrap vnav-in">
+      <a class="vnav-t" href="#values">Values</a>
+      <ol>
+        <li><a href="#value-1"><span>01</span><span class="t">Be bold</span></a></li>
+        <li><a href="#value-2"><span>02</span><span class="t">Tinker</span></a></li>
+        <li><a href="#value-3"><span>03</span><span class="t">Fail fast</span></a></li>
+        <li><a href="#value-4"><span>04</span><span class="t">Small stuff</span></a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <section class="spread v-title" aria-labelledby="values-h1">
+      <div class="page page-l">
+        <p class="kicker">Lab notebook · Values</p>
+        <h1 id="values-h1" tabindex="-1">Values</h1>
+        <p class="lede">Four entries. Each comes with a working figure. Move the controls and the captions print the real numbers.</p>
+        <p class="folio" aria-hidden="true">p. 10</p>
+      </div>
+      <div class="page page-r">
+        <ol class="toc">
+          <li><a href="#value-1"><span class="n">01</span><span class="t">Be bold.</span><span class="d" aria-hidden="true"></span><span class="f">Fig. 4</span></a></li>
+          <li><a href="#value-2"><span class="n">02</span><span class="t">Tinker.</span><span class="d" aria-hidden="true"></span><span class="f">Fig. 5</span></a></li>
+          <li><a href="#value-3"><span class="n">03</span><span class="t">Fail fast. Learn faster.</span><span class="d" aria-hidden="true"></span><span class="f">Fig. 6</span></a></li>
+          <li><a href="#value-4"><span class="n">04</span><span class="t">Sweat the small stuff.</span><span class="d" aria-hidden="true"></span><span class="f">Fig. 7</span></a></li>
+        </ol>
+        <p class="folio" aria-hidden="true">p. 11</p>
+      </div>
+    </section>
+
+    <article class="spread entry" id="value-1" aria-labelledby="v1-h">
+      <div class="page page-l">
+        <p class="e-no"><span class="big">01</span><span>Entry</span></p>
+        <h2 id="v1-h">Be bold.</h2>
+        <p class="e-line">Pick the hard problem. Go after it.</p>
+        <aside class="note" aria-label="Note on Fig. 4"><b>Note</b>The climber tests one step left and one step right, and moves only uphill. When stuck, it halves the step. Try a small first step, then a bold one.</aside>
+        <p class="folio" aria-hidden="true">p. 12</p>
+      </div>
+      <div class="page page-r">
+        <figure class="fig" data-fig="hill" aria-labelledby="f4-cap">
+          <div class="fig-head"><span class="no">Fig. 4</span><span class="ttl">Hill climb</span></div>
+          <div class="stage stage-hill">
+            <svg viewBox="0 0 640 330" aria-hidden="true">
+              <g class="axes" stroke="#18202C" stroke-width="1" fill="none"><path d="M48 286 H604"/><path d="M48 286 V40" stroke-opacity=".35"/></g>
+              <path class="area" d="" fill="url(#hatch-l)"/>
+              <path class="curve" d="" fill="none" stroke="#18202C" stroke-width="1.6"/>
+              <g class="peaks"></g>
+              <g class="trail"></g>
+              <g class="climber"><circle r="9" fill="#F4F0E6" stroke="#18202C" stroke-width="1.4"/><circle r="4" fill="#A3283A"/></g>
+              <text x="48" y="306">0</text><text x="604" y="306" text-anchor="end">1</text><text x="56" y="48">height</text>
+            </svg>
+          </div>
+          <div class="ctl">
+            <label class="range">
+              <span class="lab">First step</span><output data-o="step">0.08</output>
+              <input type="range" min="2" max="60" step="1" value="8" data-k="step" aria-valuetext="0.08">
+            </label>
+            <div class="bset"><button class="b" type="button" data-k="go">Climb again</button></div>
+          </div>
+          <figcaption id="f4-cap"><b>Fig. 4</b><span data-c="txt">First step <span class="v">0.08</span>.</span></figcaption>
+          <p class="sr" aria-live="polite" data-live></p>
+        </figure>
+        <p class="folio" aria-hidden="true">p. 13</p>
+      </div>
+    </article>
+
+    <article class="spread entry" id="value-2" aria-labelledby="v2-h">
+      <div class="page page-l">
+        <p class="e-no"><span class="big">02</span><span>Entry</span></p>
+        <h2 id="v2-h">Tinker.</h2>
+        <p class="e-line">We learn by building. Prototype first, debate later.</p>
+        <aside class="note" aria-label="Note on Fig. 5"><b>Note</b>A four-bar linkage. Change a length and the pen draws a new path. The faint line is your last try.</aside>
+        <p class="folio" aria-hidden="true">p. 14</p>
+      </div>
+      <div class="page page-r">
+        <figure class="fig" data-fig="link" aria-labelledby="f5-cap">
+          <div class="fig-head"><span class="no">Fig. 5</span><span class="ttl">Four-bar linkage</span></div>
+          <div class="stage stage-link">
+            <canvas aria-hidden="true"></canvas>
+            <div class="fallback" aria-hidden="true" hidden></div>
+          </div>
+          <div class="ctl">
+            <label class="range"><span class="lab">Crank</span><output data-o="a">0.30</output><input type="range" min="20" max="45" step="1" value="30" data-k="a"></label>
+            <label class="range"><span class="lab">Coupler</span><output data-o="b">1.10</output><input type="range" min="80" max="140" step="1" value="110" data-k="b"></label>
+            <label class="range"><span class="lab">Pen offset</span><output data-o="v">0.50</output><input type="range" min="-40" max="80" step="1" value="50" data-k="v"></label>
+          </div>
+          <figcaption id="f5-cap"><b>Fig. 5</b><span data-c="txt">Crank <span class="v">0.30</span>, coupler <span class="v">1.10</span>, rocker <span class="v">0.95</span>, ground <span class="v">1.00</span>.</span></figcaption>
+        </figure>
+        <p class="folio" aria-hidden="true">p. 15</p>
+      </div>
+    </article>
+
+    <article class="spread entry" id="value-3" aria-labelledby="v3-h">
+      <div class="page page-l">
+        <p class="e-no"><span class="big">03</span><span>Entry</span></p>
+        <h2 id="v3-h">Fail fast. Learn faster.</h2>
+        <p class="e-line">Small bets. Quick tests. Honest results.</p>
+        <aside class="note" aria-label="Note on Fig. 6"><b>Note</b>Find a hidden number from 1 to 100. Each test is a cheap guess, and each answer halves the range. It never takes more than seven.</aside>
+        <p class="folio" aria-hidden="true">p. 16</p>
+      </div>
+      <div class="page page-r">
+        <figure class="fig" data-fig="bisect" aria-labelledby="f6-cap">
+          <div class="fig-head"><span class="no">Fig. 6</span><span class="ttl">Guess, test, adjust</span></div>
+          <div class="stage stage-bis">
+            <svg viewBox="0 0 640 330" aria-hidden="true">
+              <g class="axis"></g>
+              <g class="rows"></g>
+              <g class="target" opacity="0"><path d="M0 -14 V 300" stroke="#A3283A" stroke-width="1" stroke-dasharray="2 4"/><circle r="5" fill="#A3283A"/></g>
+            </svg>
+          </div>
+          <div class="ctl">
+            <div class="bset">
+              <button class="b" type="button" data-k="new">New number</button>
+              <button class="b" type="button" data-k="step">Step</button>
+            </div>
+          </div>
+          <figcaption id="f6-cap"><b>Fig. 6</b><span data-c="txt">Halve the range with every test.</span></figcaption>
+          <p class="sr" aria-live="polite" data-live></p>
+        </figure>
+        <p class="folio" aria-hidden="true">p. 17</p>
+      </div>
+    </article>
+
+    <article class="spread entry" id="value-4" aria-labelledby="v4-h">
+      <div class="page page-l">
+        <p class="e-no"><span class="big">04</span><span>Entry</span></p>
+        <h2 id="v4-h">Sweat the small stuff.</h2>
+        <p class="e-line">Hummingbirds are tiny and exact. Good software is too.</p>
+        <aside class="note" aria-label="Note on Fig. 7"><b>Note</b>The figure draws a one-pixel line and reads back the pixels your browser made. Half a pixel off, and the line goes soft.</aside>
+        <p class="folio" aria-hidden="true">p. 18</p>
+      </div>
+      <div class="page page-r">
+        <figure class="fig" data-fig="pixel" aria-labelledby="f7-cap">
+          <div class="fig-head"><span class="no">Fig. 7</span><span class="ttl">Half a pixel, magnified</span></div>
+          <div class="stage stage-px">
+            <canvas aria-hidden="true"></canvas>
+            <div class="fallback" aria-hidden="true" hidden></div>
+          </div>
+          <div class="ctl">
+            <label class="range"><span class="lab">Line position</span><output data-o="x">+0.50 px</output><input type="range" min="0" max="100" step="1" value="50" data-k="x" aria-valuetext="plus 0.50 pixels"></label>
+            <div class="bset"><label class="sw"><input type="checkbox" data-k="snap"><span class="tr" aria-hidden="true"></span><span>Snap to pixels</span></label></div>
+          </div>
+          <figcaption id="f7-cap"><b>Fig. 7</b><span data-c="txt">A one-pixel line, half a pixel off the grid.</span></figcaption>
+        </figure>
+        <p class="folio" aria-hidden="true">p. 19</p>
+      </div>
+    </article>
+
+    <div class="v-end">
+      <a class="btn" href="#top">Back to the notebook</a>
+      <a class="tlink" href="#contact"><span class="t">Write to us</span><svg aria-hidden="true"><use href="#arr-e"/></svg></a>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer class="ftr">
+  <div class="wrap ftr-in">
+    <a class="brand" href="#top" aria-label="Hummingbolt, home"><svg class="mark" aria-hidden="true"><use href="#mk"/></svg><span>Hummingbolt</span></a>
+    <div>
+      <p>© 2026 Hummingbolt LLC, a California limited liability company.</p>
+      <address>2108 N St #18140, Sacramento, CA 95816 · <a href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a></address>
+    </div>
+    <ul>
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Legal notice</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function () {
+'use strict';
+var W = window, D = document, HTML = D.documentElement;
+var TAU = Math.PI * 2, DEG = Math.PI / 180;
+var STATIC = /(^|[#&?])nogl\b/.test(location.hash + '&' + location.search);
+var mqRM = W.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+var reduced = !!(mqRM && mqRM.matches);
+var coarse = W.matchMedia ? matchMedia('(pointer: coarse)').matches : false;
+var HB = W.HB = { view: 'home', tier: 2, static: STATIC, reduced: reduced, figs: {}, freeze: false };
+HB.resume = function () { HB.freeze = false; kick(); };
+function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+function ease(t) { t = clamp(t, 0, 1); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+function easeOut(t) { t = clamp(t, 0, 1); return 1 - Math.pow(1 - t, 3); }
+function sq(v) { return v * v; }
+function f2(v) { return (Math.round(v * 100) / 100).toFixed(2); }
+function cssVar(n) { return getComputedStyle(HTML).getPropertyValue(n).trim(); }
+var C = { ink: cssVar('--ink') || '#18202C', ink2: cssVar('--ink-2') || '#4A5260', ink3: cssVar('--ink-3') || '#5A616C', ruby: cssVar('--ruby') || '#A3283A', teal: cssVar('--teal') || '#1D6352', paper: cssVar('--paper') || '#F4F0E6', paper2: cssVar('--paper-2') || '#ECE6D8' };
+var MONO = '"IBM Plex Mono","Plex Mono Fallback",ui-monospace,Menlo,monospace';
+var NS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs, parent) { var e = D.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function dprCap() { var cap = (coarse || innerWidth < 700) ? 1.25 : 1.75; if (HB.tier < 2) cap = Math.min(cap, 1.25); if (HB.tier < 1) cap = 1; return Math.min(W.devicePixelRatio || 1, cap); }
+function setReduced(v) { reduced = HB.reduced = v; HTML.classList.toggle('motion', !v && !STATIC); for (var i = 0; i < figs.length; i++) if (figs[i].onMotion) figs[i].onMotion(); kick(); }
+if (mqRM) { var onRM = function (e) { setReduced(e.matches); }; if (mqRM.addEventListener) mqRM.addEventListener('change', onRM); else if (mqRM.addListener) mqRM.addListener(onRM); }
+
+/* ---------- today (a real readout) ---------- */
+try {
+  var td = D.querySelector('[data-today]');
+  if (td && W.Intl) { var now = new Date(); td.textContent = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(now); td.setAttribute('datetime', now.toISOString().slice(0, 10)); D.querySelector('[data-today-wrap]').hidden = false; }
+} catch (e) {}
+
+/* ---------- scheduler: one rAF for every figure, paused when hidden ---------- */
+var figs = [], rafId = 0, lastT = 0, emaDt = 16.7, slowRun = 0;
+function anyLive() { for (var i = 0; i < figs.length; i++) { var f = figs[i]; if (f.visible && f.wants()) return true; } return false; }
+function kick() { if (!rafId && !D.hidden && !HB.freeze && anyLive()) { lastT = 0; rafId = requestAnimationFrame(frame); } }
+function frame(t) {
+  rafId = 0; if (HB.freeze) return;
+  var dt = lastT ? Math.min(100, Math.max(1, t - lastT)) : 16.7; lastT = t;
+  emaDt += (dt - emaDt) * 0.06;
+  if (emaDt > 34) { if (++slowRun > 120 && HB.tier > 0) { HB.tier--; slowRun = 0; emaDt = 16.7; for (var j = 0; j < figs.length; j++) if (figs[j].resize) figs[j].resize(true); } } else slowRun = 0;
+  var live = false;
+  for (var i = 0; i < figs.length; i++) { var f = figs[i]; if (f.visible && f.wants()) { try { f.tick(dt / 1000, t); } catch (err) { f.wants = function () { return false; }; if (W.console) console.warn('figure stopped', err); } live = true; } }
+  if (live && !D.hidden) rafId = requestAnimationFrame(frame);
+}
+D.addEventListener('visibilitychange', function () { if (D.hidden) { if (rafId) cancelAnimationFrame(rafId); rafId = 0; } else kick(); });
+var io = W.IntersectionObserver ? new IntersectionObserver(function (es) {
+  for (var i = 0; i < es.length; i++) { var f = es[i].target.__fig; if (!f) continue; f.visible = es[i].isIntersecting; if (f.visible && f.onShow) f.onShow(); }
+  kick();
+}, { rootMargin: '80px 0px' }) : null;
+var ro = W.ResizeObserver ? new ResizeObserver(function (es) { for (var i = 0; i < es.length; i++) { var f = es[i].target.__fig; if (f && f.resize) f.resize(); } kick(); }) : null;
+function register(f, root, stage) {
+  f.visible = !io; figs.push(f); root.__fig = f; if (io) io.observe(root);
+  if (stage) { stage.__fig = f; if (ro) ro.observe(stage); else W.addEventListener('resize', function () { f.resize && f.resize(); kick(); }); }
+  HB.figs[f.name] = f; return f;
+}
+function sizeCanvas(cv, force) {
+  var r = cv.getBoundingClientRect(), d = dprCap(), w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+  if (!force && cv._w === w && cv._h === h && cv._d === d) return false;
+  cv._w = w; cv._h = h; cv._d = d; cv.width = Math.round(w * d); cv.height = Math.round(h * d); return true;
+}
+// Figures are small vector drawings: a CPU-backed canvas (willReadFrequently) draws them in a few ms and never
+// queues work behind a slow or software GPU, which otherwise lets frames pile up on weak machines.
+function get2d(cv) { if (STATIC) return null; try { return cv.getContext('2d', { willReadFrequently: true }) || cv.getContext('2d'); } catch (e) { return null; } }
+function svgPoint(svg, e, pt) { var m = svg.getScreenCTM(); if (!m) return null; pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(m.inverse()); }
+
+/* =====================================================================
+   FIG. 1 — HOVER. A geometric hummingbird (two circles, a hull, a beak)
+   with a model wing at 50 beats/s. Each canvas frame is treated as an
+   exposure lasting one real frame, so at 1x the wing smears into a fan.
+   ===================================================================== */
+function FigHover(root) {
+  var stage = root.querySelector('.stage'), cv = stage.querySelector('canvas'), fb = stage.querySelector('.fallback');
+  var rng = root.querySelector('[data-k=speed]'), out = root.querySelector('[data-o=speed]'), bPause = root.querySelector('[data-k=pause]'), cStrobe = root.querySelector('[data-k=strobe]');
+  var cap = { speed: root.querySelector('[data-c=speed]'), beat: root.querySelector('[data-c=beat]'), frame: root.querySelector('[data-c=frame]'), tail: root.querySelector('[data-c=tail]') };
+  var FREQ = 50, LOG200 = Math.log(200);
+  // geometry, bird space (y up), chest radius = 1
+  var beta = 52 * DEG, rh = 0.56;
+  var Hx = 1.62 * Math.cos(beta), Hy = 1.62 * Math.sin(beta);
+  var Tx = 2.3 * Math.cos(beta + Math.PI), Ty = 2.3 * Math.sin(beta + Math.PI);
+  var Sx = 0.70 * Math.cos(beta + Math.PI / 2) + 0.05, Sy = 0.70 * Math.sin(beta + Math.PI / 2) + 0.05;
+  var LW = 3.25, PSI0 = 140 * DEG, AMP = 58 * DEG;
+  var pts = [], i, a;
+  for (i = 0; i < 120; i++) { a = i / 120 * TAU; pts.push([Math.cos(a), Math.sin(a)]); pts.push([Hx + rh * Math.cos(a), Hy + rh * Math.sin(a)]); }
+  pts.push([Tx, Ty]);
+  var hull = convexHull(pts), HULL = new Float32Array(hull.length * 2);
+  for (i = 0; i < hull.length; i++) { HULL[i * 2] = hull[i][0]; HULL[i * 2 + 1] = hull[i][1]; }
+  var NW = 15, WX = new Float32Array(NW), WB = new Float32Array(NW), WT = new Float32Array(NW), WC = new Float32Array(NW);
+  for (i = 0; i < NW; i++) { var u = i / (NW - 1); WX[i] = u * LW; WB[i] = 0.09 * Math.sin(Math.PI * Math.min(1, u * 1.05)); WT[i] = u * LW * 0.985 - 0.04 * (1 - u); WC[i] = 0.64 * Math.pow(Math.max(0, 1 - Math.pow(u, 2.3)), 0.55) * (1 - 0.32 * u); }
+  var dBeak = -9 * DEG;
+  var state = { speed: 1 / 40, phase: 0.12, playing: !reduced, strobe: true, intro: !reduced && !STATIC, t0: -1, introSpeedDone: false, userSpeed: false, k: 1, lastSg: 1, capT: 0, eFrame: 0, slW: -1 };
+  var ctx = get2d(cv), f = { name: 'hover', dirty: true, visible: false };
+  f.state = state;
+  function speedFromV(v) { return Math.exp(-v / 1000 * LOG200); }
+  function vFromSpeed(s) { return Math.round(-Math.log(s) / LOG200 * 1000); }
+  function speedLabel(s) { return s > 0.97 ? '1' : '1/' + Math.round(1 / s); }
+  function syncRange() { var lbl = speedLabel(state.speed); out.textContent = lbl + '×'; rng.setAttribute('aria-valuetext', (lbl === '1' ? 'full' : lbl) + ' speed'); }
+  function psiAt(ph) { return PSI0 + AMP * Math.sin(TAU * ph); }
+
+  // ---- static SVG version (fallback / no canvas) ----
+  function buildSVG() {
+    var s = 100, p = function (x, y) { return (x * s).toFixed(1) + ' ' + (-y * s).toFixed(1); };
+    function wingD(ph, len) {
+      var psi = psiAt(ph), c = Math.cos(psi), sn = Math.sin(psi), cw = Math.cos(TAU * ph), sg = cw >= 0 ? 1 : -1, wf = 0.2 + 0.8 * Math.abs(cw), d = '', j, x, y;
+      for (j = 0; j < NW; j++) { x = WX[j] * len; y = WB[j]; d += (j ? 'L' : 'M') + p(Sx + x * c - y * sg * sn, Sy + x * sn + y * sg * c); }
+      for (j = NW - 1; j >= 0; j--) { x = WT[j] * len; y = -WC[j] * wf; d += 'L' + p(Sx + x * c - y * sg * sn, Sy + x * sn + y * sg * c); }
+      return d + 'Z';
+    }
+    var h = 'M' + p(HULL[0], HULL[1]); for (i = 1; i < hull.length; i++) h += 'L' + p(HULL[i * 2], HULL[i * 2 + 1]); h += 'Z';
+    var g = '';
+    for (i = 0; i < 10; i++) g += '<path d="' + wingD(i / 10 + 0.025, 1) + '" fill="none" stroke="' + C.ink3 + '" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+    var bt = [Hx + (rh + 1.95) * Math.cos(dBeak), Hy + (rh + 1.95) * Math.sin(dBeak)];
+    var beak = 'M' + p(Hx + rh * Math.cos(dBeak + 17 * DEG), Hy + rh * Math.sin(dBeak + 17 * DEG)) + 'L' + p(bt[0], bt[1]) + 'L' + p(Hx + rh * Math.cos(dBeak - 15 * DEG), Hy + rh * Math.sin(dBeak - 15 * DEG)) + 'Z';
+    var tail = ''; for (i = -1; i <= 1; i++) { var ta = beta + Math.PI + i * 0.2, L = i ? 1.02 : 0.82, bx = Tx - 0.35 * Math.cos(beta + Math.PI), by = Ty - 0.35 * Math.sin(beta + Math.PI); tail += 'M' + p(bx + 0.12 * Math.cos(ta + 1.57), by + 0.12 * Math.sin(ta + 1.57)) + 'L' + p(Tx + L * Math.cos(ta), Ty + L * Math.sin(ta)) + 'L' + p(bx - 0.12 * Math.cos(ta + 1.57), by - 0.12 * Math.sin(ta + 1.57)) + 'Z'; }
+    var arcA = PSI0 - AMP, arcB = PSI0 + AMP;
+    var arc = 'M' + p(Sx + LW * Math.cos(arcA), Sy + LW * Math.sin(arcA)) + 'A' + (LW * s) + ' ' + (LW * s) + ' 0 0 0 ' + p(Sx + LW * Math.cos(arcB), Sy + LW * Math.sin(arcB));
+    return '<svg viewBox="-470 -420 920 800" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="hb-body"><path d="' + h + '"/></clipPath></defs>' +
+      '<circle cx="0" cy="0" r="100" fill="none" stroke="' + C.ink3 + '" stroke-opacity=".45" vector-effect="non-scaling-stroke"/><circle cx="' + (Hx * s) + '" cy="' + (-Hy * s) + '" r="' + (rh * s) + '" fill="none" stroke="' + C.ink3 + '" stroke-opacity=".45" vector-effect="non-scaling-stroke"/>' +
+      '<path d="' + arc + '" fill="none" stroke="' + C.ruby + '" stroke-dasharray="5 6" vector-effect="non-scaling-stroke"/>' + g +
+      '<path d="' + tail + '" fill="' + C.ink + '"/><path d="' + h + '" fill="' + C.ink + '"/><circle clip-path="url(#hb-body)" cx="' + ((Hx + 0.6 * Math.cos(-64 * DEG)) * s) + '" cy="' + (-(Hy + 0.6 * Math.sin(-64 * DEG)) * s) + '" r="' + (0.46 * s) + '" fill="' + C.ruby + '"/>' +
+      '<path d="' + beak + '" fill="' + C.ink + '"/><circle cx="' + ((Hx + 0.25 * Math.cos(30 * DEG)) * s) + '" cy="' + (-(Hy + 0.25 * Math.sin(30 * DEG)) * s) + '" r="8" fill="' + C.paper + '"/>' +
+      '<path d="' + wingD(0.16, 1) + '" fill="' + C.ink + '"/></svg>';
+  }
+  if (!ctx) {
+    fb.innerHTML = buildSVG(); fb.hidden = false; cv.hidden = true;
+    rng.disabled = true; bPause.disabled = true; cStrobe.disabled = true;
+    cap.speed.parentNode.innerHTML = '<b>Fig. 1</b>A model wing that beats 50 times a second, drawn at ten moments in one beat. The live version runs where canvas drawing is available.';
+    f.wants = function () { return false; }; f.tick = function () {};
+    return register(f, root, null);
+  }
+  f.resize = function (force) { if (sizeCanvas(cv, force)) { f.dirty = true; state.slW = -1; } };
+  f.wants = function () { return f.dirty || state.playing || state.intro; };
+  f.onMotion = function () { if (reduced) { state.intro = false; state.playing = false; setPauseUI(); f.dirty = true; } };
+
+  function setPauseUI() { bPause.textContent = state.playing ? 'Pause' : 'Play'; }
+  rng.addEventListener('input', function () { state.userSpeed = true; state.speed = speedFromV(+rng.value); syncRange(); f.dirty = true; updateCaption(true); kick(); });
+  bPause.addEventListener('click', function () { state.playing = !state.playing; if (state.playing) state.intro = state.intro && !state.introSpeedDone; setPauseUI(); f.dirty = true; updateCaption(true); kick(); });
+  cStrobe.addEventListener('change', function () { state.strobe = cStrobe.checked; f.dirty = true; kick(); });
+  if (!state.playing) setPauseUI();
+  if (state.intro) { state.speed = 1; rng.value = 0; syncRange(); }
+
+  function updateCaption(force) {
+    var s = state.speed, e = state.playing ? FREQ * s * emaDt / 1000 : 0;
+    var lbl = speedLabel(s);
+    cap.speed.textContent = lbl === '1' ? 'full' : lbl;
+    cap.beat.textContent = (1 / (FREQ * s)).toFixed(s > 0.2 ? 3 : 2) + ' s';
+    cap.frame.textContent = e.toFixed(2);
+    cap.tail.textContent = !state.playing ? ', because playback is paused' : e > 0.25 ? ', so the wing is a blur' : e > 0.06 ? ', so the wing smears' : ', so the wing looks sharp';
+  }
+
+  f.tick = function (dt, now) {
+    var w = cv._w, h = cv._h; if (!w) { f.resize(); w = cv._w; h = cv._h; }
+    var tIntro = 99;
+    if (state.intro) {
+      if (state.t0 < 0) state.t0 = now;
+      tIntro = (now - state.t0) / 1000;
+      if (!state.userSpeed) {
+        if (tIntro < 1.7) state.speed = 1;
+        else { var q = ease((tIntro - 1.7) / 1.9); state.speed = Math.exp(Math.log(1 / 40) * q); }
+        rng.value = vFromSpeed(state.speed); syncRange();
+      }
+      if (tIntro > 3.7) { state.intro = false; state.introSpeedDone = true; if (!state.userSpeed) { state.speed = 1 / 40; rng.value = 696; syncRange(); } }
+    }
+    if (state.playing) { state.phase += FREQ * state.speed * dt; state.phase -= Math.floor(state.phase); }
+    state.capT += dt; if (state.capT > 0.12 || f.dirty) { state.capT = 0; updateCaption(); }
+    draw(w, h, state.intro ? tIntro : 99);
+    f.dirty = false;
+  };
+
+  function wingPath(ph, len, sx, sy, k, dpsi) {
+    var psi = psiAt(ph) + dpsi, c = Math.cos(psi), s = Math.sin(psi), cw = Math.cos(TAU * ph);
+    var sg = cw > 0.02 ? 1 : cw < -0.02 ? -1 : state.lastSg; var wf = 0.2 + 0.8 * Math.abs(cw), j, x, y;
+    ctx.beginPath();
+    for (j = 0; j < NW; j++) { x = WX[j] * len; y = WB[j]; var bx = x * c - y * sg * s, by = x * s + y * sg * c; if (j) ctx.lineTo(sx + k * bx, sy - k * by); else ctx.moveTo(sx + k * bx, sy - k * by); }
+    for (j = NW - 1; j >= 0; j--) { x = WT[j] * len; y = -WC[j] * wf; ctx.lineTo(sx + k * (x * c - y * sg * s), sy - k * (x * s + y * sg * c)); }
+    ctx.closePath();
+    return sg;
+  }
+  function featherLines(ph, len, sx, sy, k) {
+    var psi = psiAt(ph), c = Math.cos(psi), s = Math.sin(psi), cw = Math.cos(TAU * ph), sg = cw >= 0 ? 1 : -1, wf = 0.2 + 0.8 * Math.abs(cw);
+    ctx.beginPath();
+    for (var j = 3; j < NW - 2; j += 2) {
+      var x0 = WX[j] * len, y0 = WB[j] * 0.4, x1 = WT[j] * len - 0.05, y1 = -WC[j] * wf * 0.92;
+      ctx.moveTo(sx + k * (x0 * c - y0 * sg * s), sy - k * (x0 * s + y0 * sg * c));
+      ctx.lineTo(sx + k * (x1 * c - y1 * sg * s), sy - k * (x1 * s + y1 * sg * c));
+    }
+  }
+  function draw(w, h, tI) {
+    var d = cv._d; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.clearRect(0, 0, w, h);
+    var small = w < 520;
+    var k = Math.min(w / (small ? 8.7 : 9.6), h / (small ? 7.9 : 8.4)); state.k = k;
+    var ox = w * 0.5 + 0.15 * k, oy = h * 0.5 + 0.28 * k;
+    var sx = ox + k * Sx, sy = oy - k * Sy;
+    var pC = easeOut(tI / 1.0), pB = clamp((tI - 0.45) / 0.6, 0, 1), pW = clamp((tI - 0.95) / 0.45, 0, 1), pL = clamp((tI - 2.4) / 0.7, 0, 1);
+    var i, j;
+    // --- construction: chest + head circles, body axis, shoulder pivot
+    ctx.lineWidth = 1; ctx.strokeStyle = C.ink3; ctx.globalAlpha = 0.5;
+    ctx.beginPath(); ctx.arc(ox, oy, k, -Math.PI / 2, -Math.PI / 2 + TAU * pC); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ox + k * Hx, oy - k * Hy, k * rh, Math.PI, Math.PI + TAU * pC); ctx.stroke();
+    ctx.setLineDash([3, 5]);
+    var ax0 = -2.9, ax1 = 3.0 * pC;
+    ctx.beginPath(); ctx.moveTo(ox + k * ax0 * Math.cos(beta), oy - k * ax0 * Math.sin(beta)); ctx.lineTo(ox + k * (ax0 + (ax1 - ax0) * pC) * Math.cos(beta), oy - k * (ax0 + (ax1 - ax0) * pC) * Math.sin(beta)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 0.7 * pC;
+    ctx.beginPath(); ctx.moveTo(ox - 5, oy); ctx.lineTo(ox + 5, oy); ctx.moveTo(ox, oy - 5); ctx.lineTo(ox, oy + 5); ctx.stroke();
+    // --- wingtip path (ruby, dashed) + strobe ticks
+    var A0 = PSI0 - AMP, A1 = PSI0 + AMP, R = k * LW;
+    ctx.globalAlpha = 0.9 * pC; ctx.strokeStyle = C.ruby; ctx.setLineDash([4, 5]);
+    ctx.beginPath(); ctx.arc(sx, sy, R, -A1, -A1 + (A1 - A0) * pC); ctx.stroke(); ctx.setLineDash([]);
+    // arrowheads at both ends
+    if (pC > 0.98) {
+      for (i = 0; i < 2; i++) {
+        var ae = i ? A1 : A0, ex = sx + R * Math.cos(ae), ey = sy - R * Math.sin(ae), tdir = i ? 1 : -1;
+        var tx = -Math.sin(ae) * tdir, ty = -Math.cos(ae) * tdir; // tangent (screen)
+        ctx.beginPath(); ctx.moveTo(ex - 7 * tx + 3.5 * ty, ey - 7 * ty - 3.5 * tx); ctx.lineTo(ex, ey); ctx.lineTo(ex - 7 * tx - 3.5 * ty, ey - 7 * ty + 3.5 * tx); ctx.stroke();
+      }
+    }
+    // --- strobe: ten wing outlines, one per tenth of a beat
+    if (state.strobe && pW > 0) {
+      ctx.globalAlpha = 0.5 * pW; ctx.strokeStyle = C.ink3; ctx.lineWidth = 1;
+      for (i = 0; i < 10; i++) { wingPath(i / 10 + 0.025, 1, sx, sy, k, 0); ctx.stroke(); }
+      ctx.strokeStyle = C.ruby; ctx.globalAlpha = 0.9 * pW;
+      for (i = 0; i < 10; i++) { var pa = psiAt(i / 10 + 0.025), cx2 = Math.cos(pa), sy2 = Math.sin(pa); ctx.beginPath(); ctx.moveTo(sx + (R - 5) * cx2, sy - (R - 5) * sy2); ctx.lineTo(sx + (R + 5) * cx2, sy - (R + 5) * sy2); ctx.stroke(); }
+    }
+    // --- the exposure: how much of a beat this frame covers
+    var e = state.playing ? FREQ * state.speed * (emaDt / 1000) : 0;
+    var K = e < 0.012 ? 1 : Math.min(HB.tier > 1 ? 28 : HB.tier > 0 ? 14 : 8, Math.ceil(e * 44));
+    var aEach = K === 1 ? 1 : clamp(2.4 / K, 0.07, 1);
+    // far wing (behind the body)
+    if (pW > 0) {
+      ctx.fillStyle = C.ink;
+      for (j = 0; j < K; j++) { ctx.globalAlpha = 0.2 * pW * (K === 1 ? 1 : aEach * 1.2); wingPath(state.phase - e * (K === 1 ? 0 : j / (K - 1)), 0.93, sx - 0.18 * k, sy - 0.04 * k, k, 10 * DEG); ctx.fill(); }
+    }
+    // --- body: tail, hull, throat, beak, eye
+    ctx.globalAlpha = pB; ctx.fillStyle = C.ink;
+    var bxo = Tx - 0.35 * Math.cos(beta + Math.PI), byo = Ty - 0.35 * Math.sin(beta + Math.PI);
+    ctx.beginPath();
+    for (i = -1; i <= 1; i++) {
+      var ta = beta + Math.PI + i * 0.2, L = i ? 1.02 : 0.82;
+      ctx.moveTo(ox + k * (bxo + 0.12 * Math.cos(ta + 1.5708)), oy - k * (byo + 0.12 * Math.sin(ta + 1.5708)));
+      ctx.lineTo(ox + k * (Tx + L * Math.cos(ta)), oy - k * (Ty + L * Math.sin(ta)));
+      ctx.lineTo(ox + k * (bxo - 0.12 * Math.cos(ta + 1.5708)), oy - k * (byo - 0.12 * Math.sin(ta + 1.5708)));
+    }
+    ctx.fill();
+    ctx.beginPath(); ctx.moveTo(ox + k * HULL[0], oy - k * HULL[1]);
+    for (i = 1; i < hull.length; i++) ctx.lineTo(ox + k * HULL[i * 2], oy - k * HULL[i * 2 + 1]);
+    ctx.closePath(); ctx.fill();
+    ctx.save(); ctx.clip();
+    ctx.fillStyle = C.ruby; ctx.beginPath(); ctx.arc(ox + k * (Hx + 0.6 * Math.cos(-64 * DEG)), oy - k * (Hy + 0.6 * Math.sin(-64 * DEG)), k * 0.46, 0, TAU); ctx.fill();
+    ctx.restore();
+    var bl = 0.2 + 0.8 * easeOut((tI - 0.5) / 0.7), btx = Hx + (rh + 1.95 * bl) * Math.cos(dBeak), bty = Hy + (rh + 1.95 * bl) * Math.sin(dBeak);
+    ctx.fillStyle = C.ink; ctx.beginPath();
+    ctx.moveTo(ox + k * (Hx + rh * Math.cos(dBeak + 17 * DEG)), oy - k * (Hy + rh * Math.sin(dBeak + 17 * DEG)));
+    ctx.lineTo(ox + k * btx, oy - k * bty);
+    ctx.lineTo(ox + k * (Hx + rh * Math.cos(dBeak - 15 * DEG)), oy - k * (Hy + rh * Math.sin(dBeak - 15 * DEG)));
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.paper; ctx.beginPath(); ctx.arc(ox + k * (Hx + 0.25 * Math.cos(30 * DEG)), oy - k * (Hy + 0.25 * Math.sin(30 * DEG)), Math.max(1.6, k * 0.075), 0, TAU); ctx.fill();
+    // construction lines again, in paper ink, over the body: the bird is two circles and a hull
+    ctx.globalAlpha = 0.28 * pB * pC; ctx.strokeStyle = C.paper; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(ox, oy, k, 0, TAU); ctx.moveTo(ox + k * (Hx + rh), oy - k * Hy); ctx.arc(ox + k * Hx, oy - k * Hy, k * rh, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox - 5, oy); ctx.lineTo(ox + 5, oy); ctx.moveTo(ox, oy - 5); ctx.lineTo(ox, oy + 5);
+    ctx.moveTo(ox + k * Hx - 4, oy - k * Hy); ctx.lineTo(ox + k * Hx + 4, oy - k * Hy); ctx.moveTo(ox + k * Hx, oy - k * Hy - 4); ctx.lineTo(ox + k * Hx, oy - k * Hy + 4); ctx.stroke();
+    // --- near wing: one crisp wing, or a fan of K samples across the exposure
+    if (pW > 0) {
+      ctx.fillStyle = C.ink;
+      for (j = 0; j < K; j++) {
+        var ph = state.phase - e * (K === 1 ? 0 : j / (K - 1));
+        ctx.globalAlpha = pW * (K === 1 ? 0.94 : aEach);
+        var sg = wingPath(ph, 1, sx, sy, k, 0); ctx.fill();
+        if (j === 0) state.lastSg = sg;
+      }
+      if (K === 1) { featherLines(state.phase, 1, sx, sy, k); ctx.strokeStyle = C.paper; ctx.globalAlpha = 0.55 * pW; ctx.lineWidth = 1; ctx.stroke(); }
+      // shoulder pivot
+      ctx.globalAlpha = 0.75 * pW; ctx.strokeStyle = C.paper; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(sx, sy, 3, 0, TAU); ctx.stroke();
+      // live tip marker on the path
+      var pn = psiAt(state.phase); ctx.fillStyle = C.ruby; ctx.beginPath(); ctx.arc(sx + R * Math.cos(pn), sy - R * Math.sin(pn), 3.4, 0, TAU); ctx.fill();
+    }
+    // --- labels
+    if (pL > 0) {
+      ctx.globalAlpha = pL; ctx.fillStyle = C.ink3; ctx.font = '500 ' + (small ? 10 : 11) + 'px ' + MONO; ctx.textBaseline = 'middle';
+      var la = A0 + 0.06, lx = sx + (R + 12) * Math.cos(la), ly = sy - (R + 12) * Math.sin(la);
+      ctx.textAlign = 'left'; ctx.fillText('WINGTIP PATH', lx + 2, ly);
+      var lb = A1 - 0.02, mx = sx + (R + 12) * Math.cos(lb), my = sy - (R + 12) * Math.sin(lb);
+      var sl = 'STROKE ' + Math.round(2 * AMP / DEG) + '°';
+      if (state.slW < 0) state.slW = ctx.measureText(sl).width;
+      ctx.textAlign = 'left'; ctx.fillText(sl, Math.max(6, mx - state.slW), my + 14);
+      if (!small) {
+        ctx.textAlign = 'center'; ctx.fillText('HEAD r = ' + rh.toFixed(2), ox + k * Hx - 0.1 * k, oy - k * (Hy + rh) - 14);
+        ctx.textAlign = 'left'; ctx.fillText('CHEST r = 1.00', ox + k * 1.15, oy + k * 0.62);
+        ctx.fillText('BODY AXIS ' + Math.round(beta / DEG) + '°', ox + k * 3.05 * Math.cos(beta) + 8, oy - k * 3.05 * Math.sin(beta) + 2);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  syncRange(); updateCaption(true);
+  register(f, root, stage); f.resize();
+  return f;
+}
+function convexHull(P) {
+  P.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+  function cr(o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); }
+  var L = [], U = [], i;
+  for (i = 0; i < P.length; i++) { while (L.length >= 2 && cr(L[L.length - 2], L[L.length - 1], P[i]) <= 0) L.pop(); L.push(P[i]); }
+  for (i = P.length - 1; i >= 0; i--) { while (U.length >= 2 && cr(U[U.length - 2], U[U.length - 1], P[i]) <= 0) U.pop(); U.push(P[i]); }
+  U.pop(); L.pop(); return L.concat(U);
+}
+
+/* =====================================================================
+   FIG. 2 — PLAN, ACT, CHECK. A real loop: plan picks the first pair of
+   bars out of order, act swaps them, check counts pairs still out of order.
+   ===================================================================== */
+function FigLoop(root) {
+  var svg = root.querySelector('svg'), gBars = svg.querySelector('.bars'), nodes = svg.querySelectorAll('.nodes > g'), token = svg.querySelector('.token');
+  var bracket = svg.querySelector('.bracket'), swapP = svg.querySelector('.swap'), status = svg.querySelector('.status');
+  var bRun = root.querySelector('[data-k=run]'), bStep = root.querySelector('[data-k=step]'), bShuf = root.querySelector('[data-k=shuffle]');
+  var capTxt = root.querySelector('[data-c=txt]'), live = root.querySelector('[data-live]');
+  var N = 6, X0 = 340, DX = 44, BW = 28, BASE = 232;
+  var order = [3, 6, 1, 5, 2, 4], bars = [], labels = [], posX = new Float32Array(7), lift = new Float32Array(7);
+  var st = { phase: 0, loop: 1, pair: -1, t: 0, running: !reduced && !STATIC, anim: 0, from: 0, to: 0, tokenT: 1, done: false, doneT: 0, user: false };
+  var f = { name: 'loop', visible: false };
+  f.state = st;
+  for (var v = 1; v <= N; v++) {
+    var g = sv('g', {}, gBars);
+    bars[v] = sv('rect', { x: -BW / 2, width: BW, y: -(24 + v * 22), height: 24 + v * 22, fill: C.paper2, stroke: C.ink, 'stroke-width': 1.3 }, g);
+    labels[v] = sv('text', { x: 0, y: 20, 'text-anchor': 'middle', class: 'tk' }, g); labels[v].textContent = v;
+    bars[v].parentNode.__v = v;
+  }
+  function inversions() { var c = 0; for (var i = 0; i < N; i++) for (var j = i + 1; j < N; j++) if (order[i] > order[j]) c++; return c; }
+  function firstPair() { for (var i = 0; i < N - 1; i++) if (order[i] > order[i + 1]) return i; return -1; }
+  function layout() {
+    for (var i = 0; i < N; i++) { var v = order[i]; posX[v] = X0 + i * DX; lift[v] = 0; }
+    paint();
+  }
+  function paint() {
+    for (var v = 1; v <= N; v++) bars[v].parentNode.setAttribute('transform', 'translate(' + posX[v].toFixed(1) + ' ' + (BASE - lift[v]).toFixed(1) + ')');
+  }
+  function setNode(n) {
+    for (var i = 0; i < 3; i++) { var on = i === n, c = nodes[i].querySelector('circle'), t = nodes[i].querySelector('text'); c.setAttribute('fill', on ? C.ink : C.paper); t.style.fill = on ? C.paper : C.ink; }
+  }
+  function setBracket(i) {
+    if (i < 0) { bracket.setAttribute('d', ''); return; }
+    var x0 = X0 + i * DX - BW / 2 - 4, x1 = X0 + (i + 1) * DX + BW / 2 + 4;
+    bracket.setAttribute('d', 'M' + x0 + ' 256 V262 H' + x1 + ' V256');
+  }
+  function say(txt, html) { status.textContent = txt; capTxt.innerHTML = html; }
+  function shuffle() {
+    do { for (var i = N - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t; } } while (inversions() < 5);
+    st.phase = 0; st.loop = 1; st.done = false; st.pair = -1; st.anim = 0; st.t = 0; layout(); setBracket(-1); swapP.setAttribute('d', ''); setNode(-1); token.setAttribute('opacity', 0);
+    for (var v = 1; v <= N; v++) bars[v].setAttribute('fill', C.paper2);
+    say('Loop 1 · ready', '<span class="v">' + inversions() + '</span> pairs start out of order.');
+  }
+  // one phase of the loop: 0 plan, 1 act, 2 check
+  function doPhase() {
+    if (st.done) { shuffle(); return; }
+    var p = st.phase, inv;
+    st.from = (p + 2) % 3; st.to = p; st.tokenT = 0;
+    setNode(p);
+    if (p === 0) {
+      st.pair = firstPair(); setBracket(st.pair); swapP.setAttribute('d', '');
+      say('Loop ' + st.loop + ' · plan: swap bars ' + order[st.pair] + ' and ' + order[st.pair + 1], 'Loop <span class="v">' + st.loop + '</span>. Plan: swap bars <span class="v">' + order[st.pair] + '</span> and <span class="v">' + order[st.pair + 1] + '</span>.');
+    } else if (p === 1) {
+      var i = st.pair, a = order[i], b = order[i + 1];
+      var xa = X0 + i * DX, xb = X0 + (i + 1) * DX;
+      swapP.setAttribute('d', 'M' + xa + ' ' + (BASE - 24 - a * 22 - 10) + ' Q ' + ((xa + xb) / 2) + ' ' + (BASE - 24 - Math.max(a, b) * 22 - 40) + ' ' + xb + ' ' + (BASE - 24 - b * 22 - 10));
+      order[i] = b; order[i + 1] = a; st.anim = reduced ? 1 : 0.0001; st.sa = a; st.sb = b; st.xa = xa; st.xb = xb;
+      if (reduced) layout();
+      say('Loop ' + st.loop + ' · act: swapped', 'Loop <span class="v">' + st.loop + '</span>. Act: swap done.');
+    } else {
+      inv = inversions(); setBracket(-1); swapP.setAttribute('d', '');
+      if (inv === 0) {
+        st.done = true; for (var v = 1; v <= N; v++) bars[v].setAttribute('fill', '#D5E3DC');
+        say('Loop ' + st.loop + ' · check: sorted', 'Loop <span class="v">' + st.loop + '</span>. Check: <span class="v good">0</span> pairs out of order. The check passes, so the loop stops.');
+        live.textContent = 'Sorted in ' + st.loop + ' loops.';
+      } else {
+        say('Loop ' + st.loop + ' · check: ' + inv + ' out of order', 'Loop <span class="v">' + st.loop + '</span>. Check: <span class="v bad">' + inv + '</span> ' + (inv === 1 ? 'pair' : 'pairs') + ' still out of order. Go again.');
+        st.loop++;
+      }
+    }
+    st.phase = (p + 1) % 3;
+  }
+  function setRunUI() { bRun.textContent = st.running ? 'Pause' : 'Run'; }
+  bRun.addEventListener('click', function () { st.running = !st.running; st.user = true; setRunUI(); kick(); });
+  bStep.addEventListener('click', function () { st.running = false; setRunUI(); if (st.anim) { st.anim = 0; layout(); } doPhase(); st.tokenT = 1; placeToken(); kick(); });
+  bShuf.addEventListener('click', function () { shuffle(); kick(); });
+  f.onMotion = function () { if (reduced && !st.user) { st.running = false; setRunUI(); } };
+  function placeToken() {
+    var t = easeOut(st.tokenT), a0 = (-90 + 120 * st.from) * DEG, a1 = a0 + 120 * DEG, a = a0 + (a1 - a0) * t;
+    if (st.from === st.to) a = (-90 + 120 * st.to) * DEG;
+    token.setAttribute('cx', (150 + 96 * Math.cos(a)).toFixed(1)); token.setAttribute('cy', (150 + 96 * Math.sin(a)).toFixed(1)); token.setAttribute('opacity', st.tokenT >= 1 ? 0 : 1);
+  }
+  f.wants = function () { return st.running || st.anim > 0 || st.tokenT < 1; };
+  f.tick = function (dt) {
+    if (st.tokenT < 1) { st.tokenT = Math.min(1, st.tokenT + dt / 0.42); placeToken(); }
+    if (st.anim > 0) {
+      st.anim = Math.min(1, st.anim + dt / 0.5); var q = ease(st.anim);
+      posX[st.sa] = st.xa + (st.xb - st.xa) * q; posX[st.sb] = st.xb + (st.xa - st.xb) * q; lift[st.sa] = Math.sin(Math.PI * q) * 14; lift[st.sb] = 0; paint();
+      if (st.anim >= 1) { st.anim = 0; layout(); }
+    }
+    if (st.running) { st.t += dt; var dwell = st.done ? 2.6 : 0.95; if (st.t > dwell && st.anim === 0) { st.t = 0; doPhase(); } }
+  };
+  setRunUI(); shuffle();
+  if (reduced || STATIC) { doPhase(); st.tokenT = 1; placeToken(); }
+  return register(f, root, null);
+}
+
+/* =====================================================================
+   FIG. 3 — STACK. Each group of slabs must have its centre of mass over
+   the slab (or table) below it. If not, that group rotates about the
+   edge under gravity, then falls.
+   ===================================================================== */
+function FigStack(root) {
+  var svg = root.querySelector('svg'), gS = svg.querySelector('.slabs'), gC = svg.querySelector('.coms'), dim = svg.querySelector('.dim'), dl = dim.querySelector('.dl'), dtx = dim.querySelector('.dt'), hintT = svg.querySelector('.hint-t');
+  var bBest = root.querySelector('[data-k=best]'), bReset = root.querySelector('[data-k=reset]'), capTxt = root.querySelector('[data-c=txt]'), live = root.querySelector('[data-live]');
+  var N = 4, E = 268, TOP = 300, LU = 150, HU = 36, G = 1500;
+  var x = new Float64Array(N), stable = new Float64Array(N), start = new Float64Array(N), goal = new Float64Array(N);
+  var INIT = [-0.4, -0.28, -0.13, 0.07];
+  var HARM = 0; for (var q = 1; q <= N; q++) HARM += 1 / (2 * q);
+  var slabs = [], coms = [], pt = svg.createSVGPoint();
+  var st = { drag: -1, off: 0, tips: [], n: N, anim: 0, animDur: 1, keyT: 0, fade: 0, wait: 0 };
+  var f = { name: 'stack', visible: false }; f.state = st; f.x = x;
+  for (var i = 0; i < N; i++) {
+    x[i] = E + INIT[i] * LU; stable[i] = x[i];
+    var g = sv('g', { class: 'slab', tabindex: '0', role: 'slider', 'aria-label': 'Slab ' + (i + 1) + ' of 4, counted from the bottom', 'aria-valuemin': '-0.8', 'aria-valuemax': '1.6', style: 'cursor:grab;touch-action:pan-y;outline:none' }, gS);
+    var r = sv('rect', { x: -LU / 2, y: 0, width: LU, height: HU, fill: C.paper2, stroke: C.ink, 'stroke-width': 1.5 }, g);
+    sv('rect', { class: 'focus', x: -LU / 2 - 4, y: -4, width: LU + 8, height: HU + 8, fill: 'none', stroke: C.ruby, 'stroke-width': 2, opacity: 0 }, g);
+    var t = sv('text', { x: 0, y: HU / 2 + 5, 'text-anchor': 'middle', class: 'tk' }, g); t.textContent = i + 1;
+    g.__i = i; slabs.push(g);
+    var cg = sv('g', { opacity: 1 }, gC);
+    sv('circle', { r: 6.5, fill: C.paper, stroke: C.ink, 'stroke-width': 1.3 }, cg);
+    sv('path', { d: 'M0 0 H6.5 A6.5 6.5 0 0 1 0 6.5 Z M0 0 H-6.5 A6.5 6.5 0 0 1 0 -6.5 Z', fill: C.ink }, cg);
+    coms.push(cg);
+    g.addEventListener('focus', onFocus); g.addEventListener('blur', onFocus);
+  }
+  function onFocus(e) { var g = e.currentTarget, vis = false; try { vis = g.matches(':focus-visible'); } catch (er) { vis = true; } g.querySelector('.focus').setAttribute('opacity', e.type === 'focus' && vis ? 1 : 0); }
+  // centre of mass of slabs k..N-1 (equal masses), support interval under slab k
+  // centre of mass of slabs k..n-1 (equal masses); the support under slab k is slab k-1, or the table
+  function comAbove(k, n) { var s = 0; for (var j = k; j < n; j++) s += x[j]; return s / (n - k); }
+  function analyse(n) {
+    var worst = 1e9, wk = 0, fail = -1, side = 1;
+    for (var k = 0; k < n; k++) {
+      var c = comAbove(k, n), lo = k ? x[k - 1] - LU / 2 : -1e9, hi = k ? x[k - 1] + LU / 2 : E;
+      var m = Math.min(c - lo, hi - c);
+      if (m < worst) { worst = m; wk = k; side = (c - lo) < (hi - c) ? -1 : 1; }
+      if (m < -0.0001) fail = k; // keep the highest failing level: that group is unsupported and goes first
+    }
+    return { worst: worst, wk: wk, fail: fail, side: side };
+  }
+  function overhang() { var m = -1e9; for (var k = 0; k < N; k++) m = Math.max(m, x[k] + LU / 2); return (m - E) / LU; }
+  function who(k) { return k === 0 ? 'The whole stack' : k === N - 1 ? 'Slab ' + N : 'Slab ' + (k + 1) + ' and up'; }
+  function render() {
+    var n = st.n, a = analyse(n), tipping = st.tips.length > 0;
+    for (var k = 0; k < N; k++) {
+      if (k < n) slabs[k].setAttribute('transform', 'translate(' + x[k].toFixed(2) + ' ' + (TOP - (k + 1) * HU) + ')');
+      slabs[k].setAttribute('aria-valuenow', ((x[k] - E) / LU).toFixed(2));
+      slabs[k].setAttribute('aria-valuetext', 'centre ' + ((x[k] - E) / LU).toFixed(2) + ' slab lengths from the table edge');
+      if (k >= n) { coms[k].setAttribute('opacity', 0); continue; }
+      var c = comAbove(k, n), y = TOP - k * HU, bad = c < (k ? x[k - 1] - LU / 2 : -1e9) - 0.0001 || c > (k ? x[k - 1] + LU / 2 : E) + 0.0001;
+      coms[k].setAttribute('transform', 'translate(' + c.toFixed(2) + ' ' + y + ')');
+      var cc = coms[k].firstChild, pp = cc.nextSibling;
+      cc.setAttribute('stroke', bad ? C.ruby : C.ink); pp.setAttribute('fill', bad ? C.ruby : C.ink);
+      coms[k].setAttribute('opacity', (k === a.wk || bad) ? 1 : 0.55);
+    }
+    // dimension line: the tightest margin between a centre of mass and the edge under it
+    if (!tipping && n > 0) {
+      var k2 = a.wk, c2 = comAbove(k2, n), edge = k2 ? x[k2 - 1] + a.side * LU / 2 : E, y2 = TOP - k2 * HU + 15;
+      var x0 = Math.min(c2, edge), x1 = Math.max(c2, edge);
+      dl.setAttribute('d', 'M' + edge.toFixed(1) + ' ' + (y2 - 13) + ' V' + (y2 + 5) + ' M' + x0.toFixed(1) + ' ' + y2 + ' H' + x1.toFixed(1) + ' M' + c2.toFixed(1) + ' ' + (y2 - 10) + ' V' + (y2 + 5));
+      dl.setAttribute('stroke', a.worst < 0 ? C.ruby : C.ink);
+      dtx.setAttribute('x', ((x0 + x1) / 2).toFixed(1)); dtx.setAttribute('y', y2 + 17); dtx.textContent = (a.worst / LU).toFixed(2);
+      dtx.style.fill = a.worst < 0 ? C.ruby : C.ink;
+      dim.setAttribute('opacity', 1);
+    } else dim.setAttribute('opacity', 0);
+    if (!tipping) caption(a);
+    return a;
+  }
+  function caption(a) {
+    if (a.fail >= 0) {
+      var k = a.fail, c = comAbove(k, N), lo = k ? x[k - 1] - LU / 2 : -1e9, hi = k ? x[k - 1] + LU / 2 : E, past = c > hi ? c - hi : lo - c;
+      capTxt.innerHTML = who(k) + ': centre of mass <span class="v bad">' + (past / LU).toFixed(2) + '</span> past the edge ' + (k ? 'of slab ' + k : 'of the table') + '. Let go and it tips.';
+    } else {
+      capTxt.innerHTML = 'Overhang <span class="v">' + overhang().toFixed(2) + '</span> of a slab. Tightest margin <span class="v' + (a.worst / LU < 0.03 ? ' bad' : '') + '">' + (a.worst / LU).toFixed(2) + '</span>' + (a.wk ? ', on slab ' + a.wk : ', at the table edge') + '. Best possible with four slabs, one per level: <span class="v">' + HARM.toFixed(2) + '</span>.';
+    }
+  }
+  function save() { for (var k = 0; k < N; k++) stable[k] = x[k]; }
+  function moveGroup(i, nx) { var dx = clamp(nx, LU / 2 + 4, 640 - LU / 2 - 4) - x[i]; for (var k = i; k < N; k++) x[k] = clamp(x[k] + dx, LU / 2 + 4 - 400, 640 + 400); }
+  function settle() { var a = analyse(N); if (a.fail >= 0) startTip(a.fail, N); else save(); }
+  // group k..n-1 rotates about the edge it passed: I·θ'' = M·g·(horizontal lever of its centre of mass)
+  function startTip(k, n) {
+    var c = comAbove(k, n), lo = k ? x[k - 1] - LU / 2 : -1e9, hi = k ? x[k - 1] + LU / 2 : E;
+    var dir = c > hi ? 1 : -1, px = dir > 0 ? hi : lo, py = TOP - k * HU;
+    var tip = { k: k, e: n, px: px, py: py, th: 0, w: 0.25 * dir, ph: 1, I: 0, gx: 0, gy: 0, cx: 0, cy: 0, vx: 0, vy: 0, t: 0, m: n - k, next: false };
+    for (var j = k; j < n; j++) { var dx = x[j] - px, dy = py - (TOP - (j + 0.5) * HU); tip.gx += dx; tip.gy += dy; tip.I += (LU * LU + HU * HU) / 12 + dx * dx + dy * dy; }
+    tip.gx /= tip.m; tip.gy /= tip.m; tip.I /= tip.m;
+    st.tips.push(tip); st.n = k; svg.style.cursor = 'default';
+    var msg = who(k) + (k === N - 1 ? ' tipped' : ' tipped') + ': its centre of mass passed the edge ' + (k ? 'of slab ' + k : 'of the table') + ', so gravity turned it about that edge.';
+    live.textContent = msg; capTxt.innerHTML = msg;
+    dim.setAttribute('opacity', 0); render(); kick();
+  }
+  function poseTip(T) {
+    var c = Math.cos(T.th), s = Math.sin(T.th), deg = T.th / DEG;
+    var g0x = T.px + T.gx, g0y = T.py - T.gy; // group centre of mass at rest (svg coords)
+    if (T.ph === 1) { T.cx = T.px + (T.gx * c + T.gy * s); T.cy = T.py - (-T.gx * s + T.gy * c); }
+    for (var j = T.k; j < T.e; j++) slabs[j].setAttribute('transform', 'translate(' + (T.cx - g0x).toFixed(2) + ' ' + (T.cy - g0y).toFixed(2) + ') rotate(' + deg.toFixed(2) + ' ' + g0x.toFixed(2) + ' ' + g0y.toFixed(2) + ') translate(' + x[j].toFixed(2) + ' ' + (TOP - (j + 1) * HU) + ')');
+  }
+  function stepTip(T, dt) {
+    var h = dt / 4;
+    for (var n = 0; n < 4; n++) {
+      if (T.ph === 1) {
+        var c = Math.cos(T.th), s = Math.sin(T.th), xr = T.gx * c + T.gy * s;
+        T.w += (G * xr / T.I) * h; T.th += T.w * h;
+        var yr = -T.gx * s + T.gy * c;
+        if (Math.abs(T.th) > 1.05 || yr < -HU * 0.5) {
+          // it leaves the edge: centre-of-mass velocity is w × r, which in svg coords (y down) is (w·yr, w·xr)
+          T.ph = 2; T.cx = T.px + xr; T.cy = T.py - yr; T.vx = T.w * yr; T.vy = T.w * xr;
+        }
+      } else { T.vy += G * h; T.cx += T.vx * h; T.cy += T.vy * h; T.th += T.w * h; }
+    }
+    T.t += dt; poseTip(T);
+    if (T.ph === 2 && !T.next) { T.next = true; var a = analyse(st.n); if (a.fail >= 0) startTip(a.fail, st.n); }
+  }
+  function restoreAfterFall() {
+    var minK = N, k; for (var i = 0; i < st.tips.length; i++) minK = Math.min(minK, st.tips[i].k);
+    st.tips.length = 0; st.n = N;
+    for (k = minK; k < N; k++) { x[k] = stable[k]; slabs[k].style.opacity = 0; }
+    var arr = []; for (k = 0; k < N; k++) arr[k] = stable[k];
+    st.fade = 0.0001; svg.style.cursor = ''; render(); animateTo(arr, 0.6);
+  }
+  function animateTo(arr, dur) { for (var k = 0; k < N; k++) { start[k] = x[k]; goal[k] = arr[k]; } st.anim = reduced ? 1 : 0.0001; st.animDur = dur; if (reduced) { for (k = 0; k < N; k++) x[k] = goal[k]; st.anim = 0; render(); save(); } kick(); }
+  bBest.addEventListener('click', function () {
+    if (st.tips.length) return; var arr = [], c = E - LU / 2 + LU * (1 / (2 * N)) * 0.996; arr[0] = c;
+    for (var k = 1; k < N; k++) { c += LU * (1 / (2 * (N - k))) * 0.996; arr[k] = c; }
+    animateTo(arr, 1.1);
+  });
+  bReset.addEventListener('click', function () { if (st.tips.length) return; var arr = []; for (var k = 0; k < N; k++) arr[k] = E + INIT[k] * LU; animateTo(arr, 0.8); });
+  svg.addEventListener('pointerdown', function (e) {
+    if (st.tips.length || st.anim) return; var g = e.target.closest ? e.target.closest('.slab') : null; if (!g) return;
+    var p = svgPoint(svg, e, pt); if (!p) return;
+    st.drag = g.__i; st.off = p.x - x[st.drag]; st.pid = e.pointerId;
+    try { svg.setPointerCapture(e.pointerId); } catch (er) {}
+    g.style.cursor = 'grabbing'; slabs[st.drag].firstChild.setAttribute('fill', C.paper3 || '#E2D9C6'); hintT.setAttribute('opacity', 0);
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (st.drag < 0 || e.pointerId !== st.pid) return; if (e.clientX === 0 && e.clientY === 0) return;
+    var p = svgPoint(svg, e, pt); if (!p) return; moveGroup(st.drag, p.x - st.off); render();
+  });
+  function endDrag(e) { if (st.drag < 0 || (e && e.pointerId !== st.pid)) return; slabs[st.drag].style.cursor = 'grab'; slabs[st.drag].firstChild.setAttribute('fill', C.paper2); st.drag = -1; settle(); render(); }
+  svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+  svg.addEventListener('keydown', function (e) {
+    var g = e.target.closest ? e.target.closest('.slab') : null; if (!g || st.tips.length || st.anim) return;
+    var step = e.shiftKey ? LU * 0.1 : LU * 0.02, i = g.__i;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') moveGroup(i, x[i] + step); else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') moveGroup(i, x[i] - step); else return;
+    e.preventDefault(); hintT.setAttribute('opacity', 0); render(); st.keyT = 0.45; kick();
+  });
+  f.wants = function () { return st.tips.length > 0 || st.anim > 0 || st.keyT > 0 || st.fade > 0; };
+  f.tick = function (dt) {
+    if (st.tips.length) {
+      var gone = true, d = Math.min(dt, 0.033);
+      for (var i = 0; i < st.tips.length; i++) { stepTip(st.tips[i], d); if (st.tips[i].cy < 720) gone = false; }
+      if (gone) { st.wait += dt; if (st.wait > 0.5) { st.wait = 0; restoreAfterFall(); } }
+      return;
+    }
+    if (st.anim > 0) { st.anim = Math.min(1, st.anim + dt / st.animDur); var q = ease(st.anim); for (var k = 0; k < N; k++) x[k] = start[k] + (goal[k] - start[k]) * q; render(); if (st.anim >= 1) { st.anim = 0; save(); } }
+    if (st.keyT > 0) { st.keyT -= dt; if (st.keyT <= 0) { st.keyT = 0; settle(); render(); } }
+    if (st.fade > 0) { st.fade = Math.min(1, st.fade + dt / 0.5); for (var j = 0; j < N; j++) if (slabs[j].style.opacity !== '') slabs[j].style.opacity = st.fade >= 1 ? '' : st.fade; if (st.fade >= 1) st.fade = 0; }
+  };
+  render();
+  return register(f, root, null);
+}
+
+/* =====================================================================
+   FIG. 4 — HILL CLIMB. Test x−s and x+s; move only uphill; when stuck,
+   halve s; stop when s is tiny. The landscape is two bell curves.
+   ===================================================================== */
+function FigHill(root) {
+  var svg = root.querySelector('svg'), curve = svg.querySelector('.curve'), area = svg.querySelector('.area'), trail = svg.querySelector('.trail'), climber = svg.querySelector('.climber'), peaks = svg.querySelector('.peaks');
+  var rng = root.querySelector('[data-k=step]'), out = root.querySelector('[data-o=step]'), bGo = root.querySelector('[data-k=go]'), capTxt = root.querySelector('[data-c=txt]'), live = root.querySelector('[data-live]');
+  function F(x) { return 0.04 + 0.38 * Math.exp(-sq((x - 0.22) / 0.08)) + 0.92 * Math.exp(-sq((x - 0.68) / 0.13)); }
+  function X(x) { return 48 + x * 556; } function Y(y) { return 286 - y * 236; }
+  var d = '', i; for (i = 0; i <= 220; i++) { var xx = i / 220; d += (i ? 'L' : 'M') + X(xx).toFixed(1) + ' ' + Y(F(xx)).toFixed(1); }
+  curve.setAttribute('d', d); area.setAttribute('d', d + 'L604 286 L48 286 Z');
+  var pk = [[0.22, 'nearby peak'], [0.68, 'highest peak']];
+  for (i = 0; i < 2; i++) { var px = pk[i][0], py = F(px); sv('path', { d: 'M' + X(px) + ' ' + (Y(py) - 14) + ' V' + (Y(py) - 30), stroke: C.ink, 'stroke-width': 1 }, peaks); var tt = sv('text', { x: X(px), y: Y(py) - 36, 'text-anchor': 'middle' }, peaks); tt.textContent = pk[i][1] + ' ' + f2(py); }
+  var X0 = 0.04, MAXEV = 120, ev = [], st = { s0: 0.08, run: false, idx: 0, t: 0, cx: X0, hop: null, result: null, auto: !reduced && !STATIC, started: false };
+  var f = { name: 'hill', visible: false }; f.state = st;
+  function plan(s0) {
+    ev.length = 0; var x = X0, s = s0, fx = F(x), tests = 0, moves = 0;
+    while (s >= 0.004 && ev.length < MAXEV - 3) {
+      var xl = x - s, xr = x + s, fl = xl >= 0 ? F(xl) : -1, fr = xr <= 1 ? F(xr) : -1;
+      if (xl >= 0) { ev.push({ t: 0, x: xl, y: fl, ok: fl > fx && fl >= fr }); tests++; }
+      if (xr <= 1) { ev.push({ t: 0, x: xr, y: fr, ok: fr > fx && fr > fl }); tests++; }
+      if (Math.max(fl, fr) > fx + 1e-9) { var nx = fr > fl ? xr : xl; ev.push({ t: 1, x0: x, x: nx, y: F(nx) }); x = nx; fx = F(x); moves++; }
+      else s /= 2;
+    }
+    return { x: x, y: fx, tests: tests, moves: moves, high: Math.abs(x - 0.68) < 0.08 };
+  }
+  function placeClimber(x) { climber.setAttribute('transform', 'translate(' + X(x).toFixed(1) + ' ' + (Y(F(x)) - 9).toFixed(1) + ')'); }
+  function capFor(r) { return 'First step <span class="v">' + f2(st.s0) + '</span>. <span class="v">' + r.moves + '</span> moves, <span class="v">' + r.tests + '</span> tests. Stopped at height <span class="v ' + (r.high ? 'good' : 'bad') + '">' + f2(r.y) + '</span>: ' + (r.high ? 'the highest peak.' : 'the nearby peak.'); }
+  function start() {
+    st.result = plan(st.s0); st.idx = 0; st.t = 0; st.cx = X0; st.hop = null; while (trail.firstChild) trail.removeChild(trail.firstChild);
+    placeClimber(X0); st.run = true; st.started = true;
+    capTxt.innerHTML = 'First step <span class="v">' + f2(st.s0) + '</span>. Climbing…';
+    if (reduced || STATIC) { while (st.idx < ev.length) apply(ev[st.idx++], true); finish(); }
+    kick();
+  }
+  function apply(e, instant) {
+    if (e.t === 0) sv('circle', { cx: X(e.x).toFixed(1), cy: Y(e.y).toFixed(1), r: 3.2, fill: e.ok ? C.ink : C.paper, stroke: C.ink3, 'stroke-width': 1 }, trail);
+    else {
+      var x0 = X(e.x0), y0 = Y(F(e.x0)) - 9, x1 = X(e.x), y1 = Y(e.y) - 9, hy = Math.min(y0, y1) - 18 - Math.abs(x1 - x0) * 0.18;
+      sv('path', { d: 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + ' Q ' + ((x0 + x1) / 2).toFixed(1) + ' ' + hy.toFixed(1) + ' ' + x1.toFixed(1) + ' ' + y1.toFixed(1), fill: 'none', stroke: C.ruby, 'stroke-width': 1.2, 'stroke-dasharray': '3 3' }, trail);
+      if (instant) { st.cx = e.x; placeClimber(e.x); } else st.hop = { x0: x0, y0: y0, x1: x1, y1: y1, hy: hy, t: 0, x: e.x };
+    }
+  }
+  function finish() { st.run = false; capTxt.innerHTML = capFor(st.result); live.textContent = 'Stopped at height ' + f2(st.result.y) + ', ' + (st.result.high ? 'the highest peak.' : 'the nearby peak.'); placeClimber(st.result.x); }
+  var deb = 0;
+  rng.addEventListener('input', function () { st.s0 = +rng.value / 100; out.textContent = f2(st.s0); rng.setAttribute('aria-valuetext', f2(st.s0)); clearTimeout(deb); deb = setTimeout(start, 260); });
+  bGo.addEventListener('click', start);
+  f.onShow = function () { if (!st.started) { if (st.auto) setTimeout(start, 350); else start(); } };
+  f.wants = function () { return st.run; };
+  f.tick = function (dt) {
+    if (st.hop) {
+      var h = st.hop; h.t = Math.min(1, h.t + dt / 0.28); var q = ease(h.t), a = 1 - q;
+      var px = a * a * h.x0 + 2 * a * q * (h.x0 + h.x1) / 2 + q * q * h.x1, py = a * a * h.y0 + 2 * a * q * h.hy + q * q * h.y1;
+      climber.setAttribute('transform', 'translate(' + px.toFixed(1) + ' ' + py.toFixed(1) + ')');
+      if (h.t >= 1) { st.cx = h.x; st.hop = null; }
+      return;
+    }
+    st.t += dt;
+    if (st.t > 0.11) {
+      st.t = 0;
+      if (st.idx >= ev.length) { finish(); return; }
+      // one beat = both tests of an iteration, then the move (if any)
+      if (ev[st.idx].t === 0) { while (st.idx < ev.length && ev[st.idx].t === 0) { apply(ev[st.idx], false); st.idx++; if (st.idx < ev.length && ev[st.idx - 1].x < ev[st.idx].x === false && ev[st.idx].t === 0) break; } }
+      else apply(ev[st.idx++], false);
+    }
+  };
+  placeClimber(X0);
+  return register(f, root, null);
+}
+
+/* =====================================================================
+   FIG. 5 — FOUR-BAR LINKAGE. Crank a, coupler b, rocker c, ground d.
+   The pen rides on the coupler; Grashof's rule says whether the crank
+   can turn all the way: shortest + longest ≤ sum of the other two.
+   ===================================================================== */
+function FigLink(root) {
+  var stage = root.querySelector('.stage'), cv = stage.querySelector('canvas'), fb = stage.querySelector('.fallback'), capTxt = root.querySelector('[data-c=txt]');
+  var ins = { a: root.querySelector('[data-k=a]'), b: root.querySelector('[data-k=b]'), v: root.querySelector('[data-k=v]') }, outs = { a: root.querySelector('[data-o=a]'), b: root.querySelector('[data-o=b]'), v: root.querySelector('[data-o=v]') };
+  var P = { a: 0.30, b: 1.10, c: 0.95, d: 1.0, v: 0.50 }, NB = 720;
+  var cur = new Float32Array(NB * 2), prev = new Float32Array(NB * 2), st = { th: 0.6, dir: 1, n: 0, pn: 0, head: 0, lastS: 0, playing: !reduced, user: false };
+  var ctx = get2d(cv), f = { name: 'link', visible: false, dirty: true }; f.state = st;
+  var A = { x: 0, y: 0 }, B = { x: 0, y: 0 }, Pp = { x: 0, y: 0 }, Bprev = { x: 0, y: 1, ok: false };
+  function solve(th) {
+    A.x = -P.d / 2 + P.a * Math.cos(th); A.y = P.a * Math.sin(th);
+    var ox = P.d / 2, oy = 0, dx = ox - A.x, dy = oy - A.y, dd = Math.sqrt(dx * dx + dy * dy);
+    if (dd > P.b + P.c || dd < Math.abs(P.b - P.c) || dd < 1e-6) return false;
+    var aa = (P.b * P.b - P.c * P.c + dd * dd) / (2 * dd), hh = Math.sqrt(Math.max(0, P.b * P.b - aa * aa));
+    var mx = A.x + aa * dx / dd, my = A.y + aa * dy / dd;
+    B.x = mx - hh * dy / dd; B.y = my + hh * dx / dd; // upper branch
+    var ux = B.x - A.x, uy = B.y - A.y, ul = Math.sqrt(ux * ux + uy * uy);
+    Pp.x = A.x + 0.5 * ux - P.v * uy / ul; Pp.y = A.y + 0.5 * uy + P.v * ux / ul;
+    return true;
+  }
+  function grashof() { var L = [P.a, P.b, P.c, P.d].sort(function (p, q) { return p - q; }); return { s: L[0] + L[3], o: L[1] + L[2], ok: L[0] + L[3] <= L[1] + L[2] + 1e-9, crank: L[0] === P.a }; }
+  function caption() {
+    var g = grashof();
+    capTxt.innerHTML = 'Crank <span class="v">' + f2(P.a) + '</span>, coupler <span class="v">' + f2(P.b) + '</span>, rocker <span class="v">' + f2(P.c) + '</span>, ground <span class="v">' + f2(P.d) + '</span>. Shortest plus longest is <span class="v">' + f2(g.s) + '</span>, ' + (g.ok ? 'not more than' : 'more than') + ' the other two (<span class="v">' + f2(g.o) + '</span>), so the crank ' + (g.ok && g.crank ? '<span class="good">turns all the way round</span>.' : '<span class="bad">cannot turn all the way</span>.');
+  }
+  // frame the drawing: bounds of the pivots, joints and pen over one turn, eased so the view never jumps
+  var vb = { x0: -1, x1: 1, y0: -0.3, y1: 1, tx0: -1, tx1: 1, ty0: -0.3, ty1: 1 };
+  function fitTarget() {
+    var x0 = -P.d / 2 - 0.1, x1 = P.d / 2 + 0.1, y0 = -0.2, y1 = 0.2;
+    for (var i = 0; i < 120; i++) if (solve(i / 120 * TAU)) {
+      x0 = Math.min(x0, A.x, B.x, Pp.x); x1 = Math.max(x1, A.x, B.x, Pp.x); y0 = Math.min(y0, A.y, B.y, Pp.y); y1 = Math.max(y1, A.y, B.y, Pp.y);
+    }
+    vb.tx0 = x0; vb.tx1 = x1; vb.ty0 = Math.min(y0, -0.22); vb.ty1 = y1;
+  }
+  function restart() { prev.set(cur); st.pn = st.n; st.n = 0; st.head = 0; st.lastS = st.th; fitTarget(); f.dirty = true; caption(); }
+  function fullCurve() { st.n = 0; for (var i = 0; i < NB; i++) { if (solve(i / NB * TAU)) { cur[st.n * 2] = Pp.x; cur[st.n * 2 + 1] = Pp.y; st.n++; } } st.head = 0; }
+  function onInput(e) { var k = e.target.getAttribute('data-k'); P[k] = +e.target.value / 100; outs[k].textContent = f2(P[k]); restart(); if (reduced || !st.playing) fullCurve(); kick(); }
+  ins.a.addEventListener('input', onInput); ins.b.addEventListener('input', onInput); ins.v.addEventListener('input', onInput);
+  function buildStatic() {
+    fullCurve(); var s = 120, d = '';
+    for (var i = 0; i < st.n; i++) d += (i ? 'L' : 'M') + (cur[i * 2] * s).toFixed(1) + ' ' + (-cur[i * 2 + 1] * s).toFixed(1);
+    solve(0.9);
+    var p = function (o) { return (o.x * s).toFixed(1) + ' ' + (-o.y * s).toFixed(1); };
+    fb.innerHTML = '<svg viewBox="-240 -190 480 300"><path d="' + d + 'Z" fill="none" stroke="' + C.ruby + '" stroke-width="1.6"/><path d="M' + (-P.d / 2 * s) + ' 0 L' + p(A) + ' L' + p(B) + ' L' + (P.d / 2 * s) + ' 0" fill="none" stroke="' + C.ink + '" stroke-width="2.2"/><path d="M' + p(A) + ' L' + p(Pp) + ' L' + p(B) + '" fill="' + C.paper2 + '" stroke="' + C.ink + '" stroke-width="1.4"/><circle cx="' + (Pp.x * s) + '" cy="' + (-Pp.y * s) + '" r="4" fill="' + C.ruby + '"/></svg>';
+    fb.hidden = false; cv.hidden = true;
+  }
+  if (!ctx) { buildStatic(); caption(); f.wants = function () { return false; }; f.tick = function () {}; for (var k in ins) ins[k].disabled = true; return register(f, root, null); }
+  f.resize = function (force) { if (sizeCanvas(cv, force)) f.dirty = true; };
+  f.wants = function () { return f.dirty || (st.playing && !reduced); };
+  f.onMotion = function () { st.playing = !reduced; if (reduced) fullCurve(); f.dirty = true; };
+  f.tick = function (dt) {
+    var w = cv._w, h = cv._h; if (!w) { f.resize(); w = cv._w; h = cv._h; }
+    if (st.playing && !reduced) {
+      var nth = st.th + st.dir * TAU * 0.24 * dt, step = TAU / NB;
+      if (!solve(nth)) { st.dir = -st.dir; nth = st.th; solve(nth); }
+      // lay down ink at fixed angle steps, so the trace does not depend on frame rate
+      while (Math.abs(nth - st.lastS) >= step) {
+        st.lastS += st.dir * step;
+        if (solve(st.lastS)) { cur[st.head * 2] = Pp.x; cur[st.head * 2 + 1] = Pp.y; st.head = (st.head + 1) % NB; if (st.n < NB) st.n++; }
+      }
+      st.th = nth; solve(st.th);
+    } else solve(st.th);
+    f.dirty = false; draw(w, h);
+  };
+  function draw(w, h) {
+    var dpr = cv._d; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    var e = reduced ? 1 : 0.12;
+    vb.x0 += (vb.tx0 - vb.x0) * e; vb.x1 += (vb.tx1 - vb.x1) * e; vb.y0 += (vb.ty0 - vb.y0) * e; vb.y1 += (vb.ty1 - vb.y1) * e;
+    if (Math.abs(vb.tx0 - vb.x0) + Math.abs(vb.tx1 - vb.x1) + Math.abs(vb.ty0 - vb.y0) + Math.abs(vb.ty1 - vb.y1) > 0.002) f.dirty = true;
+    var mx = 40, my = 24, k = Math.min((w - 2 * mx) / (vb.x1 - vb.x0), (h - 2 * my - 48) / (vb.y1 - vb.y0));
+    var ox = w / 2 - k * (vb.x0 + vb.x1) / 2, oy = my + k * vb.y1 + ((h - 2 * my - 48) - k * (vb.y1 - vb.y0)) / 2;
+    function X(v) { return ox + k * v; } function Y(v) { return oy - k * v; }
+    var i, j;
+    // previous try, faint
+    if (st.pn > 1) { ctx.strokeStyle = C.ink3; ctx.globalAlpha = 0.4; ctx.lineWidth = 1; ctx.beginPath(); for (i = 0; i < st.pn; i++) { j = i * 2; if (i) ctx.lineTo(X(prev[j]), Y(prev[j + 1])); else ctx.moveTo(X(prev[j]), Y(prev[j + 1])); } ctx.stroke(); }
+    // current trace, oldest to newest
+    if (st.n > 1) {
+      ctx.strokeStyle = C.ruby; ctx.globalAlpha = 1; ctx.lineWidth = 1.6; ctx.beginPath();
+      var s0 = st.n < NB ? 0 : st.head;
+      for (i = 0; i < st.n; i++) { j = ((s0 + i) % NB) * 2; if (i) ctx.lineTo(X(cur[j]), Y(cur[j + 1])); else ctx.moveTo(X(cur[j]), Y(cur[j + 1])); }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    // ground pivots with hatching
+    var gx = [-P.d / 2, P.d / 2];
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2;
+    for (i = 0; i < 2; i++) {
+      var px = X(gx[i]), py = Y(0);
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - 9, py + 14); ctx.lineTo(px + 9, py + 14); ctx.closePath(); ctx.fillStyle = C.paper; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px - 14, py + 14); ctx.lineTo(px + 14, py + 14);
+      for (j = -12; j <= 12; j += 6) { ctx.moveTo(px + j, py + 14); ctx.lineTo(px + j - 5, py + 20); }
+      ctx.stroke();
+    }
+    ctx.setLineDash([3, 5]); ctx.globalAlpha = 0.45; ctx.beginPath(); ctx.moveTo(X(gx[0]), Y(0)); ctx.lineTo(X(gx[1]), Y(0)); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    // coupler plate (A, pen, B)
+    ctx.beginPath(); ctx.moveTo(X(A.x), Y(A.y)); ctx.lineTo(X(Pp.x), Y(Pp.y)); ctx.lineTo(X(B.x), Y(B.y)); ctx.closePath(); ctx.fillStyle = C.paper2; ctx.globalAlpha = 0.9; ctx.fill(); ctx.globalAlpha = 1; ctx.lineWidth = 1.3; ctx.stroke();
+    // crank, coupler, rocker
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(X(gx[0]), Y(0)); ctx.lineTo(X(A.x), Y(A.y)); ctx.lineTo(X(B.x), Y(B.y)); ctx.lineTo(X(gx[1]), Y(0)); ctx.stroke();
+    // joints
+    var J = [gx[0], 0, A.x, A.y, B.x, B.y, gx[1], 0];
+    ctx.lineWidth = 1.3; for (i = 0; i < 8; i += 2) { ctx.beginPath(); ctx.arc(X(J[i]), Y(J[i + 1]), 4.2, 0, TAU); ctx.fillStyle = C.paper; ctx.fill(); ctx.stroke(); }
+    ctx.fillStyle = C.ruby; ctx.beginPath(); ctx.arc(X(Pp.x), Y(Pp.y), 4.6, 0, TAU); ctx.fill();
+    // labels
+    ctx.fillStyle = C.ink3; ctx.font = '500 ' + (w < 480 ? 10 : 11) + 'px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('CRANK ' + f2(P.a), X(gx[0]), Y(0) + 32);
+    ctx.fillText('ROCKER ' + f2(P.c), X(gx[1]), Y(0) + 32);
+    ctx.fillText('GROUND ' + f2(P.d), X(0), Y(0) + 50);
+    ctx.fillStyle = C.ruby; ctx.fillText('PEN', X(Pp.x), Y(Pp.y) - 16);
+  }
+  fitTarget(); vb.x0 = vb.tx0; vb.x1 = vb.tx1; vb.y0 = vb.ty0; vb.y1 = vb.ty1; solve(st.th);
+  caption(); if (reduced) fullCurve();
+  register(f, root, stage); f.resize();
+  return f;
+}
+
+/* =====================================================================
+   FIG. 6 — GUESS, TEST, ADJUST. Bisection on 1..100. Each row is one
+   test: the bar is the range still possible, the tick is the guess.
+   ===================================================================== */
+function FigBisect(root) {
+  var svg = root.querySelector('svg'), gAxis = svg.querySelector('.axis'), gRows = svg.querySelector('.rows'), tgt = svg.querySelector('.target');
+  var bNew = root.querySelector('[data-k=new]'), bStep = root.querySelector('[data-k=step]'), capTxt = root.querySelector('[data-c=txt]'), live = root.querySelector('[data-live]');
+  function X(n) { return 48 + (n - 1) / 99 * 556; }
+  sv('path', { d: 'M48 40 H604', stroke: C.ink, 'stroke-width': 1, fill: 'none' }, gAxis);
+  for (var n = 1; n <= 100; n += 1) { var big = n === 1 || n % 10 === 0; if (big || n % 5 === 0) sv('path', { d: 'M' + X(n).toFixed(1) + ' 40 V' + (big ? 33 : 36), stroke: C.ink, 'stroke-width': 1 }, gAxis); if (big) { var t = sv('text', { x: X(n).toFixed(1), y: 26, 'text-anchor': 'middle' }, gAxis); t.textContent = n; } }
+  var st = { target: 0, lo: 1, hi: 100, tests: 0, done: false, t: 0, auto: !reduced && !STATIC, running: false, started: false, wait: 0 };
+  var f = { name: 'bisect', visible: false }; f.state = st;
+  function fresh() {
+    st.target = 1 + Math.floor(Math.random() * 100); st.lo = 1; st.hi = 100; st.tests = 0; st.done = false; st.t = 0; st.wait = 0;
+    while (gRows.firstChild) gRows.removeChild(gRows.firstChild); tgt.setAttribute('opacity', 0);
+    capTxt.innerHTML = 'A hidden number from <span class="v">1</span> to <span class="v">100</span>. Each test halves the range.';
+  }
+  function test() {
+    if (st.done) return;
+    var g = Math.floor((st.lo + st.hi) / 2), y = 66 + st.tests * 36, res = g === st.target ? 0 : g > st.target ? 1 : -1;
+    var row = sv('g', {}, gRows);
+    sv('rect', { x: X(st.lo).toFixed(1) - 3, y: y - 7, width: (X(st.hi) - X(st.lo) + 6).toFixed(1), height: 14, fill: C.paper2, stroke: C.ink, 'stroke-width': 1 }, row);
+    sv('path', { d: 'M' + X(g).toFixed(1) + ' ' + (y - 12) + ' V' + (y + 12), stroke: res === 0 ? C.ruby : C.ink, 'stroke-width': 2 }, row);
+    var lab = sv('text', { x: (X(g) + 10).toFixed(1), y: y + 4, 'text-anchor': 'start', class: 'tk' }, row);
+    lab.textContent = (st.tests + 1) + ' · ' + g + (res === 0 ? ' · found' : res > 0 ? ' · too high' : ' · too low');
+    var tw = 0; try { tw = lab.getComputedTextLength(); } catch (er) { tw = 120; }
+    if (X(g) + 10 + tw > 632) { lab.setAttribute('x', (X(g) - 10).toFixed(1)); lab.setAttribute('text-anchor', 'end'); }
+    if (res === 0) lab.style.fill = C.ruby;
+    st.tests++;
+    if (res === 0) {
+      st.done = true; tgt.setAttribute('transform', 'translate(' + X(st.target).toFixed(1) + ' 40)'); tgt.setAttribute('opacity', 1);
+      capTxt.innerHTML = 'Found <span class="v">' + st.target + '</span> in <span class="v">' + st.tests + '</span> ' + (st.tests === 1 ? 'test' : 'tests') + '. With 100 numbers, halving never needs more than <span class="v">7</span>.';
+      live.textContent = 'Found ' + st.target + ' in ' + st.tests + ' tests.';
+    } else {
+      if (res > 0) st.hi = g - 1; else st.lo = g + 1;
+      capTxt.innerHTML = 'Test <span class="v">' + st.tests + '</span>: ' + g + ' is ' + (res > 0 ? 'too high' : 'too low') + '. The number is between <span class="v">' + st.lo + '</span> and <span class="v">' + st.hi + '</span>.';
+    }
+  }
+  function runAll() { while (!st.done) test(); }
+  bNew.addEventListener('click', function () { fresh(); if (reduced || STATIC) runAll(); else { st.running = true; kick(); } });
+  bStep.addEventListener('click', function () { st.running = false; if (st.done) fresh(); test(); });
+  f.onShow = function () { if (!st.started) { st.started = true; fresh(); if (st.auto) { st.running = true; st.t = -0.3; } else runAll(); kick(); } };
+  f.wants = function () { return st.running; };
+  f.tick = function (dt) {
+    st.t += dt;
+    if (!st.done) { if (st.t > 0.6) { st.t = 0; test(); } }
+    else { st.wait += dt; if (st.wait > 4.5 && st.auto && !reduced) { fresh(); st.t = -0.2; } else if (!st.auto || reduced) st.running = false; }
+  };
+  return register(f, root, null);
+}
+
+/* =====================================================================
+   FIG. 7 — HALF A PIXEL. Draws a 1-px line into a tiny canvas at x+offset,
+   reads the pixels back with getImageData, and shows them magnified.
+   ===================================================================== */
+function FigPixel(root) {
+  var stage = root.querySelector('.stage'), cv = stage.querySelector('canvas'), fb = stage.querySelector('.fallback'), capTxt = root.querySelector('[data-c=txt]');
+  var rng = root.querySelector('[data-k=x]'), out = root.querySelector('[data-o=x]'), chk = root.querySelector('[data-k=snap]');
+  var COLS = 12, ROWS = 5, LX = 5;
+  var ctx = get2d(cv), f = { name: 'pixel', visible: false, dirty: true };
+  var st = { off: 0.5, snap: false, auto: !reduced && !STATIC, t: 0, cov: new Float32Array(COLS), measured: true, acc: 0 };
+  f.state = st;
+  var oc = null, octx = null, big = null, bctx = null;
+  try { oc = D.createElement('canvas'); oc.width = COLS; oc.height = ROWS; octx = oc.getContext('2d', { willReadFrequently: true }); big = D.createElement('canvas'); big.width = 48; big.height = 30; bctx = big.getContext('2d'); } catch (e) { octx = null; }
+  var styles = []; // 101 shades between paper and ink, built once
+  (function () { var p = [244, 240, 230], q = [24, 32, 44]; for (var i = 0; i <= 100; i++) { var a = i / 100; styles.push('rgb(' + Math.round(p[0] + (q[0] - p[0]) * a) + ',' + Math.round(p[1] + (q[1] - p[1]) * a) + ',' + Math.round(p[2] + (q[2] - p[2]) * a) + ')'); } })();
+  function eff() { return st.snap ? Math.round(st.off) : st.off; }
+  function measure() {
+    var o = eff(), i;
+    if (octx) {
+      try {
+        octx.setTransform(1, 0, 0, 1, 0, 0); octx.fillStyle = '#F4F0E6'; octx.fillRect(0, 0, COLS, ROWS); octx.fillStyle = '#18202C'; octx.fillRect(LX + o, 0, 1, ROWS);
+        var dta = octx.getImageData(0, 2, COLS, 1).data;
+        for (i = 0; i < COLS; i++) st.cov[i] = clamp((244 - dta[i * 4]) / (244 - 24), 0, 1);
+        st.measured = true;
+        if (bctx) { bctx.fillStyle = '#F4F0E6'; bctx.fillRect(0, 0, 48, 30); bctx.fillStyle = '#18202C'; bctx.fillRect(20 + o, 0, 1, 30); }
+        return;
+      } catch (e) { st.measured = false; }
+    }
+    for (i = 0; i < COLS; i++) st.cov[i] = clamp(Math.min(i + 1, LX + o + 1) - Math.max(i, LX + o), 0, 1);
+    st.measured = false;
+  }
+  function caption() {
+    var o = eff(), cols = [], i;
+    for (i = 0; i < COLS; i++) if (st.cov[i] > 0.005) cols.push(i);
+    var txt = 'Line at <span class="v">x = ' + (LX + o).toFixed(2) + ' px</span>' + (st.snap && Math.abs(st.off - o) > 0.001 ? ' (snapped)' : '') + '. ';
+    txt += cols.map(function (c, n) { return (n ? 'column ' : 'Column ') + c + ': <span class="v">' + Math.round(st.cov[c] * 100) + '%</span>'; }).join(', ');
+    var sharp = cols.length === 1 && st.cov[cols[0]] > 0.97;
+    txt += '. ' + (sharp ? '<span class="good">One full column: a sharp line.</span>' : '<span class="bad">Split across columns: a soft line.</span>');
+    if (!st.measured) txt += ' (Computed; this browser blocked reading pixels.)';
+    capTxt.innerHTML = txt;
+  }
+  function setUI() { var o = st.off; out.textContent = '+' + o.toFixed(2) + ' px'; rng.setAttribute('aria-valuetext', 'plus ' + o.toFixed(2) + ' pixels'); }
+  rng.addEventListener('input', function () { st.auto = false; st.off = +rng.value / 100; setUI(); measure(); caption(); f.dirty = true; kick(); });
+  chk.addEventListener('change', function () { st.snap = chk.checked; measure(); caption(); f.dirty = true; kick(); });
+  function buildStatic() {
+    measure(); var s = '<svg viewBox="0 0 640 360">', cw = 40, x0 = 80, y0 = 70;
+    for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) s += '<rect x="' + (x0 + c * cw) + '" y="' + (y0 + r * cw) + '" width="' + cw + '" height="' + cw + '" fill="' + styles[Math.round(st.cov[c] * 100)] + '" stroke="rgba(24,32,44,.25)"/>';
+    s += '</svg>'; fb.innerHTML = s; fb.hidden = false; cv.hidden = true;
+  }
+  if (!ctx) { buildStatic(); caption(); rng.disabled = true; chk.disabled = true; f.wants = function () { return false; }; f.tick = function () {}; return register(f, root, null); }
+  f.resize = function (force) { if (sizeCanvas(cv, force)) f.dirty = true; };
+  f.wants = function () { return f.dirty || (st.auto && !reduced); };
+  f.onMotion = function () { if (reduced) st.auto = false; f.dirty = true; };
+  f.tick = function (dt) {
+    var w = cv._w, h = cv._h; if (!w) { f.resize(); w = cv._w; h = cv._h; }
+    if (st.auto && !reduced) {
+      st.t += dt; st.acc += dt;
+      if (st.acc < 0.05 && !f.dirty) return; st.acc = 0; // ~20 fps is plenty here
+      st.off = 0.5 - 0.5 * Math.cos(st.t / 7 * TAU); rng.value = Math.round(st.off * 100); setUI(); measure(); caption();
+    } else if (f.dirty) { measure(); caption(); }
+    draw(w, h); f.dirty = false;
+  };
+  function draw(w, h) {
+    var d = cv._d; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.clearRect(0, 0, w, h);
+    var small = w < 480, cell = Math.floor(Math.min((w - (small ? 24 : 150)) / COLS, (h - 86) / ROWS)), gw = cell * COLS, gh = cell * ROWS;
+    var x0 = Math.round(small ? (w - gw) / 2 : (w - gw - 96) / 2), y0 = Math.round((h - gh) / 2 - 10), r, c;
+    for (r = 0; r < ROWS; r++) for (c = 0; c < COLS; c++) { ctx.fillStyle = styles[Math.round(st.cov[c] * 100)]; ctx.fillRect(x0 + c * cell, y0 + r * cell, cell, cell); }
+    // pixel grid
+    ctx.strokeStyle = 'rgba(24,32,44,.22)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (c = 0; c <= COLS; c++) { ctx.moveTo(x0 + c * cell + 0.5, y0); ctx.lineTo(x0 + c * cell + 0.5, y0 + gh); }
+    for (r = 0; r <= ROWS; r++) { ctx.moveTo(x0, y0 + r * cell + 0.5); ctx.lineTo(x0 + gw, y0 + r * cell + 0.5); }
+    ctx.stroke();
+    // the ideal line, as a ruby outline over the pixels
+    var o = eff(), lx = x0 + (LX + o) * cell;
+    ctx.strokeStyle = C.ruby; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]); ctx.strokeRect(lx, y0 - 10, cell, gh + 20); ctx.setLineDash([]);
+    // column readouts
+    ctx.font = '500 ' + (small ? 10 : 11) + 'px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (c = 0; c < COLS; c++) {
+      var v = Math.round(st.cov[c] * 100);
+      ctx.fillStyle = v > 0 ? C.ink : C.ink3; ctx.globalAlpha = v > 0 ? 1 : 0.6;
+      if (v > 0 || !small) ctx.fillText(v + '%', x0 + c * cell + cell / 2, y0 + gh + 18);
+      ctx.globalAlpha = 0.7; ctx.fillStyle = C.ink3; if (!small || c % 2 === 0) ctx.fillText(String(c), x0 + c * cell + cell / 2, y0 - 26);
+    }
+    ctx.globalAlpha = 1;
+    // actual-size preview: 1 canvas pixel = 1 device pixel
+    if (!small && big) {
+      var bx = x0 + gw + 34, by = y0 + 4, dd = cv._d;
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = false; ctx.drawImage(big, Math.round(bx * dd), Math.round(by * dd)); ctx.restore();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillStyle = C.ink3; ctx.fillText('ACTUAL', bx, by + 30 / dd + 10); ctx.fillText('SIZE', bx, by + 30 / dd + 24);
+    }
+  }
+  setUI(); measure(); caption();
+  register(f, root, stage); f.resize();
+  return f;
+}
+
+/* ---------- build figures (hero now, the rest when idle) ---------- */
+var built = {};
+function build(name, fn) { if (built[name]) return; var el = D.querySelector('[data-fig=' + name + ']'); if (!el) return; built[name] = true; try { fn(el); } catch (e) { if (W.console) console.warn('figure init failed', name, e); } }
+build('hover', FigHover);
+var later = function () { build('loop', FigLoop); build('stack', FigStack); kick(); };
+if (W.requestIdleCallback) requestIdleCallback(later, { timeout: 900 }); else setTimeout(later, 120);
+function buildValues() { build('hill', FigHill); build('link', FigLink); build('bisect', FigBisect); build('pixel', FigPixel); kick(); }
+if (D.fonts && D.fonts.ready) D.fonts.ready.then(function () { for (var i = 0; i < figs.length; i++) figs[i].dirty = true; kick(); });
+kick();
+
+/* ---------- decorative ink rules ---------- */
+var rules = D.querySelectorAll('.rule');
+if (!HTML.classList.contains('motion') || !io) for (var r = 0; r < rules.length; r++) rules[r].classList.add('drawn');
+else { var rio = new IntersectionObserver(function (es) { for (var i = 0; i < es.length; i++) if (es[i].isIntersecting) { es[i].target.classList.add('drawn'); rio.unobserve(es[i].target); } }, { rootMargin: '0px 0px -10% 0px' }); for (var r2 = 0; r2 < rules.length; r2++) rio.observe(rules[r2]); }
+
+/* ---------- router: #values is its own view ---------- */
+var views = { home: D.getElementById('home'), values: D.getElementById('values') };
+var baseTitle = D.title, metaD = D.querySelector('meta[name="description"]'), baseDesc = metaD ? metaD.getAttribute('content') : '';
+var VALUES_TITLE = 'Values — Hummingbolt', VALUES_DESC = 'Hummingbolt’s four values: Be bold. Tinker. Fail fast, learn faster. Sweat the small stuff. Each one comes with a small working figure.';
+var navValues = D.querySelector('.nav a[href="#values"]'), current = 'home';
+function viewFor(h) {
+  if (h === 'values' || /^value-[1-4]$/.test(h)) return 'values';
+  if (!h || h === 'top' || h === 'nogl') return 'home';
+  var el = D.getElementById(h);
+  if (el && views.home.contains(el)) return 'home';
+  if (el && views.values.contains(el)) return 'values';
+  return current;
+}
+function jump(top) { var sb = HTML.style.scrollBehavior; HTML.style.scrollBehavior = 'auto'; W.scrollTo(0, top); HTML.style.scrollBehavior = sb; }
+function route(initial) {
+  var h = decodeURIComponent((location.hash || '').slice(1)), v = viewFor(h), changed = v !== current;
+  if (changed || initial) {
+    views.home.hidden = v !== 'home'; views.values.hidden = v !== 'values'; current = HB.view = v;
+    D.title = v === 'values' ? VALUES_TITLE : baseTitle;
+    if (metaD) metaD.setAttribute('content', v === 'values' ? VALUES_DESC : baseDesc);
+    if (navValues) { if (v === 'values') navValues.setAttribute('aria-current', 'page'); else navValues.removeAttribute('aria-current'); }
+    if (v === 'values') buildValues();
+  }
+  var target = h && h !== 'top' && h !== 'values' && h !== 'nogl' ? D.getElementById(h) : null;
+  if (target && !views[v].contains(target)) target = null;
+  if (initial && !h) return;
+  if (target) {
+    if (changed || initial) { jump(0); requestAnimationFrame(function () { target.scrollIntoView({ block: 'start', behavior: 'auto' }); }); }
+    else target.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' });
+  } else if (changed || h === 'top' || h === 'values') {
+    if (changed || initial) jump(0); else W.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+  }
+  if (changed && !initial) { var h1 = views[v].querySelector('h1'); if (h1 && !target) { try { h1.focus({ preventScroll: true }); } catch (e) { h1.focus(); } } }
+  if (target && (changed || !initial)) { var foc = target.matches('section,article') ? target.querySelector('h2,h3') : null; if (foc) { foc.setAttribute('tabindex', '-1'); try { foc.focus({ preventScroll: true }); } catch (e) {} } }
+}
+D.addEventListener('click', function (e) {
+  var a = e.target.closest ? e.target.closest('a[href^="#"]') : null; if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  var href = a.getAttribute('href');
+  if (href === '#') { e.preventDefault(); return; }
+  if (a.classList.contains('skip')) { e.preventDefault(); var m = D.getElementById('main'); m.focus({ preventScroll: true }); m.scrollIntoView(); return; }
+  e.preventDefault(); setMenu(false);
+  if (location.hash !== href) history.pushState(null, '', href); route(false);
+  if (location.hash === href && a.closest('.vnav,.toc')) { /* focus handled by route */ }
+});
+W.addEventListener('popstate', function () { route(false); });
+W.addEventListener('hashchange', function () { route(false); });
+route(true);
+
+/* ---------- values sub-nav: mark the entry in view ---------- */
+(function () {
+  var links = D.querySelectorAll('.vnav ol a'), entries = D.querySelectorAll('.entry');
+  if (!io || !entries.length) return;
+  var vio = new IntersectionObserver(function (es) {
+    for (var i = 0; i < es.length; i++) if (es[i].isIntersecting) { var id = es[i].target.id; for (var j = 0; j < links.length; j++) { if (links[j].getAttribute('href') === '#' + id) links[j].setAttribute('aria-current', 'true'); else links[j].removeAttribute('aria-current'); } }
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  for (var i = 0; i < entries.length; i++) vio.observe(entries[i]);
+})();
+
+/* ---------- contents menu (phones) ---------- */
+var mBtn = D.querySelector('.menu-btn');
+function setMenu(open) { if (!mBtn) return; mBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); HTML.classList.toggle('menu-open', open); }
+if (mBtn) {
+  mBtn.addEventListener('click', function () { var open = mBtn.getAttribute('aria-expanded') !== 'true'; setMenu(open); if (open) { var fl = D.querySelector('#site-nav a'); if (fl) fl.focus(); } });
+  D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && HTML.classList.contains('menu-open')) { setMenu(false); mBtn.focus(); } });
+  D.addEventListener('click', function (e) { if (HTML.classList.contains('menu-open') && !e.target.closest('.hdr')) setMenu(false); });
+}
+
+/* ---------- copy email ---------- */
+var copyBtn = D.getElementById('copy-btn'), copySt = D.getElementById('copy-st'), emailEl = D.getElementById('email-addr');
+function selectEmail() { try { var rg = D.createRange(); rg.selectNodeContents(emailEl); var s = W.getSelection(); s.removeAllRanges(); s.addRange(rg); } catch (e) {} }
+function legacyCopy(text) { try { var ta = D.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none'; D.body.appendChild(ta); ta.select(); var ok = D.execCommand('copy'); D.body.removeChild(ta); return ok; } catch (e) { return false; } }
+if (copyBtn) copyBtn.addEventListener('click', function () {
+  var text = emailEl.textContent.trim();
+  function done(ok) { if (ok) { copySt.textContent = 'Copied ' + text + ' to the clipboard.'; copyBtn.textContent = 'Copied'; setTimeout(function () { copyBtn.textContent = 'Copy address'; }, 2200); } else { selectEmail(); copySt.textContent = 'Copy was blocked. The address is selected: press Ctrl+C, or ⌘C on a Mac.'; } }
+  try { if (navigator.clipboard && W.isSecureContext) { navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(legacyCopy(text)); }); return; } } catch (e) {}
+  done(legacyCopy(text));
+});
+})();
+</script>
