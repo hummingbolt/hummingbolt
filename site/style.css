@@ -153,8 +153,7 @@ p { margin: 0 0 1rem; }
 
 /* Capability cards */
 .cards { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
-@media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 64rem) { .cards { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 48rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
 .card {
   position: relative; overflow: hidden;
   padding: 1.6rem 1.5rem 1.4rem; border-radius: var(--radius);
