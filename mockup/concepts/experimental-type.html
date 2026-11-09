@@ -1,0 +1,909 @@
+<title>Hummingbolt — Long Exposure</title>
+<style>
+/* Layout: one fitted wordmark that behaves like a long-exposure photo of a hummingbird; editorial index rows below;
+   the page runs from day (fog) to evening (dusk). Colour lives only inside the letters, as a gorget glint. */
+:root{
+  --fog:#E2E3DE; --mist:#D5D7D0; --graphite:#2B2E2A; --lichen:#585C55; --haze:#B5B8AF; --rule:#BEC1B8; --line-btn:#8A8D84;
+  --rose:#A3405F; --copper:#9E5C2E; --bronze:#56653F; --flash:#C0587A;
+  --dusk-top:#272A24; --dusk:#22251F; --dusk-low:#1E201B;
+  --dusk-fog:#D8D9D2; --dusk-lichen:#9EA298; --dusk-haze:#41453D; --dusk-rule:#3A3E36; --dusk-raise:#30342D;
+  --rose-light:#C98AA0; --bronze-light:#8E9E6D;
+  --f-sans:"Archivo","Archivo Fallback","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --f-mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --hdr-bg:var(--fog); --hdr-fg:var(--graphite); --hdr-line:var(--rule); --hdr-echo:var(--haze);
+  --focus:var(--rose);
+  color-scheme:light;
+}
+:root.hdr-dusk{--hdr-bg:var(--dusk); --hdr-fg:var(--dusk-fog); --hdr-line:var(--dusk-rule); --hdr-echo:var(--dusk-haze)}
+@font-face{font-family:"Archivo Fallback";src:local("Helvetica Neue"),local("Arial"),local("Helvetica");size-adjust:101%;ascent-override:87%;descent-override:21%;line-gap-override:0%}
+
+html{background:var(--fog);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:76px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--fog);color:var(--graphite);font-family:var(--f-sans);font-size:17px;line-height:1.55;font-weight:400;font-stretch:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+@media (min-width:900px){body{font-size:18px}}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--hdr-bg)}
+::selection{background:var(--rose);color:var(--fog)}
+.dusk ::selection{background:var(--rose-light);color:var(--dusk)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:3px}
+.dusk{--focus:var(--rose-light)}
+h1,h2,h3,p,ul{margin:0}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.skip{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:-120px;z-index:60;background:var(--graphite);color:var(--fog);font:14px/1 var(--f-mono);padding:15px 18px;border-radius:999px;text-decoration:none}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + 10px)}
+#main:focus{outline:none}
+
+.wrap{box-sizing:border-box;width:100%;max-width:1440px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:600px){.wrap{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
+@media (min-width:900px){.wrap{padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:max(48px,env(safe-area-inset-right,0px))}}
+
+.eyebrow{font-family:var(--f-mono);font-size:13px;line-height:1.4;letter-spacing:.04em;font-weight:400;color:var(--lichen)}
+.dusk .eyebrow{color:var(--dusk-lichen)}
+.h2{font-size:clamp(40px,6vw,88px);line-height:1;letter-spacing:-.025em;font-weight:520;font-stretch:100%;font-variation-settings:"wdth" 100,"wght" 520;text-wrap:balance}
+
+/* Header */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hdr-bg);color:var(--hdr-fg);transition:transform .4s cubic-bezier(.2,.7,.2,1),background-color .3s,color .3s}
+.hdr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--hdr-line);opacity:0;transition:opacity .3s}
+.hdr.is-line::after{opacity:1}
+.hdr.is-hidden{transform:translate3d(0,calc(-100% - env(safe-area-inset-top,0px)),0)}
+.hdr__in{display:flex;align-items:center;justify-content:space-between;gap:12px;height:64px}
+.logo{display:inline-flex;align-items:center;min-height:44px;color:inherit;text-decoration:none;border-radius:4px}
+.mark{display:block;height:24px;width:auto;overflow:visible}
+@media (min-width:600px){.mark{height:28px}}
+.mark-ink{fill:currentColor}
+.mark .mark-echo{fill:var(--hdr-echo);transform:translate(calc(var(--lv,0) * -70px),calc(var(--lv,0) * 40px));transition:fill .3s}
+@media (prefers-reduced-motion:no-preference){
+  .logo:hover .mark-echo,.logo:focus-visible .mark-echo{animation:eight .48s cubic-bezier(.4,0,.2,1) 1}
+}
+@keyframes eight{0%,50%,100%{transform:translate(0,0)}12.5%{transform:translate(99px,70px)}25%{transform:translate(140px,0)}37.5%{transform:translate(99px,-70px)}62.5%{transform:translate(-99px,70px)}75%{transform:translate(-140px,0)}87.5%{transform:translate(-99px,-70px)}}
+.nav ul{list-style:none;padding:0;display:flex;gap:2px}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding-inline:10px;font:13px/1 var(--f-mono);letter-spacing:.04em;text-decoration:none;border-radius:4px}
+.nav a span{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;padding-bottom:3px;transition:background-size .3s}
+.nav a:hover span{background-size:100% 1px}
+.nav .wide{display:none}
+@media (min-width:760px){.nav .wide{display:list-item}.nav ul{gap:8px}}
+.nav li:last-child a{padding-right:0}
+/* Very narrow phones (320-374px): the logo and both links must fit without a sideways scroll. */
+@media (max-width:374px){.hdr__in{gap:8px}.mark{height:20px}.nav ul{gap:0}.nav a{padding-inline:7px;font-size:12px}}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;overflow:clip}
+.hero__in{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"eye" "wm" "hint" "lead" "ctas";padding-block:28px 52px}
+@media (min-width:900px){
+  .hero__in{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 1fr auto;grid-template-areas:"eye hint" "wm wm" "lead ctas";min-height:min(88svh,860px);padding-block:48px 60px;column-gap:48px}
+}
+.hero .eyebrow{grid-area:eye}
+.hint{grid-area:hint;font:13px/1.4 var(--f-mono);letter-spacing:.04em;color:var(--lichen);visibility:hidden;margin-top:14px}
+.kin .hint{visibility:visible}
+.hint .t{display:none}
+@media (hover:none){.hint .m{display:none}.hint .t{display:inline}}
+@media (min-width:900px){.hint{margin-top:0;justify-self:end}}
+.wm-h1{grid-area:wm;margin-top:clamp(22px,5vw,64px);font-weight:300;min-width:0}
+@media (min-width:900px){.wm-h1{align-self:center;margin-top:0}}
+.lead{grid-area:lead;margin-top:clamp(26px,3.4vw,44px);font-size:clamp(28px,3.9vw,56px);line-height:1.08;letter-spacing:-.022em;font-weight:400;font-variation-settings:"wdth" 100,"wght" 400;max-width:15em;text-wrap:balance}
+.ctas{grid-area:ctas;display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+@media (min-width:900px){.ctas{align-self:end;margin-top:0}}
+
+/* The fitted wordmark (shared by the hero and "Say hello.") */
+.wm{--ink:var(--graphite);--echo:var(--haze);display:block;position:relative;isolation:isolate;white-space:nowrap;color:var(--ink);font-weight:300;font-stretch:112%;letter-spacing:-.035em;line-height:.86;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;transform:translate3d(calc(var(--lx,0) * 1px),0,0)}
+.wm--hero{font-size:calc((100vw - 32px) / 4.33);line-height:1;touch-action:pan-y}
+.wm--hero .wl{display:block}
+.wm--hero .wl2{text-align:right}
+@media (min-width:600px){.wm--hero{font-size:calc((100vw - 64px) / 6.02);line-height:.86}.wm--hero .wl{display:inline}}
+@media (min-width:900px){.wm--hero{font-size:calc((min(100vw,1440px) - 96px) / 6.02)}}
+.l{display:inline-block;position:relative;font-variation-settings:"wdth" var(--w,112),"wght" var(--g,280)}
+.g{display:block;position:relative;z-index:2;text-align:center;transform:translate3d(0,calc(var(--y,0) * 1em),0) skewX(calc(var(--k,0) * 1deg))}
+.l::before,.l::after{content:attr(data-ch);position:absolute;left:0;top:0;width:100%;text-align:center;color:var(--echo);z-index:1;pointer-events:none;transform:translate3d(calc(var(--ax,0) * 1em),calc((var(--y,0) + var(--ay,0)) * 1em),0) skewX(calc(var(--k,0) * 1deg))}
+.l::after{opacity:.55;transform:translate3d(calc(var(--bx,0) * 1em),calc((var(--y,0) + var(--by,0)) * 1em),0) skewX(calc(var(--k,0) * 1deg))}
+.m2{--ax:-.05;--ay:-.07}
+.kin .wm .g,.kin .wm .l::before,.kin .wm .l::after{will-change:transform}
+/* FULL tier only: echoes are soft, like wings in a slow shutter. The logo's own echo on the second m stays crisp. */
+:root[data-tier="2"].kin .wm .l::before{filter:blur(.009em)}
+:root[data-tier="2"].kin .wm .l::after{filter:blur(.02em)}
+:root[data-tier="2"].kin .wm .m2::before{filter:none}
+:root[data-tier="2"].kin .be::before{filter:blur(.012em)}
+:root[data-tier="2"].kin .be::after{filter:blur(.024em)}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .sheen .g::after{content:attr(data-ch);position:absolute;left:0;right:0;top:-.22em;bottom:-.22em;padding-top:.22em;box-sizing:border-box;text-align:center;color:transparent;pointer-events:none;
+    --o:calc(var(--sp,0) * 2.4em);
+    background-image:repeating-linear-gradient(calc(var(--sa,90) * 1deg),var(--graphite) var(--o),var(--graphite) calc(var(--o) + 1em),var(--bronze) calc(var(--o) + 1.22em),var(--copper) calc(var(--o) + 1.42em),var(--rose) calc(var(--o) + 1.6em),var(--flash) calc(var(--o) + 1.7em),var(--rose) calc(var(--o) + 1.82em),var(--graphite) calc(var(--o) + 2.1em),var(--graphite) calc(var(--o) + 2.4em));
+    -webkit-background-clip:text;background-clip:text;opacity:var(--so,0)}
+  .kin .sheen .g::after{will-change:opacity}
+  .still .sheen .mm .g::after{background-image:linear-gradient(90deg,var(--bronze) 0%,var(--copper) 26%,var(--rose) 62%,#86344F 100%);background-size:200% 100%;opacity:.9}
+  .still .sheen .m2 .g::after{background-position:100% 0}
+  @media (prefers-reduced-motion:reduce){.sheen .mm .g::after{background-image:linear-gradient(90deg,var(--bronze) 0%,var(--copper) 26%,var(--rose) 62%,#86344F 100%);background-size:200% 100%;opacity:.9}.sheen .m2 .g::after{background-position:100% 0}}
+}
+.still .hint{display:none}
+@media (prefers-reduced-motion:reduce){.hint{display:none}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;border-radius:999px;font-size:16px;line-height:1;font-weight:560;font-variation-settings:"wdth" 100,"wght" 560;letter-spacing:-.005em;text-decoration:none;white-space:nowrap;border:1px solid transparent;box-sizing:border-box;transition:background-color .25s,border-color .25s,color .25s}
+.btn svg{width:14px;height:14px;flex:none}
+.btn--solid{background:var(--graphite);color:var(--fog)}
+.btn--solid:hover{background:#3C403A}
+.btn--line{border-color:var(--line-btn);color:var(--graphite)}
+.btn--line:hover{background:var(--mist);border-color:var(--lichen)}
+.dusk .btn--solid{background:var(--dusk-fog);color:var(--dusk)}
+.dusk .btn--solid:hover{background:#ECEDE8}
+
+/* What we make */
+.make{padding-block:clamp(64px,9vw,132px) clamp(72px,9vw,128px);overflow:hidden;overflow:clip}
+.rows{list-style:none;padding:0;margin-top:22px;border-top:1px solid var(--rule)}
+.row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px 32px;padding-block:clamp(16px,2.2vw,30px) clamp(20px,2.4vw,32px);border-bottom:1px solid var(--rule)}
+.big{position:relative;font-size:clamp(64px,16vw,220px);line-height:.9;letter-spacing:-.03em;font-weight:620;font-variation-settings:"wdth" var(--w,92),"wght" var(--g,620);color:var(--graphite);transform:translate3d(calc(var(--dx,0) * 1px),0,0);min-width:0}
+@supports (color:color-mix(in srgb,red 50%,blue)){.big{color:color-mix(in srgb,var(--graphite) calc(var(--fo,1) * 100%),var(--lichen))}}
+.big .bw{position:relative;z-index:1}
+.be{position:absolute;left:0;top:0;z-index:0;pointer-events:none}
+.be::before,.be::after{content:attr(data-ch);position:absolute;left:0;top:0;white-space:nowrap;color:var(--haze);transform:translate3d(calc(var(--ax,0) * 1em),calc(var(--ay,0) * 1em),0)}
+.be::after{opacity:.55;transform:translate3d(calc(var(--bx,0) * 1em),calc(var(--by,0) * 1em),0)}
+.row p{max-width:30ch;font-size:inherit}
+@media (min-width:900px){.row{grid-template-columns:minmax(0,1fr) minmax(0,18rem);align-items:last baseline}.big{font-size:min(13vw,200px)}}
+
+/* Toppleton: evening begins */
+.dusk{color:var(--dusk-fog)}
+.topple{background:var(--dusk-top);background:linear-gradient(var(--dusk-top),var(--dusk));padding-block:clamp(76px,10vw,150px);overflow:hidden;overflow:clip}
+.topple__in{display:grid;grid-template-columns:minmax(0,1fr);gap:44px}
+@media (min-width:860px){.topple__in{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:48px}}
+.topple__text{display:grid;gap:18px;justify-items:start;min-width:0}
+.topple__text .h2{margin-top:4px;margin-bottom:6px}
+.topple__text p:not(.eyebrow){max-width:34ch;color:var(--dusk-fog)}
+.topple__text p.soft{color:var(--dusk-lichen)}
+.play{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:14px}
+.url{display:inline-flex;align-items:center;gap:10px;font:13px/1.4 var(--f-mono);letter-spacing:.04em;color:var(--dusk-lichen)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bronze-light);flex:none}
+.tower{order:-1;display:flex;flex-direction:column;align-items:center;font-size:clamp(40px,6.4vw,88px);line-height:.79;font-weight:700;color:var(--dusk-fog);-webkit-user-select:none;user-select:none;touch-action:pan-y;position:relative;padding-block:4px;-webkit-tap-highlight-color:transparent}
+@media (min-width:860px){.tower{order:0}}
+.tower::after{content:"";display:block;width:2.6em;height:1px;margin-top:.14em;background:var(--dusk-rule)}
+.tl{display:block;font-variation-settings:"wdth" var(--tw,100),"wght" var(--tg,700);transform-origin:50% 90%;transform:translate3d(calc(var(--tx,0) * 1em),calc(var(--ty,0) * 1em),0) rotate(calc(var(--tr,0) * 1deg))}
+.kin .tl{will-change:transform}
+
+/* How we work */
+.work{background:var(--dusk);padding-block:clamp(72px,9vw,140px)}
+.statement{margin-top:24px;font-size:clamp(26px,3.6vw,56px);line-height:1.18;letter-spacing:-.015em;font-weight:380;font-variation-settings:"wdth" 100,"wght" 380;max-width:21em;color:var(--dusk-fog);text-wrap:pretty}
+.statement .w{display:inline-block;transform:translate3d(0,calc((1 - var(--r,1)) * 2px),0)}
+@supports (color:color-mix(in srgb,red 50%,blue)){.statement .w{color:color-mix(in srgb,var(--dusk-fog) calc(var(--r,1) * 100%),var(--dusk-lichen))}}
+.traits{list-style:none;padding:0;margin-top:clamp(56px,8vw,112px);display:grid;grid-template-columns:minmax(0,1fr);gap:36px 32px}
+@media (min-width:860px){.traits{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.trait{border-top:1px solid var(--dusk-rule);padding-top:20px;min-width:0}
+.trait h3{position:relative;font-size:clamp(44px,5.4vw,80px);line-height:1.02;letter-spacing:-.02em;font-weight:400;margin-bottom:10px;color:var(--dusk-fog)}
+.trait p{color:var(--dusk-lichen)}
+.t-precise h3{font-weight:200;font-stretch:62%;font-variation-settings:"wdth" 62,"wght" 200;letter-spacing:-.01em}
+.t-quick .tw{display:inline-block;position:relative;z-index:1;font-weight:470;font-variation-settings:"wdth" 96,"wght" 470;transform:skewX(-9deg)}
+.t-quick .tt{position:absolute;left:0;top:0;z-index:0;pointer-events:none;font-variation-settings:"wdth" 96,"wght" 470}
+.t-quick .tt::before,.t-quick .tt::after{content:attr(data-ch);position:absolute;left:0;top:0;white-space:nowrap;color:var(--dusk-haze);transform:translate3d(-.07em,0,0) skewX(-9deg)}
+.t-quick .tt::after{opacity:.5;transform:translate3d(-.15em,0,0) skewX(-9deg)}
+.t-steady h3{font-weight:640;font-stretch:125%;font-variation-settings:"wdth" 125,"wght" 640}
+@media (prefers-reduced-motion:no-preference){
+  .kin .t-precise.act h3{animation:precise 1.1s cubic-bezier(.2,.7,.1,1) 1}
+  .kin .t-quick.act .tw{animation:dart .7s cubic-bezier(.15,.8,.2,1) 1}
+  .kin .t-quick.act .tt::before{animation:trail1 .7s cubic-bezier(.15,.8,.2,1) 1}
+  .kin .t-quick.act .tt::after{animation:trail2 .7s cubic-bezier(.15,.8,.2,1) 1}
+  .kin .t-steady.act h3{animation:hover 2.6s ease-in-out 1}
+}
+@keyframes precise{0%{letter-spacing:.09em;font-variation-settings:"wdth" 82,"wght" 200}100%{letter-spacing:-.01em;font-variation-settings:"wdth" 62,"wght" 200}}
+@keyframes dart{0%{transform:translate3d(-.35em,0,0) skewX(-9deg)}100%{transform:translate3d(0,0,0) skewX(-9deg)}}
+@keyframes trail1{0%{transform:translate3d(-.55em,0,0) skewX(-9deg)}100%{transform:translate3d(-.07em,0,0) skewX(-9deg)}}
+@keyframes trail2{0%{transform:translate3d(-.8em,0,0) skewX(-9deg)}100%{transform:translate3d(-.15em,0,0) skewX(-9deg)}}
+@keyframes hover{0%,100%{transform:translate3d(0,0,0)}30%{transform:translate3d(0,-3px,0)}62%{transform:translate3d(0,1px,0)}82%{transform:translate3d(0,-1px,0)}}
+
+/* Contact */
+.contact{background:var(--dusk);background:linear-gradient(var(--dusk),var(--dusk-low));padding-block:clamp(72px,9vw,140px) clamp(56px,7vw,96px);overflow:hidden;overflow:clip}
+.say{font-weight:300}
+.wm--say{--ink:var(--dusk-fog);--echo:var(--dusk-haze);font-size:clamp(56px,12.5vw,184px);line-height:.92;touch-action:pan-y}
+.contact__body{display:grid;gap:22px;margin-top:clamp(24px,3vw,40px)}
+.contact__body > p{max-width:34ch;color:var(--dusk-lichen)}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px}
+.email{min-width:0;font-size:clamp(26px,4.6vw,64px);line-height:1.15;letter-spacing:-.02em;font-weight:360;font-variation-settings:"wdth" 100,"wght" 360;color:var(--dusk-fog);text-decoration:none;overflow-wrap:anywhere;padding-bottom:6px;
+  background:linear-gradient(var(--rose-light),var(--rose-light)) 0 100%/0 2px no-repeat,linear-gradient(var(--dusk-rule),var(--dusk-rule)) 0 100%/100% 1px no-repeat;transition:background-size .5s cubic-bezier(.2,.7,.2,1)}
+.email:hover,.email:focus-visible{background-size:100% 2px,100% 1px}
+.copy{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #686C63;background:transparent;color:var(--dusk-fog);font:13px/1 var(--f-mono);letter-spacing:.04em;cursor:pointer;transition:background-color .25s,border-color .25s}
+.copy:hover{background:var(--dusk-raise);border-color:var(--dusk-lichen)}
+
+/* Footer: the exposure closes into the logo */
+.ftr{background:var(--dusk-low);color:var(--dusk-lichen);padding-block:clamp(36px,5vw,72px) 22px}
+.fmark{display:block;width:100%;height:auto;overflow:visible}
+.fmark .mark-ink{fill:var(--dusk-fog)}
+.fmark .mark-echo{fill:var(--dusk-haze)}
+.fmark-echo use{fill:var(--dusk-haze);transform:translate(calc(var(--fe,0) * var(--dx) * 1px),calc(var(--fe,0) * var(--dy) * 1px))}
+.ftr__row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 28px;margin-top:clamp(20px,3vw,36px);padding-top:12px;border-top:1px solid var(--dusk-rule);font:12px/1.5 var(--f-mono);letter-spacing:.04em}
+.ftr__row p,.ftr address{font-style:normal;padding-block:12px}
+.ftr__links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0 20px}
+.ftr__links a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:var(--dusk-lichen)}
+.ftr__links a:hover{color:var(--dusk-fog);text-decoration:underline;text-decoration-color:var(--rose-light);text-underline-offset:4px}
+.ftr__legal{display:flex;flex-wrap:wrap;gap:0 28px}
+</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Crect width='1000' height='1000' fill='%23E2E3DE'/%3E%3Cg transform='translate(42 815) scale(1.06)'%3E%3Cpath d='M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z' fill='%23B5B8AF' transform='translate(-50 -70)'/%3E%3Cpath d='M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z' fill='%232B2E2A'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Web fonts load without blocking the first paint (a slow or blocked font CDN must never leave the page blank). The script switches media to "all". -->
+<link id="fcss" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Fragment+Mono&display=swap" media="print">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Fragment+Mono&display=swap"></noscript>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><path id="gl-b" d="M353 12Q297 12 252-9Q207-31 177-76H170L160 0H69V-723H181V-461H187Q205-487 231-504Q257-521 290-530Q323-538 360-538Q426-538 476-509Q525-479 553-419Q581-359 581-264Q581-169 553-108Q526-47 475-17Q424 12 353 12ZM324-84Q371-84 402-102Q434-120 450-158Q465-195 465-254V-271Q465-330 450-368Q435-405 403-424Q372-442 323-442Q290-442 264-432Q237-421 219-400Q200-379 190-346Q180-313 180-269V-256Q180-200 196-162Q212-124 244-104Q276-84 324-84Z"/><path id="gl-g" d="M165 186Q126 186 93 172Q59 158 39 129Q19 101 19 60Q19 17 44-11Q70-39 105-53Q79-66 65-88Q51-111 51-139Q51-176 78-201Q105-226 144-233Q107-256 87-290Q67-324 67-366Q67-421 94-459Q121-497 175-518Q230-538 309-538Q342-538 371-534Q400-530 425-522Q464-540 482-566Q501-592 504-614H613Q612-580 598-554Q584-527 559-509Q534-492 498-484Q524-462 538-432Q551-402 551-366Q551-313 525-275Q500-236 448-215Q397-194 320-194H220Q195-194 180-184Q165-174 165-154Q165-137 180-126Q194-114 220-114H469Q532-114 571-74Q609-34 609 27Q609 73 586 109Q562 145 522 165Q481 186 427 186ZM196 105H425Q445 105 461 97Q477 89 487 75Q496 60 496 43Q496 13 478-3Q460-19 433-19H198Q170-19 151-2Q132 15 132 43Q132 70 150 87Q168 105 196 105ZM309-274Q373-274 406-298Q439-321 439-366Q439-411 406-435Q373-458 309-458Q245-458 212-435Q179-411 179-366Q179-337 194-316Q208-295 237-285Q266-274 309-274Z"/><path id="gl-h" d="M69 0V-723H181V-459H188Q209-486 237-504Q264-521 297-530Q330-538 366-538Q423-538 464-519Q506-500 529-459Q551-418 551-349V0H439V-331Q439-363 431-384Q423-406 408-418Q393-431 371-436Q350-441 325-441Q286-441 253-424Q221-406 201-375Q181-343 181-300V0Z"/><path id="gl-i" d="M69-616V-723H181V-616ZM69 0V-526H181V0Z"/><path id="gl-l" d="M69 0V-723H181V0Z"/><path id="gl-m" d="M69 0V-526H160L169-447H177Q199-478 226-499Q253-519 286-528Q319-538 354-538Q411-538 451-517Q492-496 511-447H519Q540-478 568-498Q596-518 630-528Q664-538 700-538Q754-538 793-520Q833-501 854-461Q876-420 876-353V0H764V-332Q764-364 757-385Q749-407 735-419Q722-431 702-436Q683-441 661-441Q625-441 595-424Q565-406 547-374Q529-343 529-300V0H417V-332Q417-364 409-385Q402-407 388-419Q374-431 355-436Q336-441 314-441Q278-441 248-424Q217-406 199-374Q181-343 181-300V0Z"/><path id="gl-n" d="M69 0V-526H160L169-447H177Q199-478 229-499Q258-519 293-528Q328-538 366-538Q423-538 464-519Q506-500 529-459Q551-418 551-349V0H439V-331Q439-363 431-384Q423-406 408-418Q393-431 371-436Q350-441 325-441Q286-441 253-424Q221-406 201-374Q181-343 181-300V0Z"/><path id="gl-o" d="M317 12Q228 12 167-18Q106-48 75-109Q44-170 44-263Q44-357 75-418Q106-478 167-508Q228-538 317-538Q406-538 466-508Q527-478 558-418Q590-357 590-263Q590-170 558-109Q527-48 466-18Q406 12 317 12ZM317-79Q369-79 404-98Q439-117 456-156Q474-195 474-254V-272Q474-332 456-371Q439-409 404-428Q369-447 317-447Q265-447 230-428Q195-409 177-371Q160-332 160-272V-254Q160-195 177-156Q195-117 230-98Q265-79 317-79Z"/><path id="gl-t" d="M222 12Q175 12 146-5Q118-22 106-52Q94-82 94-122V-435H17V-526H96L118-675H205V-526H315V-435H205V-135Q205-107 216-93Q227-79 258-79H315V-4Q304 0 287 4Q271 8 254 10Q237 12 222 12Z"/><path id="gl-u" d="M250 12Q164 12 114-32Q64-75 64-177V-526H176V-196Q176-163 184-142Q192-121 207-108Q223-96 244-90Q265-85 290-85Q329-85 362-103Q394-120 414-152Q434-184 434-226V-526H546V0H455L446-79H439Q416-48 387-28Q358-8 323 2Q288 12 250 12Z"/></defs></svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr" id="hdr">
+  <div class="wrap hdr__in">
+    <a class="logo" href="#top" aria-label="Hummingbolt, back to top"><svg class="mark" viewBox="40 -745 6140 945" role="img" aria-label="Hummingbolt"><use class="mark-echo" href="#gl-m" x="2031" y="-70"/><g class="mark-ink"><use href="#gl-h" x="0"/><use href="#gl-u" x="586"/><use href="#gl-m" x="1171"/><use href="#gl-m" x="2081"/><use href="#gl-i" x="2991"/><use href="#gl-n" x="3210"/><use href="#gl-g" x="3796"/><use href="#gl-b" x="4387"/><use href="#gl-o" x="4982"/><use href="#gl-l" x="5585"/><use href="#gl-t" x="5804"/></g></svg></a>
+    <nav class="nav" aria-label="Primary">
+      <ul>
+        <li class="wide"><a href="#make"><span>What we make</span></a></li>
+        <li><a href="#toppleton"><span>Toppleton</span></a></li>
+        <li class="wide"><a href="#studio"><span>Studio</span></a></li>
+        <li><a href="#contact"><span>Contact</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <section class="hero" id="hero" aria-labelledby="hero-title">
+    <div class="wrap hero__in">
+      <p class="eyebrow">Software studio · San Francisco Bay Area</p>
+      <p class="hint" aria-hidden="true"><span class="m">Move across the name.</span><span class="t">Drag across the name.</span></p>
+      <h1 class="wm-h1" id="hero-title"><span class="sr">Hummingbolt, a software studio</span><span class="wm wm--hero sheen" id="wm" aria-hidden="true"><span class="wl wl1"><span class="l" data-ch="h"><span class="g" data-ch="h">h</span></span><span class="l" data-ch="u"><span class="g" data-ch="u">u</span></span><span class="l mm" data-ch="m"><span class="g" data-ch="m">m</span></span><span class="l mm m2" data-ch="m"><span class="g" data-ch="m">m</span></span><span class="l" data-ch="i"><span class="g" data-ch="i">i</span></span><span class="l" data-ch="n"><span class="g" data-ch="n">n</span></span><span class="l" data-ch="g"><span class="g" data-ch="g">g</span></span></span><span class="wl wl2"><span class="l" data-ch="b"><span class="g" data-ch="b">b</span></span><span class="l" data-ch="o"><span class="g" data-ch="o">o</span></span><span class="l" data-ch="l"><span class="g" data-ch="l">l</span></span><span class="l" data-ch="t"><span class="g" data-ch="t">t</span></span></span></span></h1>
+      <p class="lead">We make mobile and web apps, games, and AI.</p>
+      <div class="ctas">
+        <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="sr"> (opens in a new tab)</span><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 3h7v7M11 3 3 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <a class="btn btn--line" href="#contact">Say hello</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="make" id="make" aria-labelledby="make-h">
+    <div class="wrap">
+      <h2 class="eyebrow" id="make-h">What we make</h2>
+      <ul class="rows">
+        <li class="row"><h3 class="big"><span class="bw">Apps</span><span class="be" aria-hidden="true" data-ch="Apps"></span></h3><p>Mobile and web apps. Clear, quick and easy to use.</p></li>
+        <li class="row"><h3 class="big"><span class="bw">Games</span><span class="be" aria-hidden="true" data-ch="Games"></span></h3><p>Our first is Toppleton, a stacking game for all ages.</p></li>
+        <li class="row"><h3 class="big"><span class="bw">AI</span><span class="be" aria-hidden="true" data-ch="AI"></span></h3><p>AI applications, models and agents.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="topple dusk" id="toppleton" aria-labelledby="top-h">
+    <div class="wrap topple__in">
+      <div class="topple__text">
+        <p class="eyebrow">Our first game</p>
+        <h2 class="h2" id="top-h">Toppleton</h2>
+        <p>A stacking game for all ages, children included.</p>
+        <p class="soft">Free to play on the web. Versions for phones and tablets are coming later.</p>
+        <div class="play">
+          <a class="btn btn--solid" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="sr"> (opens in a new tab)</span><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 3h7v7M11 3 3 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+          <span class="url"><span class="dot" aria-hidden="true"></span>play.toppleton.app</span>
+        </div>
+      </div>
+      <div class="tower" id="tower" aria-hidden="true"><span class="tl" style="--tw:62;--tg:520">T</span><span class="tl" style="--tw:70;--tg:550">O</span><span class="tl" style="--tw:78;--tg:580">P</span><span class="tl" style="--tw:86;--tg:610">P</span><span class="tl" style="--tw:94;--tg:640">L</span><span class="tl" style="--tw:102;--tg:670">E</span><span class="tl" style="--tw:110;--tg:700">T</span><span class="tl" style="--tw:118;--tg:740">O</span><span class="tl" style="--tw:125;--tg:780">N</span></div>
+    </div>
+  </section>
+
+  <section class="work dusk" id="studio" aria-labelledby="work-h">
+    <div class="wrap">
+      <h2 class="eyebrow" id="work-h">How we work</h2>
+      <p class="statement" id="statement">We are a small studio. We work on a few things at a time, and we make them with care. We keep them light, quick and steady. Then we keep making them better.</p>
+      <ul class="traits">
+        <li class="trait t-precise"><h3>Precise</h3><p>Small details, done right.</p></li>
+        <li class="trait t-quick"><h3><span class="tw">Quick</span><span class="tt" aria-hidden="true" data-ch="Quick"></span></h3><p>Short loops. Build, test, improve.</p></li>
+        <li class="trait t-steady"><h3>Steady</h3><p>Calm, reliable software.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="contact dusk" id="contact" aria-labelledby="say-h">
+    <div class="wrap">
+      <h2 class="say" id="say-h"><span class="sr">Say hello.</span><span class="wm wm--say" id="say" aria-hidden="true"><span class="wl"><span class="l" data-ch="S"><span class="g" data-ch="S">S</span></span><span class="l" data-ch="a"><span class="g" data-ch="a">a</span></span><span class="l" data-ch="y"><span class="g" data-ch="y">y</span></span></span> <span class="wl"><span class="l" data-ch="h"><span class="g" data-ch="h">h</span></span><span class="l" data-ch="e"><span class="g" data-ch="e">e</span></span><span class="l" data-ch="l"><span class="g" data-ch="l">l</span></span><span class="l" data-ch="l"><span class="g" data-ch="l">l</span></span><span class="l" data-ch="o"><span class="g" data-ch="o">o</span></span><span class="l" data-ch="."><span class="g" data-ch=".">.</span></span></span></span></h2>
+      <div class="contact__body">
+        <p>Questions, ideas or feedback on Toppleton. Write to us.</p>
+        <div class="mail">
+          <a class="email" id="email" href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a>
+          <button class="copy" id="copy-email" type="button" hidden>Copy email</button>
+          <span class="sr" id="copy-status" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr dusk" id="ftr">
+  <div class="wrap">
+    <svg class="fmark" viewBox="40 -745 6140 945" role="img" aria-label="Hummingbolt"><g class="fmark-echo"><use href="#gl-h" x="0" style="--dx:38;--dy:16"/><use href="#gl-u" x="586" style="--dx:70;--dy:16"/><use href="#gl-m" x="1171" style="--dx:80;--dy:-24"/><use href="#gl-m" x="2081" style="--dx:64;--dy:-56"/><use href="#gl-i" x="2991" style="--dx:28;--dy:-44"/><use href="#gl-n" x="3210" style="--dx:-17;--dy:-1"/><use href="#gl-g" x="3796" style="--dx:-57;--dy:22"/><use href="#gl-b" x="4387" style="--dx:-78;--dy:-1"/><use href="#gl-o" x="4982" style="--dx:-75;--dy:-44"/><use href="#gl-l" x="5585" style="--dx:-48;--dy:-56"/><use href="#gl-t" x="5804" style="--dx:-6;--dy:-24"/></g><use class="mark-echo" href="#gl-m" x="2031" y="-70"/><g class="mark-ink"><use href="#gl-h" x="0"/><use href="#gl-u" x="586"/><use href="#gl-m" x="1171"/><use href="#gl-m" x="2081"/><use href="#gl-i" x="2991"/><use href="#gl-n" x="3210"/><use href="#gl-g" x="3796"/><use href="#gl-b" x="4387"/><use href="#gl-o" x="4982"/><use href="#gl-l" x="5585"/><use href="#gl-t" x="5804"/></g></svg>
+    <div class="ftr__row">
+      <div class="ftr__legal">
+        <p>© 2026 Hummingbolt LLC</p>
+        <address>2108 N St #18140, Sacramento, CA 95816</address>
+      </div>
+      <ul class="ftr__links">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Legal notice</a></li>
+        <li><a href="#top">Back to top</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+// Long Exposure: one rAF ticker, spring-driven type, no WebGL, no third-party JS.
+// The page is complete without this script. Everything here only adds motion on top.
+const D = document, R = D.documentElement, W = window, M = Math, NV = navigator;
+const mq = q => !!(W.matchMedia && W.matchMedia(q).matches);
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const TAU = M.PI * 2, DEG = 180 / M.PI, NONE = -2147483647, now = () => performance.now();
+const HASH = location.hash;
+
+// Web fonts: the stylesheet is linked with media="print" so it never blocks the first paint. Switch it on here.
+// fontsIn settles when the faces the wordmark is measured with are loaded (or failed); boot caps the wait at 1.5 s.
+const fontsIn = new Promise(res => {
+  const l = D.getElementById('fcss');
+  if (!l) { res(); return; }
+  const on = () => { l.media = 'all'; res(); };
+  if (l.sheet) on();
+  else { l.addEventListener('load', on, { once: true }); l.addEventListener('error', () => res(), { once: true }); }
+}).then(() => {
+  const F = D.fonts;
+  if (!F || !F.load) return 0;
+  return Promise.all([F.load('300 100px Archivo', 'hummingbolt'), F.load('13px "Fragment Mono"', 'Move')]).then(() => F.ready, () => F.ready);
+}).catch(() => 0);
+const REDUCED = mq('(prefers-reduced-motion: reduce)');
+const FINE = mq('(hover: hover) and (pointer: fine)');
+const SMALL = mq('(max-width: 700px)');
+const CORES = NV.hardwareConcurrency || 4, MEM = NV.deviceMemory || 8, SAVE = !!(NV.connection && NV.connection.saveData);
+
+// Tiers: 2 FULL, 1 LITE, 0 STATIC. Chosen once, only ever downgraded.
+let tier = (REDUCED || /^#(static|still|nowebgl)$/.test(HASH)) ? 0
+  : (FINE && !SMALL && innerWidth > 900 && CORES > 4 && MEM > 4 && !SAVE) ? 2 : 1;
+if (tier && HASH === '#lite') tier = 1;
+if (tier && HASH === '#full') tier = 2;
+R.dataset.tier = tier;
+if (!tier) R.classList.add('still');
+
+// Quantised style writer: skips unchanged values. mul is 1/step.
+function wr(el, C, i, name, val, mul) {
+  const v = M.round(val * mul);
+  if (C[i] === v) return;
+  C[i] = v;
+  el.style.setProperty(name, mul < 1 ? v * M.round(1 / mul) : v / mul);
+}
+
+// ---------- UI that works in every tier ----------
+(function ui() {
+  const btn = D.getElementById('copy-email'), mail = D.getElementById('email'), st = D.getElementById('copy-status');
+  if (!btn || !mail) return;
+  if (!NV.clipboard || !NV.clipboard.writeText) return; // the button stays hidden
+  btn.hidden = false;
+  let tm = 0;
+  const say = (label, msg) => {
+    btn.textContent = label; st.textContent = msg; clearTimeout(tm);
+    tm = setTimeout(() => { btn.textContent = 'Copy email'; st.textContent = ''; }, 2400);
+  };
+  btn.addEventListener('click', () => {
+    let p;
+    try { p = NV.clipboard.writeText(mail.textContent.trim()); } catch (e) { p = Promise.reject(e); }
+    Promise.resolve(p).then(() => say('Copied', 'Email address copied.'), () => {
+      try { const r = D.createRange(); r.selectNodeContents(mail); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) { /* ignore */ }
+      say('Selected', 'Email address selected. Copy it with your keyboard.');
+    });
+  });
+})();
+
+// Header tone for the static tier (no hide/show, no motion).
+function staticHeader() {
+  let eve = 1e9, dusk = false;
+  const m = () => { const e = D.getElementById('toppleton'); if (e) eve = e.getBoundingClientRect().top + scrollY; t(); };
+  const t = () => { const d = scrollY + 64 > eve; if (d !== dusk) { dusk = d; R.classList.toggle('hdr-dusk', d); } };
+  addEventListener('scroll', t, { passive: true });
+  addEventListener('resize', m, { passive: true });
+  addEventListener('load', m);
+  m();
+}
+if (!tier) staticHeader();
+
+// ---------- Core: ticker, visibility, watchdog ----------
+const actors = [];
+let ready = false, raf = 0, last = 0, fresh = true, sy = scrollY, psy = sy, vy = 0, vh = innerHeight, vw = innerWidth;
+const fbuf = new Float32Array(60), fsrt = new Float32Array(60);
+let fi = 0, fbad = 0, fwarm = true;
+const io = ('IntersectionObserver' in W) ? new IntersectionObserver(es => {
+  for (const e of es) {
+    const a = e.target.__actor; if (!a) continue;
+    const was = a.vis; a.vis = e.isIntersecting;
+    if (a.vis && !was) { if (a.enter) a.enter(); wake(a); }
+    if (!a.vis && was && a.leave) a.leave();
+  }
+}, { rootMargin: '12% 0px' }) : null;
+
+function add(a, el) {
+  a.awake = false; a.vis = !io || !el; a.dead = false;
+  actors.push(a);
+  if (io && el) { el.__actor = a; io.observe(el); }
+  return a;
+}
+function wake(a) {
+  if (!tier || !ready || a.dead) return;
+  a.awake = true;
+  if (!raf && !D.hidden) { fresh = true; raf = requestAnimationFrame(loop); }
+}
+function kill(a, e) {
+  a.dead = true; a.awake = false;
+  try { if (a.reset) a.reset(); } catch (_) { /* ignore */ }
+  console.warn('[long-exposure] actor stopped:', a.name, e && e.message);
+}
+function loop(t) {
+  raf = 0;
+  const dt = fresh ? 16.7 : M.min(t - last, 100);
+  if (fresh) { psy = sy; fresh = false; }
+  last = t;
+  const s = M.min(dt, 50) / 1000;
+  vy += ((sy - psy) / s - vy) * 0.25; psy = sy;
+  if (M.abs(vy) < 0.5) vy = 0;
+  let any = false;
+  for (let i = 0; i < actors.length; i++) {
+    const a = actors[i];
+    if (!a.awake || !a.vis || a.dead) continue;
+    try { a.awake = !!a.tick(s, t); } catch (e) { kill(a, e); }
+    if (a.awake) any = true;
+  }
+  dog(dt);
+  if (any && tier) raf = requestAnimationFrame(loop);
+}
+// Watchdog over windows of 60 active frames (the first window, during boot, is skipped).
+// FULL drops to LITE when the mean is above 22 ms. LITE drops to STATIC only when the median is above
+// 36 ms in two windows running, so a 30 fps low-power or throttled display is not mistaken for jank.
+function dog(dt) {
+  fbuf[fi++] = dt;
+  if (fi < 60) return;
+  fi = 0;
+  if (fwarm) { fwarm = false; return; }
+  let m = 0; for (let i = 0; i < 60; i++) m += fbuf[i];
+  m /= 60;
+  fsrt.set(fbuf); fsrt.sort();
+  const med = (fsrt[29] + fsrt[30]) / 2;
+  if (tier === 2 && m > 22) { setTier(1); fbad = 0; }
+  else if (tier === 1 && med > 36) { if (++fbad >= 2) setTier(0); }
+  else fbad = 0;
+}
+function setTier(n) {
+  tier = n; R.dataset.tier = n;
+  if (n) return;
+  for (const a of actors) { try { if (a.reset) a.reset(); } catch (_) { /* ignore */ } a.dead = true; a.awake = false; }
+  cancelAnimationFrame(raf); raf = 0;
+  R.classList.remove('kin'); R.classList.add('still');
+  staticHeader();
+}
+let mraf = 0;
+function remeasure() {
+  if (mraf || !tier || !ready) return; // nothing is measured before boot: an early resize must not lock slots to a fallback font
+  mraf = requestAnimationFrame(() => {
+    mraf = 0; vh = innerHeight; vw = innerWidth; sy = scrollY;
+    for (const a of actors) { if (a.dead || !a.measure) continue; try { a.measure(); } catch (e) { kill(a, e); } }
+    for (const a of actors) wake(a);
+  });
+}
+
+// ---------- Type engine: letters as a hovering bird ----------
+// Each letter: proximity f, arrival wave ar, tap tighten ti, skew sk, echo ec, sheen sh (all springs).
+function flutter(root, o) {
+  const L = Array.from(root.querySelectorAll('.l')), n = L.length, lines = root.querySelectorAll('.wl');
+  const F = () => new Float32Array(n);
+  const cx = F(), cy = F(), f = F(), fv = F(), ar = F(), av = F(), ti = F(), tv = F(), sk = F(), kv = F(), ec = F(), ev = F(), sh = F(), hv = F();
+  const kicked = new Uint8Array(n), m2 = L.map(l => l.classList.contains('m2'));
+  const NC = 11, C = new Int32Array(n * NC).fill(NONE), CR = new Int32Array(1).fill(NONE);
+  const sheen = !!o.sheen;
+  let fs = 100, bw = 1, bh = 1, ox = 0, oy = 0, hTop = 0, hH = 1;
+  let bx = 0, by = 0, bvx = 0, bvy = 0, tx = 0, ty = 0, inf = 0, infv = 0, infT = 0, svx = 0, svy = 0, snap = false;
+  let pcx = 0, pcy = 0, ptr = 0, dX = 0, dY = 0, dT = 0, lastAct = -1e9, lastIn = -1e9, rel = 0, lastTap = -1e9;
+  let apOn = false, apT0 = 0, apDur = 9000, arS = -1, arDur = 1200, stag = 35, arK = 14;
+  let lift = 0, liftX = 0, lastDraw = 0, quiet = false, left = false;
+  const a = { name: o.name, scroll: !!o.lift };
+
+  let lockW = -1;
+  a.measure = () => {
+    const hw = root.parentElement.clientWidth;
+    if (M.abs(hw - lockW) > 0.5) {
+      // Full pass: back to rest, fit the name to its box, lock each letter's slot width.
+      for (const l of L) l.style.cssText = '';
+      C.fill(NONE);
+      if (o.fit) {
+        const cur = parseFloat(getComputedStyle(root).fontSize) || 100;
+        const two = lines.length > 1 && getComputedStyle(lines[0]).display === 'block';
+        const lim = two ? lines[0].querySelectorAll('.l').length : n;
+        let w = 0;
+        for (let i = 0; i < lim; i++) w += L[i].getBoundingClientRect().width;
+        if (w > 0) root.style.fontSize = clamp(cur * hw / w, 36, 300).toFixed(2) + 'px';
+      }
+      const ws = L.map(l => l.getBoundingClientRect().width);
+      for (let i = 0; i < n; i++) L[i].style.width = ws[i].toFixed(2) + 'px';
+      lockW = hw;
+    }
+    // Positions only: slots never transform, so these reads are stable mid-animation.
+    fs = parseFloat(getComputedStyle(root).fontSize) || 100;
+    const rr = root.getBoundingClientRect(), applied = CR[0] === NONE ? 0 : CR[0] / 2;
+    let maxR = 0;
+    for (let i = 0; i < n; i++) {
+      const r = L[i].getBoundingClientRect();
+      cx[i] = r.left + r.width / 2 - rr.left; cy[i] = r.top + r.height * 0.56 - rr.top;
+      if (r.right - rr.left > maxR) maxR = r.right - rr.left;
+    }
+    bw = maxR || rr.width; bh = rr.height || 1;
+    ox = rr.left + scrollX - applied; oy = rr.top + scrollY;
+    if (o.heroEl) { const hr = o.heroEl.getBoundingClientRect(); hTop = hr.top + scrollY; hH = hr.height || 1; }
+  };
+  a.refit = () => { lockW = -1; };
+  const PROPS = ['--w', '--g', '--y', '--k', '--ax', '--ay', '--bx', '--by', '--so', '--sa', '--sp'];
+  a.reset = () => { for (const l of L) for (const p of PROPS) l.style.removeProperty(p); root.style.removeProperty('--lx'); };
+
+  const local = () => { tx = pcx + scrollX - ox - liftX; ty = pcy + sy - oy; };
+  function tap() {
+    const t = now(); if (t - lastTap < 600) return;
+    local();
+    let bi = -1, bd = 1e9;
+    for (let i = 0; i < n; i++) { const d = M.hypot(tx - cx[i], (ty - cy[i]) * 1.2); if (d < bd) { bd = d; bi = i; } }
+    if (bi < 0 || bd > fs * 0.9) return;
+    lastTap = t; tv[bi] += 15; if (sheen) hv[bi] += 16; wake(a);
+  }
+  const he = o.hoverEl || root;
+  if (FINE) {
+    he.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      pcx = e.clientX; pcy = e.clientY; if (inf < 0.02 && !apOn) snap = true;
+      ptr = 1; infT = 1; apOn = false; quiet = false; lastAct = lastIn = now(); wake(a);
+    }, { passive: true });
+    he.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { ptr = 0; infT = 0; wake(a); } }, { passive: true });
+    root.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') { pcx = e.clientX; pcy = e.clientY; tap(); } }, { passive: true });
+  }
+  root.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    pcx = dX = e.clientX; pcy = dY = e.clientY; dT = now();
+    if (inf < 0.05) snap = !apOn;
+    ptr = 2; infT = 1; apOn = false; quiet = false; rel = 0; lastAct = lastIn = dT; wake(a);
+  }, { passive: true });
+  root.addEventListener('pointermove', e => { if (ptr === 2) { pcx = e.clientX; pcy = e.clientY; lastAct = now(); wake(a); } }, { passive: true });
+  const up = e => {
+    if (ptr !== 2) return;
+    const t = now();
+    if (e.type === 'pointerup' && M.hypot(e.clientX - dX, e.clientY - dY) < 10 && t - dT < 350) tap();
+    ptr = 3; rel = t + (e.type === 'pointerup' ? 450 : 0); lastAct = t; wake(a);
+  };
+  root.addEventListener('pointerup', up, { passive: true });
+  root.addEventListener('pointercancel', up, { passive: true });
+
+  a.arrive = () => {
+    arS = now(); arDur = FINE ? 1200 : 700; stag = FINE ? 35 : 20; arK = FINE ? 14 : 12;
+    kicked.fill(0); lastIn = arS; wake(a);
+  };
+  a.autopilot = dur => {
+    if (!tier || apOn || ptr === 2) return;
+    apOn = true; quiet = false; apT0 = now(); apDur = dur || (FINE ? 6500 : 9000); infT = 1; ptr = 0;
+    if (inf < 0.05) { bx = bw * 1.3; by = bh * 0.5; bvx = bvy = 0; }
+    wake(a);
+  };
+  a.enter = () => { if (left && !FINE && o.apOnEnter) a.autopilot(); if (o.apFirst && !FINE && !left) a.autopilot(); left = false; };
+  a.leave = () => { left = true; apOn = false; infT = 0; ptr = 0; };
+
+  const hold = o.hold || [0, 1];
+  function apPos(t) {
+    const u = (t - apT0) / apDur;
+    if (u < 1) {
+      const th = TAU * u;
+      tx = bw * (0.5 + 0.56 * M.cos(th)); ty = bh * (0.5 + 0.36 * M.sin(2 * th));
+      return true;
+    }
+    const k = t - apT0 - apDur;
+    if (k < 1900) {
+      const e = sstep(0, 900, k), hx = (cx[hold[0]] + cx[hold[1]]) / 2, hy = (cy[hold[0]] + cy[hold[1]]) / 2;
+      tx = bw * 1.06 + (hx - bw * 1.06) * e + 1.5 * M.sin(t * 0.004);
+      ty = bh * 0.5 + (hy - bh * 0.5) * e + 1.5 * M.cos(t * 0.003);
+      return true;
+    }
+    return false;
+  }
+
+  a.tick = (s, t) => {
+    if (quiet && t - lastDraw < 41) return true; // idle drift runs at 24 fps
+    const gap = t - lastDraw, sd = (lastDraw && gap < 100) ? M.min(gap / 1000, 0.05) : s;
+    lastDraw = t;
+    if (o.lift) { lift = clamp(sy / (hTop + hH), 0, 1); liftX = -lift * (FINE ? 0.03 : 0.015) * M.min(vw, 1440); }
+    if (apOn) { if (apPos(t)) infT = 1; else { apOn = false; infT = 0; } }
+    else if (ptr) { local(); if (ptr === 3 && t >= rel) { infT = 0; ptr = 0; } }
+    if (snap) { bx = tx; by = ty; bvx = bvy = 0; snap = false; }
+    const steps = sd > 0.018 ? 2 : 1, h = sd / steps;
+    for (let k = 0; k < steps; k++) {
+      bvx += (-260 * (bx - tx) - 30 * bvx) * h; bx += bvx * h;
+      bvy += (-260 * (by - ty) - 30 * bvy) * h; by += bvy * h;
+      infv += (-60 * (inf - infT) - 15.5 * infv) * h; inf += infv * h;
+    }
+    svx += (bvx - svx) * 0.2; svy += (bvy - svy) * 0.2;
+    const spd = M.hypot(svx, svy), vn = M.min(spd / 1600, 1), dxn = spd > 1 ? svx / spd : 0, dyn = spd > 1 ? svy / spd : 0;
+    const act = (t - lastAct < 2500 || apOn) ? 1 : 0, infc = clamp(inf, 0, 1);
+
+    // Light source for the gorget sheen
+    let Lx = 0, Ly = 0, Sg = 0, Rs = fs * 0.95, drift = false;
+    if (sheen) {
+      if (infc > 0.01 || infT > 0) { const p = t * 0.001 * TAU * 0.35; Lx = bx + fs * 0.24 * M.cos(p); Ly = by + fs * 0.16 * M.sin(2 * p); Sg = 0.8 * infc; }
+      if (arS >= 0) {
+        const u = (t - arS) / arDur;
+        if (u >= 0 && u <= 1) { const g = 0.82 * M.sin(M.PI * u); if (g > Sg) { Lx = bw * (-0.1 + 1.2 * u); Ly = bh * 0.42; Sg = g; Rs = fs * 1.15; } }
+      }
+      if (!FINE && lift > 0 && lift < 0.6 && Sg < 0.05) { const u = lift / 0.6; Lx = bw * (1.05 - 1.1 * u); Ly = bh * 0.5; Sg = 0.55 * M.sin(M.PI * u); Rs = fs * 1.2; }
+      if (tier === 2 && FINE && Sg < 0.05 && t - lastIn < 20000) {
+        const u = t / 14000 * TAU; Lx = bw * (0.5 + 0.5 * M.sin(u)); Ly = bh * (0.5 + 0.45 * M.sin(2 * u)); Sg = 0.15; Rs = fs * 1.1; drift = true;
+      }
+      if (FINE) Sg *= 1 - lift;
+    }
+    const arrOn = arS >= 0 && t < arS + n * stag + 1400;
+    if (arS >= 0) for (let i = 0; i < n; i++) if (!kicked[i] && t >= arS + i * stag) { av[i] -= arK; kicked[i] = 1; }
+    if (arS >= 0 && !arrOn) arS = -1;
+
+    const R0 = clamp(fs * 1.35, 110, 280), R2 = R0 * R0, es = tier === 1 ? 0.5 : 1, phB = t * 0.001 * TAU * 0.8;
+    let moving = false;
+    for (let i = 0; i < n; i++) {
+      const dx = bx - cx[i], dy = (by - cy[i]) * 1.15, d2 = dx * dx + dy * dy;
+      let ft = 0;
+      if (d2 < R2 && infc > 0) { const q = 1 - M.sqrt(d2) / R0; ft = q * q * (3 - 2 * q) * infc; }
+      let stT = 0, dxL = 0, dyL = 0, dl = 0;
+      if (sheen) { dxL = Lx - cx[i]; dyL = Ly - cy[i]; dl = M.hypot(dxL, dyL); stT = Sg * M.exp(-(dl * dl) / (Rs * Rs)); }
+      const fc = clamp(f[i], 0, 1), kt = -4 * vn * dxn * fc, et = fc * act + vn * fc * 0.6;
+      for (let k = 0; k < steps; k++) {
+        fv[i] += (-170 * (f[i] - ft) - 18.3 * fv[i]) * h; f[i] += fv[i] * h;
+        av[i] += (-150 * ar[i] - 13.5 * av[i]) * h; ar[i] += av[i] * h;
+        tv[i] += (-210 * ti[i] - 17.4 * tv[i]) * h; ti[i] += tv[i] * h;
+        kv[i] += (-220 * (sk[i] - kt) - 23.7 * kv[i]) * h; sk[i] += kv[i] * h;
+        ev[i] += (-90 * (ec[i] - et) - 15 * ev[i]) * h; ec[i] += ev[i] * h;
+        if (sheen) { hv[i] += (-120 * (sh[i] - stT) - 19.7 * hv[i]) * h; sh[i] += hv[i] * h; }
+      }
+      const F1 = f[i];
+      let w = 112 - 28 * F1 + ar[i] * 60 - ti[i] * 40;
+      let g = 280 + 280 * F1 + ar[i] * 100 + ti[i] * 400;
+      if (lift > 0) g += (205 - g) * lift * 0.85;
+      w = clamp(w, 62, 125); g = clamp(g, 100, 900);
+      const y = -lift * 0.07 * (1 + 0.6 * M.sin(TAU * i / n + 0.6));
+      const amp = (0.05 * clamp(ec[i], 0, 1.4) + 0.12 * M.max(0, -ar[i]) + 0.04 * lift) * es;
+      const ph = phB + i * 0.9, so = M.sin(ph), oy2 = 0.5 * M.sin(2 * ph);
+      const tr = M.min(0.12, 0.14 * vn * fc) * es;
+      let ax = amp * so - dxn * tr, ay = amp * oy2 - dyn * tr;
+      const bx2 = -amp * so - dxn * tr * 2, by2 = amp * oy2 - dyn * tr * 2;
+      if (m2[i]) { ax -= 0.05; ay -= 0.07; }
+      const el = L[i], b = i * NC;
+      wr(el, C, b, '--w', w, 1); wr(el, C, b + 1, '--g', g, 0.1); wr(el, C, b + 2, '--y', y, 500); wr(el, C, b + 3, '--k', sk[i], 10);
+      wr(el, C, b + 4, '--ax', ax, 500); wr(el, C, b + 5, '--ay', ay, 500); wr(el, C, b + 6, '--bx', bx2, 500); wr(el, C, b + 7, '--by', by2, 500);
+      if (sheen) {
+        const sv = clamp(sh[i], 0, 1) * 0.95;
+        wr(el, C, b + 8, '--so', sv, 50);
+        if (sv > 0.01) {
+          wr(el, C, b + 9, '--sa', M.atan2(dxL, -dyL) * DEG, 1);
+          let p = 2 * M.atan2(dyL, dxL) / TAU + dl / (1.6 * fs) - t * 0.00008; p -= M.floor(p);
+          wr(el, C, b + 10, '--sp', p, 100);
+        }
+        if (M.abs(hv[i]) > 1e-3 || M.abs(sh[i] - stT) > 1e-3) moving = true;
+      }
+      if (M.abs(fv[i]) > 1e-3 || M.abs(f[i] - ft) > 1e-3 || M.abs(av[i]) > 1e-3 || M.abs(ar[i]) > 1e-3 || M.abs(tv[i]) > 1e-3 || M.abs(ti[i]) > 1e-3 ||
+        M.abs(kv[i]) > 1e-3 || M.abs(sk[i] - kt) > 1e-3 || M.abs(ev[i]) > 1e-3 || M.abs(ec[i] - et) > 1e-3 || amp > 6e-4) moving = true;
+    }
+    wr(root, CR, 0, '--lx', liftX, 2);
+    if (M.abs(infv) > 1e-3 || M.abs(inf - infT) > 1e-3 || M.abs(bvx) > 0.05 || M.abs(bvy) > 0.05) moving = true;
+    quiet = drift && !moving && !apOn && !arrOn;
+    return moving || apOn || arrOn || drift || ptr === 3 || t - lastAct < 1500;
+  };
+  return a;
+}
+
+// ---------- "What we make": focus pull ----------
+function focusRows() {
+  const rows = Array.from(D.querySelectorAll('.row')), n = rows.length;
+  const H = rows.map(r => r.querySelector('.big')), cyD = new Float32Array(n);
+  const ev = new Float32Array(n), evv = new Float32Array(n), ho = new Float32Array(n), hov = new Float32Array(n);
+  const C = new Int32Array(n * 8).fill(NONE);
+  let hovered = -1, lastMove = 0;
+  const a = { name: 'rows', scroll: true };
+  a.measure = () => { for (let i = 0; i < n; i++) { const b = rows[i].getBoundingClientRect(); cyD[i] = b.top + scrollY + b.height / 2; } C.fill(NONE); };
+  a.reset = () => H.forEach(h => ['--w', '--g', '--fo', '--dx', '--ax', '--ay', '--bx', '--by'].forEach(p => h.style.removeProperty(p)));
+  if (FINE) rows.forEach((r, i) => {
+    r.addEventListener('pointermove', () => { hovered = i; lastMove = now(); wake(a); }, { passive: true });
+    r.addEventListener('pointerleave', () => { if (hovered === i) hovered = -1; wake(a); }, { passive: true });
+  });
+  a.tick = (s, t) => {
+    let moving = false;
+    const vt = clamp(vy / 2600, -1, 1), es = tier === 1 ? 0.5 : 1, ph = t * 0.001 * TAU * 0.8;
+    for (let i = 0; i < n; i++) {
+      const dist = (cyD[i] - (sy + vh * 0.5)) / vh, fo = 1 - sstep(0.03, 0.2, M.abs(dist));
+      evv[i] += (-120 * (ev[i] - vt) - 20 * evv[i]) * s; ev[i] += evv[i] * s;
+      const ht = (hovered === i && t - lastMove < 3000) ? 1 : 0;
+      hov[i] += (-80 * (ho[i] - ht) - 16 * hov[i]) * s; ho[i] += hov[i] * s;
+      const a1 = 0.035 * clamp(ho[i], 0, 1.2) * es, e = ev[i] * 0.07 * es, so = M.sin(ph + i), o2 = 0.5 * M.sin(2 * (ph + i));
+      const el = H[i], b = i * 8;
+      wr(el, C, b, '--w', 120 - 28 * fo, 1); wr(el, C, b + 1, '--g', 220 + 400 * fo, 0.1); wr(el, C, b + 2, '--fo', fo, 50);
+      wr(el, C, b + 3, '--dx', (i % 2 ? -1 : 1) * clamp(dist, -1, 1) * 0.03 * M.min(vw, 1440), 2);
+      wr(el, C, b + 4, '--ax', a1 * so, 500); wr(el, C, b + 5, '--ay', a1 * o2 + e, 500);
+      wr(el, C, b + 6, '--bx', -a1 * so, 500); wr(el, C, b + 7, '--by', a1 * o2 + e * 2, 500);
+      if (M.abs(evv[i]) > 1e-3 || M.abs(ev[i] - vt) > 1e-3 || M.abs(hov[i]) > 1e-3 || M.abs(ho[i] - ht) > 1e-3 || ho[i] > 1e-3) moving = true;
+    }
+    return moving || vy !== 0 || (hovered >= 0 && t - lastMove < 3000);
+  };
+  return a;
+}
+
+// ---------- Toppleton tower: settles bottom-up, leans, never topples ----------
+function tower() {
+  const el = D.getElementById('tower'), T = Array.from(el.children), n = T.length;
+  const hb = new Float32Array(n), r = new Float32Array(n), rv = new Float32Array(n), C = new Int32Array(n * 3).fill(NONE);
+  // Small, calm offsets. Lift per letter is 0.16em, so the top letter (9 x 0.16em) stays inside the section padding.
+  const RT = [3, -3.5, 2.5, -3, 3.5, -2.5, 3, -3.5, 2.5], XT = [0.06, -0.07, 0.05, -0.06, 0.07, -0.05, 0.06, -0.07, 0.05];
+  let top = 0, hgt = 1, fs = 60, cxD = 0, leanT = 0, ptr = 0, dX = 0, dY = 0, dT = 0, qm = 0;
+  const a = { name: 'tower', scroll: true };
+  a.measure = () => {
+    const rr = el.getBoundingClientRect(); top = rr.top + scrollY; hgt = rr.height || 1; cxD = rr.left + rr.width / 2;
+    fs = parseFloat(getComputedStyle(el).fontSize) || 60;
+    for (let i = 0; i < n; i++) { const b = n - 1 - i; hb[b] = el.offsetHeight - (T[i].offsetTop + T[i].offsetHeight * 0.9); }
+    C.fill(NONE);
+  };
+  a.reset = () => T.forEach(t => ['--tx', '--ty', '--tr'].forEach(p => t.style.removeProperty(p)));
+  const sec = D.getElementById('toppleton');
+  if (FINE) {
+    sec.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; leanT = clamp((e.clientX - cxD) / (vw * 0.4), -1, 1) * 4; wake(a); }, { passive: true });
+    sec.addEventListener('pointerleave', () => { leanT = 0; wake(a); }, { passive: true });
+  }
+  el.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; ptr = 1; dX = e.clientX; dY = e.clientY; dT = now(); }, { passive: true });
+  el.addEventListener('pointermove', e => { if (ptr) { leanT = clamp((e.clientX - dX) / 140, -1, 1) * 4; wake(a); } }, { passive: true });
+  const up = e => {
+    if (!ptr) return;
+    ptr = 0; leanT = 0;
+    if (e.type === 'pointerup' && M.hypot(e.clientX - dX, e.clientY - dY) < 10 && now() - dT < 350) {
+      const side = e.clientX < cxD ? 1 : -1;
+      for (let b = 0; b < n; b++) rv[b] += side * 26 * (0.35 + b / n);
+    }
+    wake(a);
+  };
+  el.addEventListener('pointerup', up, { passive: true });
+  el.addEventListener('pointercancel', up, { passive: true });
+  if (FINE) el.addEventListener('click', e => { const side = e.clientX < cxD ? 1 : -1; for (let b = 0; b < n; b++) rv[b] += side * 22 * (0.35 + b / n); wake(a); });
+
+  a.tick = s => {
+    // Progress only moves forward: the tower stacks once and does not come apart when you scroll back up.
+    qm = M.max(qm, clamp((sy + vh - top) / (vh * 0.55 + hgt * 0.5), 0, 1.5));
+    const q = qm, settle = sstep(0.9, 1.05, q);
+    let moving = false, cum = 0;
+    for (let b = 0; b < n; b++) {
+      const i = n - 1 - b, x = clamp((q - 0.065 * b) / 0.42, 0, 1);
+      const sb = x >= 1 ? 1 : 1 - M.exp(-5 * x) * M.cos(8 * x), u = 1 - sb;
+      cum += u * 0.16;
+      const k = 70 - 5 * b, c = 2 * 0.32 * M.sqrt(k), lt = leanT * settle;
+      rv[b] += (-k * (r[b] - lt) - c * rv[b]) * s; r[b] = clamp(r[b] + rv[b] * s, -6, 6);
+      const txL = (hb[b] / fs) * M.sin(r[b] / DEG);
+      wr(T[i], C, i * 3, '--ty', -cum, 500); wr(T[i], C, i * 3 + 1, '--tx', u * XT[b] + txL, 500); wr(T[i], C, i * 3 + 2, '--tr', u * RT[b] + r[b], 10);
+      if (M.abs(rv[b]) > 1e-3 || M.abs(r[b] - lt) > 1e-3) moving = true;
+    }
+    return moving || ptr;
+  };
+  return a;
+}
+
+// ---------- How we work: reading light ----------
+function reading() {
+  const st = D.getElementById('statement');
+  const parts = st.textContent.trim().split(/\s+/);
+  st.textContent = '';
+  const ws = parts.map((p, i) => { const s = D.createElement('span'); s.className = 'w'; s.textContent = p; st.appendChild(s); if (i < parts.length - 1) st.appendChild(D.createTextNode(' ')); return s; });
+  const n = ws.length, wy = new Float32Array(n), wx = new Float32Array(n), C = new Int32Array(n).fill(NONE);
+  let lh = 40;
+  const a = { name: 'reading', scroll: true };
+  a.measure = () => {
+    const r0 = st.getBoundingClientRect(); lh = parseFloat(getComputedStyle(st).lineHeight) || 40;
+    for (let i = 0; i < n; i++) { const r = ws[i].getBoundingClientRect(); wy[i] = r.top + scrollY; wx[i] = (r.left - r0.left) / (r0.width || 1); }
+    C.fill(NONE);
+  };
+  a.reset = () => ws.forEach(w => w.style.removeProperty('--r'));
+  a.tick = () => {
+    const line = sy + vh * 0.6;
+    for (let i = 0; i < n; i++) wr(ws[i], C, i, '--r', clamp((line - wy[i] - wx[i] * lh * 1.1) / (lh * 0.9), 0, 1), 20);
+    return false;
+  };
+  return a;
+}
+
+// ---------- Footer: the exposure closes into the logo ----------
+function closing() {
+  const ft = D.getElementById('ftr'), sv = ft.querySelector('.fmark'), C = new Int32Array(1).fill(NONE);
+  let top = 0, h = 1, maxS = 0;
+  const a = { name: 'closing', scroll: true };
+  a.measure = () => { const r = ft.getBoundingClientRect(); top = r.top + scrollY; h = r.height || 1; maxS = R.scrollHeight - innerHeight; C[0] = NONE; };
+  a.reset = () => sv.style.removeProperty('--fe');
+  a.tick = () => {
+    let p = clamp((sy + vh - top) / (h * 0.8), 0, 1);
+    if (sy >= maxS - 4) p = 1;
+    wr(sv, C, 0, '--fe', 1 - sstep(0.1, 1, p), 100);
+    return false;
+  };
+  return a;
+}
+
+// ---------- Header: hairline, hide on scroll down, dusk tone, living echo ----------
+function header() {
+  const h = D.getElementById('hdr'), C = new Int32Array(1).fill(NONE);
+  let eve = 1e9, lastY = sy, hidden = false, line = false, dusk = false, lv = 0, lvv = 0;
+  const a = { name: 'header', scroll: true };
+  a.measure = () => { const e = D.getElementById('toppleton'); eve = e.getBoundingClientRect().top + scrollY; C[0] = NONE; lastY = sy; dusk = sy + 64 > eve; R.classList.toggle('hdr-dusk', dusk); };
+  a.tone = () => { const d = sy + 64 > eve; if (d !== dusk) { dusk = d; R.classList.toggle('hdr-dusk', d); } };
+  a.reset = () => { h.classList.remove('is-hidden'); h.style.removeProperty('--lv'); };
+  a.tick = s => {
+    const y = sy, dy = y - lastY; lastY = y;
+    const nl = y > 24; if (nl !== line) { line = nl; h.classList.toggle('is-line', nl); }
+    let nh = hidden;
+    if (y < 120) nh = false; else if (dy > 3) nh = true; else if (dy < -3) nh = false;
+    if (h.contains(D.activeElement)) nh = false;
+    if (nh !== hidden) { hidden = nh; h.classList.toggle('is-hidden', nh); }
+    a.tone();
+    const lt = clamp(vy / 2500, -1, 1);
+    lvv += (-150 * (lv - lt) - 22 * lvv) * s; lv += lvv * s;
+    wr(h, C, 0, '--lv', lv, 100);
+    return M.abs(lvv) > 1e-3 || M.abs(lv - lt) > 1e-3 || vy !== 0;
+  };
+  h.addEventListener('focusin', () => { if (hidden) { hidden = false; h.classList.remove('is-hidden'); } });
+  return a;
+}
+
+// ---------- Traits act out once in view, and on hover ----------
+function traits() {
+  const items = D.querySelectorAll('.trait');
+  const play = it => { if (!it.classList.contains('act')) it.classList.add('act'); };
+  items.forEach(it => {
+    it.addEventListener('animationend', () => it.classList.remove('act'));
+    if (FINE) it.addEventListener('pointerenter', () => play(it), { passive: true });
+  });
+  if (!io) return;
+  const o = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { setTimeout(() => play(e.target), 120 * Array.prototype.indexOf.call(items, e.target)); o.unobserve(e.target); } }), { threshold: 0.6 });
+  items.forEach(it => o.observe(it));
+}
+
+// ---------- Boot ----------
+if (tier) {
+  let hero = null, say = null;
+  const mk = (fn, el) => { try { const a = fn(); return add(a, el); } catch (e) { console.warn('[long-exposure] init failed', e && e.message); return null; } };
+  const heroSec = D.getElementById('hero');
+  hero = mk(() => flutter(D.getElementById('wm'), { name: 'hero', sheen: true, lift: true, fit: true, heroEl: heroSec, hoverEl: heroSec, hold: [2, 3], apOnEnter: true }), heroSec);
+  say = mk(() => flutter(D.getElementById('say'), { name: 'say', hoverEl: D.getElementById('contact'), hold: [5, 6], apOnEnter: true, apFirst: true }), D.getElementById('contact'));
+  mk(focusRows, D.getElementById('make'));
+  mk(tower, D.getElementById('toppleton'));
+  mk(reading, D.getElementById('statement'));
+  mk(closing, D.getElementById('ftr'));
+  mk(header, null);
+  try { traits(); } catch (e) { /* the traits stay in their designed rest state */ }
+
+  addEventListener('scroll', () => { sy = scrollY; for (const a of actors) if (a.scroll) wake(a); }, { passive: true });
+  addEventListener('resize', remeasure, { passive: true });
+  D.addEventListener('visibilitychange', () => {
+    if (D.hidden) { cancelAnimationFrame(raf); raf = 0; }
+    else for (const a of actors) if (a.awake) wake(a);
+  });
+  addEventListener('pagehide', () => { cancelAnimationFrame(raf); raf = 0; });
+
+  const refitAll = () => { for (const a of actors) if (a.refit && !a.dead) a.refit(); };
+  let started = false;
+  const go = () => {
+    if (started || !tier) return;
+    started = true;
+    try {
+      R.classList.add('kin'); ready = true;
+      vh = innerHeight; vw = innerWidth; sy = scrollY;
+      refitAll(); // always a full pass at boot, with whatever font is in now
+      for (const a of actors) { try { a.measure && a.measure(); } catch (e) { kill(a, e); } }
+    } catch (e) { setTier(0); return; }
+    // Scroll-linked states are pure functions of position: settle every one of them once, on or off screen.
+    const t0 = now();
+    for (const a of actors) if (a.scroll && a !== hero && !a.dead) { try { a.tick(1 / 60, t0); } catch (e) { kill(a, e); } }
+    for (const a of actors) wake(a);
+    if (hero && !hero.dead) {
+      hero.arrive();
+      if (!FINE) setTimeout(() => { if (hero.vis) hero.autopilot(); }, 1200);
+      const ctas = D.querySelector('.hero .ctas');
+      if (FINE && ctas) ctas.addEventListener('focusin', e => { try { if (e.target.matches(':focus-visible')) hero.autopilot(5200); } catch (_) { /* ignore */ } });
+    }
+    if ('ResizeObserver' in W) { let first = true; new ResizeObserver(() => { if (first) { first = false; return; } remeasure(); }).observe(D.body); }
+    // A late web font changes every glyph width: re-lock the slots of both wordmarks, not only the hero.
+    if (D.fonts && D.fonts.addEventListener) D.fonts.addEventListener('loadingdone', () => { refitAll(); remeasure(); });
+  };
+  Promise.race([fontsIn, new Promise(r => setTimeout(r, 1500))]).then(go, go);
+}
+
+</script>

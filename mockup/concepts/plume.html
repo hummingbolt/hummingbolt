@@ -1,0 +1,2101 @@
+<title>Hummingbolt — Plume</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a software lab in the San Francisco Bay Area. We make applications, games and AI. Play Toppleton, our stacking game, free on the web.">
+<link rel="canonical" href="https://hummingbolt.com/">
+<meta property="og:title" content="Hummingbolt — a software lab in the San Francisco Bay Area">
+<meta property="og:description" content="We make applications, games and AI. Our first game, Toppleton, is free to play on the web.">
+<meta property="og:url" content="https://hummingbolt.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hummingbolt">
+<meta property="og:image" content="https://hummingbolt.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0F1211">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"https://hummingbolt.com/#org","name":"Hummingbolt LLC","url":"https://hummingbolt.com/","email":"admin@hummingbolt.com","description":"Hummingbolt is a software lab. We make applications, games and AI.","address":{"@type":"PostalAddress","streetAddress":"2108 N St #18140","addressLocality":"Sacramento","addressRegion":"CA","postalCode":"95816","addressCountry":"US"}},
+{"@type":"WebSite","@id":"https://hummingbolt.com/#website","name":"Hummingbolt","url":"https://hummingbolt.com/","publisher":{"@id":"https://hummingbolt.com/#org"}}
+]}
+</script>
+<style>
+/* Hummingbolt - Plume.
+   A field of tiny feathers lives behind the page. It re-forms into a different shape for every section, the camera glides
+   between them, and feathers ruffle where a pointer or finger passes. Everything else is type and space. */
+@font-face{font-family:"FD Fallback";src:local("Arial");size-adjust:97%;ascent-override:100%;descent-override:25%;line-gap-override:0%}
+@font-face{font-family:"FS Fallback";src:local("Arial");size-adjust:99%;ascent-override:96%;descent-override:25%;line-gap-override:0%}
+:root{
+  color-scheme:dark;
+  --night:#0F1211; --night-rgb:15,18,17; --deep:#151917;
+  --hair:#2A302C; --hair-2:#3C433E;
+  --moss:#A29E94; --lichen:#BEB9AE; --bone:#DCD6CA; --bone-rgb:220,214,202;
+  --rose:#D98A98; --rose-hi:#E6B0B9; --copper:#C9895D;
+  --display:"Funnel Display","FD Fallback","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --sans:"Funnel Sans","FS Fallback","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --hdr:60px;
+  --slab:620px;   /* the text column */
+  --gl:max(16px, env(safe-area-inset-left, 0px));
+  --gr:max(16px, env(safe-area-inset-right, 0px));
+  --ease:cubic-bezier(.2,.7,0,1);
+}
+@media (min-width:900px){:root{--slab:min(620px,54vw);--hdr:72px;--gl:max(clamp(24px,4vw,64px), env(safe-area-inset-left, 0px));--gr:max(clamp(24px,4vw,64px), env(safe-area-inset-right, 0px))}}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--night);overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--night);color:var(--lichen);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip;touch-action:pan-y pinch-zoom}
+@media (min-width:900px){body{font-size:18px}}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:42;background:var(--night)}
+a{color:inherit}
+p,h1,h2,h3,ol,ul{margin:0}
+:focus-visible{outline:2px solid var(--rose);outline-offset:3px;border-radius:2px}
+[tabindex="-1"]:focus{outline:none}
+::selection{background:var(--rose);color:var(--night)}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{width:100%;max-width:1440px;margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
+
+/* ---------- the living form (fixed, behind everything) ---------- */
+#gl,#poster{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;z-index:0;pointer-events:none;display:block;background:var(--night)}
+main{position:relative;z-index:2;display:block}
+main:focus{outline:none}
+
+/* ---------- skip + header ---------- */
+.skip{position:fixed;left:var(--gl);top:calc(env(safe-area-inset-top,0px) + 8px);z-index:300;background:var(--bone);color:var(--night);font:500 15px/1 var(--sans);padding:15px 18px;border-radius:999px;text-decoration:none;transform:translateY(-220%)}
+.skip:focus{transform:none}
+.hdr{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:40;height:var(--hdr)}
+.hdr::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(var(--hdr) + 40px);z-index:-1;pointer-events:none;background:linear-gradient(to bottom,rgba(var(--night-rgb),.94) 0,rgba(var(--night-rgb),.88) var(--hdr),rgba(var(--night-rgb),0) 100%)}
+.hdr-in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1440px;margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
+.brand{display:inline-flex;align-items:center;gap:10px;min-height:44px;text-decoration:none;color:var(--bone);font:500 18px/1 var(--display);letter-spacing:-.01em}
+.brand .mark{width:32px;height:32px;flex:none;color:var(--bone)}
+.nav ul{display:flex;gap:4px;list-style:none;padding:0}
+.nav a{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:0 14px;text-decoration:none;color:var(--lichen);font:450 15px/1 var(--sans);letter-spacing:.005em;transition:color .3s}
+.nav a::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:1px;background:linear-gradient(90deg,var(--copper),var(--rose));transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.nav a:hover{color:var(--bone)}
+.nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
+.nav a[aria-current="page"]{color:var(--bone)}
+.menu-btn{display:none;min-height:44px;min-width:44px;padding:0 18px;background:rgba(var(--night-rgb),.6);color:var(--bone);border:1px solid var(--hair-2);border-radius:999px;font:500 15px/1 var(--sans);cursor:pointer}
+@media (max-width:899px){.nav{display:none}.menu-btn{display:inline-flex;align-items:center}}
+.menu{position:fixed;inset:0;z-index:38;background:var(--night);padding-top:calc(var(--hdr) + env(safe-area-inset-top,0px) + 24px);overflow-y:auto;overscroll-behavior:contain}
+html.menu-open{overflow:hidden}
+html.menu-open .hdr::before{display:none}
+.menu ul{list-style:none;padding:0}
+.menu li{border-top:1px solid var(--hair)}
+.menu li:last-child{border-bottom:1px solid var(--hair)}
+.menu a{display:flex;align-items:center;min-height:68px;padding:10px 0;text-decoration:none;color:var(--bone);font:300 38px/1.1 var(--display);letter-spacing:-.02em}
+.menu-foot{margin-top:28px;color:var(--moss);font-size:15px}
+
+/* ---------- type ---------- */
+.eyebrow,.count{font:500 13px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--moss)}
+.count{font-variant-numeric:tabular-nums}
+.giant{font:300 clamp(64px,13vw,200px)/.88 var(--display);letter-spacing:-.04em;color:var(--bone);margin:.04em 0 .1em -.045em}
+.giant.xlong{font-size:clamp(46px,12.2vw,184px)}
+@media (min-width:900px){.giant.xlong{font-size:clamp(64px,10vw,164px)}.giant.long{font-size:clamp(64px,9.6vw,156px)}}
+.line{font:400 clamp(20px,1.9vw,28px)/1.32 var(--sans);color:var(--bone);max-width:30ch;letter-spacing:-.006em;text-wrap:balance}
+.body{color:var(--lichen);max-width:42ch}
+.statement{font:300 clamp(42px,6.2vw,100px)/.98 var(--display);letter-spacing:-.032em;color:var(--bone);text-wrap:balance;max-width:11em}
+.stack{display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:0 24px;border:1px solid var(--hair-2);border-radius:999px;background:rgba(var(--night-rgb),.72);color:var(--bone);font:500 16px/1 var(--sans);letter-spacing:.005em;text-decoration:none;cursor:pointer;transition:border-color .3s,background-color .3s,color .3s}
+.btn:hover{border-color:var(--rose)}
+.btn-primary{background:var(--bone);border-color:var(--bone);color:var(--night)}
+.btn-primary:hover{background:#EDE8DE;border-color:#EDE8DE}
+.btn .url{font-weight:400;opacity:.78}
+.arrow{display:inline-block;width:14px;height:1px;background:currentColor;position:relative}
+.arrow::after{content:"";position:absolute;right:0;top:-3px;width:7px;height:7px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg);transform-origin:100% 0}
+em.r{font-style:normal;color:var(--rose)}
+
+/* a soft dark field behind running text, so feathers drifting behind it never cost contrast */
+.slab{position:relative;isolation:isolate;max-width:var(--slab);width:fit-content}
+.slab::before{content:"";position:absolute;inset:-64px -88px;z-index:-1;background:rgba(var(--night-rgb),.9);pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 80px,#000 calc(100% - 80px),transparent),linear-gradient(180deg,transparent,#000 60px,#000 calc(100% - 60px),transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent,#000 80px,#000 calc(100% - 80px),transparent),linear-gradient(180deg,transparent,#000 60px,#000 calc(100% - 60px),transparent);mask-composite:intersect}
+/* text on the right keeps one column (its left edge), and every slab hugs its words, so the dark field never reaches
+   further into the form than the text needs */
+[data-side="left"] .slab{margin-left:max(0px,calc(100% - var(--slab) - var(--mr,0px)));margin-right:var(--mr,0px)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-block:calc(var(--hdr) + 28px) 56px}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70%;z-index:-1;background:linear-gradient(to top,rgba(var(--night-rgb),.95) 0%,rgba(var(--night-rgb),.86) 36%,rgba(var(--night-rgb),.4) 70%,rgba(var(--night-rgb),0) 100%);pointer-events:none}
+.hero-copy{position:relative;isolation:isolate;width:fit-content;max-width:100%}
+/* the headline keeps its own soft dark field, so a glint passing behind it never costs contrast */
+.hero-copy::before{content:"";position:absolute;inset:-56px -72px -40px;z-index:-1;background:rgba(var(--night-rgb),.86);pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent),linear-gradient(180deg,transparent,#000 56px,#000 calc(100% - 40px),transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent),linear-gradient(180deg,transparent,#000 56px,#000 calc(100% - 40px),transparent);mask-composite:intersect}
+@media (max-width:899px){.hero-copy::before{inset:-48px -16px -24px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 48px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(180deg,transparent,#000 48px,#000 calc(100% - 24px),transparent)}}
+.h1{color:var(--bone);font-weight:300}
+.h1-a,.h1-c{display:block;font:400 clamp(18px,1.6vw,23px)/1.3 var(--sans);color:var(--bone);letter-spacing:-.004em}
+.h1-b{display:block;font:300 clamp(60px,10vw,164px)/.88 var(--display);letter-spacing:-.042em;margin:.1em 0 .14em -.04em}
+.h1-b .ln{display:block}
+.hero .lede{margin-top:20px;font:400 clamp(19px,1.5vw,22px)/1.45 var(--sans);color:var(--lichen);max-width:34ch;text-wrap:balance}
+.hero .ctas{margin-top:28px}
+.hint{position:absolute;right:var(--gr);bottom:62px;font:400 14px/1.3 var(--sans);color:var(--moss);display:flex;align-items:center;gap:10px;pointer-events:none}
+.hint i{display:block;width:22px;height:1px;background:linear-gradient(90deg,var(--copper),var(--rose))}
+@media (max-width:899px){.hint{display:none}}
+html:not(.live) .hint{display:none}   /* the hint shows only while the feathers are live */
+@media (min-width:900px){.hero{padding-bottom:60px}}
+
+/* ---------- beats ---------- */
+.beat{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding-block:120px}
+.beat,.v-beat,.v-outro{overflow:hidden;overflow:clip}
+.beat > .wrap,.v-beat > .wrap,.v-outro > .wrap{position:relative}
+.make .meta{display:flex;gap:18px;align-items:baseline}
+.vt-list{list-style:none;padding:0;display:grid;gap:4px;counter-reset:v}
+.vt-list li{counter-increment:v;display:flex;gap:18px;align-items:baseline;font:300 clamp(28px,3vw,44px)/1.14 var(--display);color:var(--bone);letter-spacing:-.018em}
+.vt-list li::before{content:"0" counter(v);font:500 13px/1 var(--sans);letter-spacing:.1em;color:var(--moss);min-width:2em;font-variant-numeric:tabular-nums}
+.sig{font:300 clamp(24px,2.4vw,34px)/1.2 var(--display);letter-spacing:-.016em;color:var(--bone);padding-top:18px;border-top:1px solid var(--hair-2)}
+.email{font:300 clamp(30px,4.4vw,62px)/1.1 var(--display);color:var(--bone);letter-spacing:-.02em;user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
+.status{min-height:1.6em;font-size:15px;color:var(--lichen)}
+@media (max-width:899px){
+  .beat{align-items:flex-end;min-height:92svh;padding-block:46svh 56px}
+  [data-side="left"] .slab{margin-left:0}
+  .slab,.hero-copy{width:auto}   /* phones: the dark field spans the screen, so it never shows an edge */
+  .slab::before{inset:-56px -16px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 52px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(180deg,transparent,#000 52px,#000 calc(100% - 40px),transparent)}
+}
+
+/* ---------- values view ---------- */
+.v-intro{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;padding-block:calc(var(--hdr) + 40px) 64px}
+.v-intro::after{content:"";position:absolute;left:0;right:0;bottom:0;height:72%;z-index:-1;background:linear-gradient(to top,rgba(var(--night-rgb),.95),rgba(var(--night-rgb),.82) 42%,rgba(var(--night-rgb),0));pointer-events:none}
+.v-intro .wrap > .stack{width:100%}
+.v-intro .giant .ln{display:block}
+@media (min-width:900px){.v-intro .giant{font-size:clamp(76px,min(11vw,22vh),196px)}.v-intro .wrap > .stack{max-width:min(800px,62%)}
+  /* the headline sits above the bottom scrim: give it the hero's soft dark field, so a passing glint never costs contrast */
+  .v-intro .v-head{position:relative;isolation:isolate;width:fit-content;max-width:100%}
+  .v-head::before{content:"";position:absolute;inset:-56px -72px -32px;z-index:-1;background:rgba(var(--night-rgb),.86);pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent),linear-gradient(180deg,transparent,#000 56px,#000 calc(100% - 32px),transparent);-webkit-mask-composite:source-in;
+    mask-image:linear-gradient(90deg,transparent,#000 72px,#000 calc(100% - 72px),transparent),linear-gradient(180deg,transparent,#000 56px,#000 calc(100% - 32px),transparent);mask-composite:intersect}}
+.v-index{list-style:none;padding:0;margin-top:30px;align-self:stretch;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--hair-2)}
+.v-index li{display:flex}
+.v-index li + li{border-left:1px solid var(--hair)}
+.v-index a{position:relative;flex:1 1 auto;min-width:0;display:grid;grid-template-rows:auto 1fr;gap:12px;min-height:112px;padding:18px 20px;text-decoration:none;color:var(--bone)}
+.v-index li:first-child a{padding-left:0}
+.v-index a::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:linear-gradient(90deg,var(--copper),var(--rose));transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.v-index a:hover::before,.v-index a:focus-visible::before{transform:scaleX(1)}
+.v-index .n{font:500 13px/1 var(--sans);letter-spacing:.1em;color:var(--moss);font-variant-numeric:tabular-nums}
+.v-index .t{font:300 clamp(22px,1.9vw,30px)/1.08 var(--display);letter-spacing:-.014em;color:var(--bone);text-wrap:balance}
+@media (max-width:899px){
+  .v-intro{padding-top:max(calc(var(--hdr) + 40px), 48svh)}
+  .v-intro .wrap > .stack{position:relative;isolation:isolate}
+  .v-intro .wrap > .stack::before{content:"";position:absolute;inset:-56px -16px;z-index:-1;background:rgba(var(--night-rgb),.88);pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent,#000 52px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(180deg,transparent,#000 52px,#000 calc(100% - 40px),transparent)}
+  .v-index{grid-template-columns:1fr;margin-top:24px}
+  .v-index li + li{border-left:0}
+  .v-index li{border-bottom:1px solid var(--hair)}
+  .v-index a,.v-index li:first-child a{grid-template-columns:2.4em minmax(0,1fr);grid-template-rows:auto;align-items:baseline;gap:12px;min-height:58px;padding:15px 0}
+  .v-index .t{font-size:24px}
+}
+.v-beat{position:relative;min-height:110vh;min-height:110svh;display:flex;align-items:center;padding-block:140px}
+.v-num{font:500 13px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--moss);font-variant-numeric:tabular-nums}
+.v-num b{font-weight:500;color:var(--rose)}
+.v-title{font:300 clamp(56px,10.4vw,168px)/.9 var(--display);letter-spacing:-.042em;color:var(--bone);margin:.06em 0 .12em -.04em;text-wrap:balance;max-width:7.4em}
+.v-cap{font:400 clamp(21px,2vw,30px)/1.3 var(--sans);color:var(--bone);max-width:24ch;letter-spacing:-.008em;text-wrap:balance}
+.v-outro{position:relative;min-height:84vh;min-height:84svh;display:flex;align-items:center;padding-block:120px}
+@media (max-width:899px){
+  .v-beat{align-items:flex-end;min-height:96svh;padding-block:48svh 64px}
+  .v-outro{align-items:flex-end;padding-block:42svh 64px}
+}
+.v-rail{position:fixed;right:var(--gr);top:50%;transform:translateY(-50%);z-index:30}
+/* the rail sits over the form: a soft, edgeless dark field behind the numbers keeps them readable when a glint passes */
+.v-rail::before{content:"";position:absolute;top:-70px;bottom:-70px;right:-44px;width:170px;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(var(--night-rgb),.9) 0,rgba(var(--night-rgb),.9) 66%,rgba(var(--night-rgb),0) 100%)}
+.v-rail ol{list-style:none;padding:0;display:grid;gap:2px}
+.v-rail a{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:44px;padding:0 2px 0 12px;text-decoration:none;font:500 13px/1 var(--sans);letter-spacing:.06em;color:var(--moss)}
+.v-rail a .t{opacity:0;transform:translateX(6px);transition:opacity .3s,transform .4s var(--ease);background:rgba(var(--night-rgb),.92);padding:6px 9px;border-radius:999px;color:var(--lichen);letter-spacing:.01em;white-space:nowrap}
+.v-rail a i{display:block;width:18px;height:1px;background:var(--hair-2);transition:width .4s var(--ease),background-color .3s}
+.v-rail a:hover .t,.v-rail a:focus-visible .t{opacity:1;transform:none}
+.v-rail a[aria-current="true"]{color:var(--bone)}
+.v-rail a[aria-current="true"] i{width:34px;background:linear-gradient(90deg,var(--copper),var(--rose))}
+@media (max-width:1199px){.v-rail{display:none}}
+/* on the values view the rail sits at the right edge: text on that side stops well short of it */
+@media (min-width:1200px){.v-beat[data-side="left"],.v-outro[data-side="left"]{--mr:124px}}
+
+/* ---------- footer ---------- */
+.foot{position:relative;z-index:2;background:var(--night);border-top:1px solid var(--hair);padding-block:40px calc(40px + env(safe-area-inset-bottom,0px))}
+.foot-in{display:grid;grid-template-columns:1fr;gap:14px;font-size:15px;line-height:1.6;color:var(--moss)}
+.foot-in .brand{font-size:17px}
+.foot-in .brand .mark{width:26px;height:26px}
+.foot address{font-style:normal}
+.legal{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0 22px}
+.legal a{display:inline-flex;align-items:center;min-height:44px;color:var(--lichen);text-decoration:underline;text-decoration-color:var(--hair-2);text-underline-offset:4px}
+.legal a:hover{color:var(--bone);text-decoration-color:var(--rose)}
+@media (min-width:900px){.foot-in{grid-template-columns:auto 1fr auto auto;align-items:center;gap:32px}}
+
+/* ---------- loader: the wingpath draws itself, then the feathers bloom out of the stroke ---------- */
+.loader{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;z-index:100;display:grid;place-items:center;pointer-events:none;animation:ld-auto .3s linear 2.2s forwards}
+.loader::before{content:"";position:absolute;inset:0;background:var(--night);transition:opacity .8s ease}
+/* the hard cap, in CSS: whatever the script is doing, the loader has gone by 2.5 s */
+@keyframes ld-auto{to{opacity:0;visibility:hidden}}
+/* the mark is drawn at exactly the size and place of the feather stroke the camera starts on (see introPose) */
+.ld-mark{position:relative;width:min(440px,max(46vmin,62vw));height:auto;overflow:visible;transition:opacity .55s ease .1s}
+.ld-mark .lp{fill:none;stroke:var(--bone);stroke-width:.9;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:1}
+.ld-mark .lp-main{animation:draw 1.05s cubic-bezier(.6,0,.25,1) .12s forwards}
+.ld-mark .lp-over{stroke:var(--rose);animation:draw .32s cubic-bezier(.4,0,.2,1) .86s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.loader.out::before{opacity:0}
+.loader.out .ld-mark{opacity:0}
+.loader.fade{animation:fadeout .3s forwards}
+@keyframes fadeout{to{opacity:0}}
+.shutter{position:fixed;inset:0;z-index:95;background:var(--night);opacity:0;pointer-events:none;visibility:hidden}
+.shutter.run{visibility:visible;animation:shut .76s ease forwards}
+@keyframes shut{0%{opacity:0}38%{opacity:1}62%{opacity:1}100%{opacity:0}}
+
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){
+  .ld-mark .lp{animation:none;stroke-dashoffset:0}
+  .loader::before,.ld-mark{transition:none}
+  .shutter{display:none}
+  .v-rail a .t,.v-rail a i,.nav a::after,.v-index a::before{transition:none}
+}
+@media print{#gl,#poster,.loader,.shutter,.v-rail{display:none}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fonts load without blocking the parser (media="print" until the script switches it on), so a slow or blocked font host never holds the page. -->
+<link rel="stylesheet" id="gf" media="print" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..500&family=Funnel+Sans:wght@400..600&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1211'/%3E%3Cpath d='M20.42 26.45 L47.34 31.2 A8.7 8.7 0 1 0 41.03 18.82 L29.05 43.39 A11.9 11.9 0 1 1 20.42 26.45 Z' fill='none' stroke='%23D98A98' stroke-width='6.4'/%3E%3C/svg%3E">
+<noscript><style>.loader{display:none}</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..500&family=Funnel+Sans:wght@400..600&display=swap"></noscript>
+
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+    <mask id="wpm" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M30.45 40.5 L41.48 17.89" stroke="#000" stroke-width="11.6"/></mask>
+    <symbol id="wp" viewBox="0 0 64 64"><path d="M20.42 26.45 L47.34 31.2 A8.7 8.7 0 1 0 41.03 18.82 L29.05 43.39 A11.9 11.9 0 1 1 20.42 26.45 Z" fill="none" stroke="currentColor" stroke-width="7.4" mask="url(#wpm)"/><path d="M30.19 41.04 L41.75 17.35" fill="none" stroke="currentColor" stroke-width="7.4"/></symbol>
+  </defs>
+</svg>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <!-- viewBox = the centre-line's bounding box (7.69..56.31 x 14.81..49.19) plus 1.29 / 1.21 of padding, centred on (32, 32) -->
+  <svg class="ld-mark" id="ld-mark" viewBox="6.4 13.6 51.2 36.8" focusable="false">
+    <defs><mask id="ld-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M31.99 38.01 L40.94 19.67" stroke="#000" stroke-width="3"/></mask></defs>
+    <path class="lp lp-main" pathLength="1" mask="url(#ld-m)" d="M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z"/>
+    <path class="lp lp-over" pathLength="1" d="M41.2 19.14 L31.73 38.55"/>
+  </svg>
+</div>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<canvas id="poster" aria-hidden="true" hidden></canvas>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="#top" aria-label="Hummingbolt home"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#wp"/></svg><span>Hummingbolt</span></a>
+    <nav class="nav" aria-label="Primary">
+      <ul>
+        <li><a href="#make">Make</a></li>
+        <li><a href="#toppleton">Toppleton</a></li>
+        <li><a href="#story">Story</a></li>
+        <li><a href="#values" data-values-link>Values</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+  </div>
+</header>
+<div class="menu" id="menu" hidden>
+  <div class="wrap">
+    <nav aria-label="Menu">
+      <ul>
+        <li><a href="#make">Make</a></li>
+        <li><a href="#toppleton">Toppleton</a></li>
+        <li><a href="#story">Story</a></li>
+        <li><a href="#values" data-values-link>Values</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <p class="menu-foot">admin@hummingbolt.com</p>
+  </div>
+</div>
+
+<main id="main" tabindex="-1">
+<div class="view" id="view-home" data-view="home">
+
+  <section class="hero" id="top" data-form="wing" data-side="hero" aria-labelledby="home-h1">
+    <div class="wrap"><div class="hero-copy">
+      <h1 class="h1" id="home-h1" tabindex="-1"><span class="h1-a">Hummingbolt is</span> <span class="h1-b"><span class="ln">a software</span> <span class="ln"><em class="r">lab</em></span></span> <span class="h1-c">in the San Francisco Bay Area.</span></h1>
+      <p class="lede">We make applications, games and AI.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="arrow" aria-hidden="true"></span><span class="vh"> (opens in a new tab)</span></a>
+        <a class="btn" href="#values">Our values</a>
+      </div>
+    </div></div>
+    <p class="hint" aria-hidden="true"><i></i><span id="hint-text">Move through the feathers</span></p>
+  </section>
+
+  <section class="make" id="make" aria-labelledby="make-h">
+    <article class="beat" data-form="apps" data-side="right" aria-labelledby="apps-h">
+      <div class="wrap"><div class="slab stack">
+        <div class="meta"><h2 class="eyebrow" id="make-h">What we make</h2><p class="count">01 / 03</p></div>
+        <h3 class="giant xlong" id="apps-h">Applications</h3>
+        <p class="line">For mobile and the web.</p>
+      </div></div>
+    </article>
+    <article class="beat" data-form="games" data-side="left" aria-labelledby="games-h">
+      <div class="wrap"><div class="slab stack">
+        <p class="count">02 / 03</p>
+        <h3 class="giant" id="games-h">Games</h3>
+        <p class="line">Our first is Toppleton, a stacking game for all ages.</p>
+      </div></div>
+    </article>
+    <article class="beat" data-form="ai" data-side="right" aria-labelledby="ai-h">
+      <div class="wrap"><div class="slab stack">
+        <p class="count">03 / 03</p>
+        <h3 class="giant" id="ai-h">AI</h3>
+        <p class="line">Useful products with AI built in.</p>
+      </div></div>
+    </article>
+  </section>
+
+  <section class="beat" id="toppleton" data-form="tower" data-side="left" aria-labelledby="topp-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="eyebrow">Our first game</p>
+      <h2 class="giant long" id="topp-h">Toppleton</h2>
+      <p class="line">A stacking game for all ages, children included.</p>
+      <p class="body">Free to play on the web. App Store and Google Play versions are coming later.</p>
+      <div class="ctas"><a class="btn btn-primary" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton <span class="url">play.toppleton.app</span><span class="vh"> (opens in a new tab)</span></a></div>
+    </div></div>
+  </section>
+
+  <section class="beat" id="story" data-form="nest" data-side="right" aria-labelledby="story-h">
+    <div class="wrap"><div class="slab stack">
+      <h2 class="eyebrow" id="story-h">Where we started</h2>
+      <p class="statement">Hummingbolt began with Toppleton.</p>
+      <p class="line">It started as a game my daughters and I tinkered with whenever we had a free moment.</p>
+      <p class="body">That is still how we work: try things, keep what delights, then build it properly.</p>
+      <p class="sig">Turning experimentation into <em class="r">delight.</em></p>
+    </div></div>
+  </section>
+
+  <section class="beat" id="values-teaser" data-form="four" data-side="left" aria-labelledby="vt-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="eyebrow">How we work</p>
+      <h2 class="statement" id="vt-h">Four values.</h2>
+      <ol class="vt-list">
+        <li>Be bold.</li>
+        <li>Tinker.</li>
+        <li>Fail fast. Learn faster.</li>
+        <li>Sweat the small stuff.</li>
+      </ol>
+      <div class="ctas"><a class="btn" href="#values">See our values <span class="arrow" aria-hidden="true"></span></a></div>
+    </div></div>
+  </section>
+
+  <section class="beat" id="contact" data-form="settle" data-side="right" aria-labelledby="contact-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="eyebrow">Contact</p>
+      <h2 class="statement" id="contact-h">Say hello.</h2>
+      <p class="email" id="email-text">admin@<wbr>hummingbolt.com</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="mailto:admin@hummingbolt.com">Email us</a>
+        <button class="btn" type="button" id="copy-btn">Copy address</button>
+      </div>
+      <p class="status" id="copy-status" role="status" aria-live="polite"></p>
+    </div></div>
+  </section>
+</div>
+
+<div class="view" id="view-values" data-view="values" hidden>
+  <section class="v-intro" id="values-top" data-form="wing2" data-side="right" aria-labelledby="values-h1">
+    <div class="wrap"><div class="stack">
+      <div class="v-head stack">
+        <p class="eyebrow">Values</p>
+        <h1 class="giant" id="values-h1" tabindex="-1"><span class="ln">How we</span> <span class="ln">work.</span></h1>
+        <p class="line">Four values.</p>
+      </div>
+      <ol class="v-index">
+        <li><a href="#v-1"><span class="n">01</span><span class="t">Be bold.</span></a></li>
+        <li><a href="#v-2"><span class="n">02</span><span class="t">Tinker.</span></a></li>
+        <li><a href="#v-3"><span class="n">03</span><span class="t">Fail fast. Learn faster.</span></a></li>
+        <li><a href="#v-4"><span class="n">04</span><span class="t">Sweat the small stuff.</span></a></li>
+      </ol>
+    </div></div>
+  </section>
+
+  <section class="v-beat" id="v-1" data-form="sweep" data-side="right" aria-labelledby="v1-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="v-num"><b>01</b> / 04</p>
+      <h2 class="v-title" id="v1-h">Be bold.</h2>
+      <p class="v-cap">Pick the hard problem. Go after it.</p>
+    </div></div>
+  </section>
+
+  <section class="v-beat" id="v-2" data-form="tinker" data-side="left" aria-labelledby="v2-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="v-num"><b>02</b> / 04</p>
+      <h2 class="v-title" id="v2-h">Tinker.</h2>
+      <p class="v-cap">We learn by building. Prototype first, debate later.</p>
+    </div></div>
+  </section>
+
+  <section class="v-beat" id="v-3" data-form="collapse" data-side="right" aria-labelledby="v3-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="v-num"><b>03</b> / 04</p>
+      <h2 class="v-title" id="v3-h">Fail fast. Learn faster.</h2>
+      <p class="v-cap">Small bets. Quick tests. Honest results.</p>
+    </div></div>
+  </section>
+
+  <section class="v-beat" id="v-4" data-form="macro" data-side="left" aria-labelledby="v4-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="v-num"><b>04</b> / 04</p>
+      <h2 class="v-title" id="v4-h">Sweat the small stuff.</h2>
+      <p class="v-cap">Hummingbirds are tiny and exact. Good software is too.</p>
+    </div></div>
+  </section>
+
+  <section class="v-outro" id="values-end" data-form="settle2" data-side="right" aria-labelledby="vo-h">
+    <div class="wrap"><div class="slab stack">
+      <p class="eyebrow">Hummingbolt</p>
+      <h2 class="statement" id="vo-h">A software lab in the San Francisco Bay Area.</h2>
+      <div class="ctas"><a class="btn btn-primary" href="#contact">Contact</a><a class="btn" href="#top">Back to home</a></div>
+    </div></div>
+  </section>
+</div>
+</main>
+
+<footer class="foot" id="foot">
+  <div class="wrap foot-in">
+    <a class="brand" href="#top" aria-label="Hummingbolt home"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#wp"/></svg><span>Hummingbolt</span></a>
+    <p>&copy; 2026 Hummingbolt LLC</p>
+    <address>2108 N St #18140, Sacramento, CA 95816</address>
+    <ul class="legal"><li><a href="/privacy/">Privacy</a></li><li><a href="/legal/">Legal notice</a></li></ul>
+  </div>
+</footer>
+
+<nav class="v-rail" id="v-rail" aria-label="Values" hidden>
+  <ol>
+    <li><a href="#v-1" data-for="v-1"><span class="t">Be bold.</span><span>01</span><i></i></a></li>
+    <li><a href="#v-2" data-for="v-2"><span class="t">Tinker.</span><span>02</span><i></i></a></li>
+    <li><a href="#v-3" data-for="v-3"><span class="t">Fail fast. Learn faster.</span><span>03</span><i></i></a></li>
+    <li><a href="#v-4" data-for="v-4"><span class="t">Sweat the small stuff.</span><span>04</span><i></i></a></li>
+  </ol>
+</nav>
+<div class="shutter" id="shutter" aria-hidden="true"></div>
+
+<script>
+/* =====================================================================================================================
+   PLUME - the shared feather engine.
+
+   Layout of this script (each block depends only on the ones above it):
+     1. environment ............ flags, tiers, small maths helpers
+     2. FORMATIONS ............. the shapes, as data: shader kind + params, camera, light, colour
+     3. PATHS .................. curves sampled on the CPU and handed to the GPU as a texture (the wingpath, card outlines)
+     4. page ................... loader, router, menu, copy button, section tracking
+     5. flow ................... which formation the feathers are leaving and which they are joining (per-feather stagger)
+     6. camera ................. a critically damped spring per channel; lens shift keeps the form clear of the text
+     7. ruffle ................. pointer and touch become a world-space ray, a velocity and a strength
+     8. GL ..................... transform-feedback simulation + instanced feather draw
+     9. still / poster ......... reduced motion (GL still frames) and no-WebGL (a Canvas 2D still)
+    10. boot
+
+   Per feather, the GPU keeps 5 x vec4 (80 bytes), ping-ponged through transform feedback:
+     P = position.xyz, ruffle      V = velocity.xyz, roll (spin)      F = shaft direction.xyz, visibility
+     N = vane normal.xyz, glint    T = last target.xyz, size
+   Every frame each feather asks its formation(s) for a target frame {position, shaft, normal, presence, size, glint},
+   blends the leaving and joining formation with its own delay, and follows the target on a spring.
+   ===================================================================================================================== */
+(() => {
+'use strict';
+
+/* ================= 1. environment ================= */
+const doc = document, root = doc.documentElement;
+const $ = (s, r) => (r || doc).querySelector(s);
+const $$ = (s, r) => Array.prototype.slice.call((r || doc).querySelectorAll(s));
+const mq = q => { try { return window.matchMedia(q); } catch (e) { return { matches: false }; } };
+// MediaQueryList.addEventListener is missing on older Safari (addListener only): never let that stop the script
+const onMQ = (m, fn) => { try { if (m.addEventListener) m.addEventListener('change', fn); else if (m.addListener) m.addListener(fn); } catch (e) {} };
+if (!root.lang) root.lang = 'en';
+const mqReduce = mq('(prefers-reduced-motion: reduce)');
+const mqFine = mq('(hover: hover) and (pointer: fine)');
+// touch-first devices: a phone in landscape is still a phone; a tablet starts at the mid count
+const coarse = mq('(pointer: coarse)').matches && !mqFine.matches;
+const shortSide = Math.min((window.screen && screen.width) || 1e4, (window.screen && screen.height) || 1e4);
+const isPhone = mq('(max-width: 700px)').matches || (coarse && shortSide < 600);
+const QS = location.search || '';
+const NOGL = /nogl/.test(location.hash) || /nogl/.test(QS);
+// QA hook: ?tier=high|mid|phone forces a feather count and switches the frame-time downgrade off.
+const FORCE = (QS.match(/tier=(high|mid|phone)/) || [])[1] || '';
+const DBG = window.__plume = { mode: 'init', errors: [], tier: '', active: 0, revealed: false, form: '' };
+const logErr = m => { if (DBG.errors.length < 24) DBG.errors.push(String(m)); };
+let reduce = mqReduce.matches;
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const smooth = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const easeInOut = t => { t = clamp(t, 0, 1); return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+
+/* ================= 2. FORMATIONS =================
+   kind  : which shape function the update shader runs (see form() in UPDATE_VS)
+   p     : four shape parameters, documented next to each shape function in the shader
+   cam   : [azimuth, elevation, distance, fov, target x, y, z, roll]
+   flut  : idle flutter of the targets       light : [azimuth offset, speed, elevation] of the key light, camera-relative
+   warm  : pushes the throat colours toward copper and gold       expo : exposure */
+const KIND = { WING: 0, APPS: 1, DIE: 2, ORB: 3, TOWER: 4, NEST: 5, FOUR: 6, SETTLE: 7, SWEEP: 8, TINKER: 9, COLLAPSE: 10, MACRO: 11 };
+const FORMATIONS = {
+  wing:     { kind: KIND.WING,     p: [0.32, 0.012, 0.9, 0.3],   cam: [0.26, 0.1, 6.6, 34, 0, 0, 0, -0.04],   flut: 0.6, light: [0.0, 0.11, 0.62], warm: 0.0, expo: 1.0 },
+  apps:     { kind: KIND.APPS,     p: [1, 0.016, 0, 0],          cam: [-0.34, 0.10, 6.1, 34, 0.08, 0, 0.1, 0.02], flut: 0.35, light: [0.5, 0.08, 0.55], warm: 0.0, expo: 1.05 },
+  games:    { kind: KIND.DIE,      p: [0.62, 0.22, 0, 0],        cam: [0.38, 0.24, 5.4, 34, 0, 0, 0, 0.0],     flut: 0.3, light: [-0.3, 0.1, 0.7], warm: 0.0, expo: 1.05 },
+  ai:       { kind: KIND.ORB,      p: [0.9, 0.07, 0, 0],         cam: [0.10, 0.16, 5.5, 34, -0.12, 0, 0, 0.0],     flut: 0.25, light: [0.4, 0.13, 0.6], warm: 0.0, expo: 1.0 },
+  tower:    { kind: KIND.TOWER,    p: [10, 0.026, 0, 0],         cam: [0.5, 0.36, 5.5, 34, 0, 0.02, 0, 0.0],  flut: 0.25, light: [-0.6, 0.06, 0.65], warm: 0.1, expo: 1.14 },
+  nest:     { kind: KIND.NEST,     p: [0, 0.07, 0, 0],           cam: [0.18, 0.58, 5.0, 34, -0.18, 0.12, 0, 0.0],  flut: 0.8, light: [0.2, 0.05, 0.75], warm: 1.0, expo: 1.08 },
+  four:     { kind: KIND.FOUR,     p: [0, 0, 0, 0],              cam: [-0.12, 0.16, 5.6, 34, 0, 0, 0, 0.03],   flut: 0.5, light: [0.0, 0.12, 0.6], warm: 0.2, expo: 1.05 },
+  settle:   { kind: KIND.SETTLE,   p: [1.1, 0.5, 0, 0],          cam: [-0.22, 0.5, 5.1, 34, -0.26, -0.25, 0, 0.0], flut: 0.4, light: [0.0, 0.22, 0.5], warm: 0.35, expo: 1.05 },
+  wing2:    { kind: KIND.WING,     p: [0.36, 0.01, 1.0, 0.45],  cam: [-0.42, 0.18, 6.9, 34, 0, 0, 0, 0.06],  flut: 0.7, light: [0.3, 0.09, 0.6], warm: 0.1, expo: 1.0 },
+  sweep:    { kind: KIND.SWEEP,    p: [0.46, 0.15, 0, 0],        cam: [-0.30, 0.12, 5.4, 34, 0, 0, 0, 0.02],   flut: 0.2, light: [0.2, 0.05, 0.6], warm: 0.0, expo: 1.08 },
+  tinker:   { kind: KIND.TINKER,   p: [0.15, 2.6, 0, 0],         cam: [0.22, 0.14, 5.3, 34, 0, 0, 0, 0.0],     flut: 0.2, light: [0.0, 0.1, 0.6], warm: 0.0, expo: 1.08 },
+  collapse: { kind: KIND.COLLAPSE, p: [7, 8.4, 0, 0],            cam: [0.42, 0.26, 4.7, 34, 0, -0.12, 0, 0.0], flut: 0.15, light: [-0.4, 0.07, 0.65], warm: 0.1, expo: 1.16 },
+  macro:    { kind: KIND.MACRO,    p: [0, 0, 0, 0],              cam: [0.10, 0.06, 4.1, 30, 0.12, 0.1, 0, 0.0], flut: 0.1, light: [0.35, 0.06, 0.55], warm: 0.0, expo: 1.02 },
+  settle2:  { kind: KIND.SETTLE,   p: [1.0, 0.42, 0, 0],         cam: [0.30, 0.44, 5.0, 34, -0.22, -0.25, 0, 0.0], flut: 0.4, light: [0.6, 0.2, 0.5], warm: 0.5, expo: 1.05 }
+};
+for (const k in FORMATIONS) FORMATIONS[k].pf = new Float32Array(FORMATIONS[k].p);
+
+/* ================= 3. PATHS =================
+   Closed curves sampled at 512 equal arc-length steps, one texture row each (RGBA32F: x, y, z, unused).
+   Row 0: the wingpath centre-line (the loader's path, so the feathers start exactly on the drawn stroke).
+   Row 1: a wide rounded card (a web window).  Row 2: a tall rounded card (a phone). */
+const PATH_N = 512, PATH_ROWS = 4;
+const WING = { cx: 32, cy: 32, svgW: 48.6136, worldW: 2.9, viewW: 51.2 };   // bbox centre / width in SVG units -> world width
+WING.S = WING.svgW / WING.worldW;
+const PATHS = new Float32Array(PATH_N * PATH_ROWS * 4);
+(function buildPaths() {
+  const pts = [];
+  const line = (a, b, n) => { for (let i = 0; i < n; i++) { const t = i / n; pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); } };
+  const arc = (cx, cy, r, a1, da, n) => { for (let i = 0; i < n; i++) { const t = a1 + da * i / n; pts.push([cx + r * Math.cos(t), cy + r * Math.sin(t)]); } };
+  // M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z (arc centres solved offline)
+  line([21.31, 26.17], [46.92, 30.69], 600);
+  arc(48.30821, 22.81137, 8, 1.745205, -4.432401, 900);
+  line([41.12, 19.3], [29.72, 42.68], 600);
+  arc(19.29463, 37.59358, 11.6, 0.453911, 4.433103, 1200);
+  const resample = (P, row, toWorld) => {
+    const n = P.length, L = new Float64Array(n + 1);
+    for (let i = 1; i <= n; i++) { const a = P[i - 1], b = P[i % n]; L[i] = L[i - 1] + Math.hypot(b[0] - a[0], b[1] - a[1]); }
+    const tot = L[n];
+    let j = 0;
+    for (let k = 0; k < PATH_N; k++) {
+      const want = tot * k / PATH_N;
+      while (j < n - 1 && L[j + 1] < want) j++;
+      const f = (want - L[j]) / Math.max(1e-9, L[j + 1] - L[j]);
+      const a = P[j], b = P[(j + 1) % n];
+      const o = (row * PATH_N + k) * 4, w = toWorld(a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, k / PATH_N);
+      PATHS[o] = w[0]; PATHS[o + 1] = w[1]; PATHS[o + 2] = w[2]; PATHS[o + 3] = 1;
+    }
+  };
+  // over-under: the second straight (s = 0.519) passes over the first (s = 0.111) where they cross
+  const bump = (s, c) => { let d = Math.abs(s - c); d = Math.min(d, 1 - d); return Math.exp(-(d * d) / (0.055 * 0.055)); };
+  const out = [0, 0, 0];
+  resample(pts, 0, (x, y, s) => { out[0] = (x - WING.cx) / WING.S; out[1] = -(y - WING.cy) / WING.S; out[2] = 0.2 * (bump(s, 0.519) - bump(s, 0.111)) + 0.05 * Math.sin(TAU * s); return out; });
+  const rrect = (hw, hh, r) => {
+    const P = [], seg = 64;
+    const corner = (cx, cy, a0) => { for (let i = 0; i < seg; i++) { const a = a0 + (Math.PI / 2) * i / seg; P.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); } };
+    corner(hw - r, hh - r, 0); corner(-hw + r, hh - r, Math.PI / 2); corner(-hw + r, -hh + r, Math.PI); corner(hw - r, -hh + r, 1.5 * Math.PI);
+    // densify the straights so equal-length resampling stays exact
+    const D = []; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; const n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.01)); for (let k = 0; k < n; k++) D.push([a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n]); }
+    return D;
+  };
+  resample(rrect(1.0, 0.64, 0.1), 1, (x, y) => { out[0] = x; out[1] = y; out[2] = 0; return out; });
+  resample(rrect(0.36, 0.74, 0.13), 2, (x, y) => { out[0] = x; out[1] = y; out[2] = 0; return out; });
+})();
+
+/* ================= 4. page: elements, loader ================= */
+const glCanvas = $('#gl'), posterCanvas = $('#poster'), loader = $('#loader'), ldMark = $('#ld-mark');
+const views = { home: $('#view-home'), values: $('#view-values') };
+const railEl = $('#v-rail');
+const META = {
+  home: { title: 'Hummingbolt — Plume', desc: 'Hummingbolt is a software lab in the San Francisco Bay Area. We make applications, games and AI. Play Toppleton, our stacking game, free on the web.' },
+  values: { title: 'Values · Hummingbolt — Plume', desc: 'Our four values: Be bold. Tinker. Fail fast. Learn faster. Sweat the small stuff. Hummingbolt is a software lab in the San Francisco Bay Area.' }
+};
+const metaDesc = $('meta[name="description"]');
+
+let revealed = false, revealAt = -1, hardCap = 0;
+const t0 = performance.now();
+function reveal() {
+  if (revealed) return; revealed = true; DBG.revealed = true; DBG.tReveal = Math.round(performance.now() - t0);
+  clearTimeout(hardCap);
+  revealAt = performance.now();
+  loader.classList.add(reduce || mode !== 'gl' ? 'fade' : 'out');
+  setTimeout(() => { loader.hidden = true; }, reduce ? 320 : 900);
+  // the feathers leave the stroke for whatever this section is (if GL is still compiling, they leave once it is up)
+  introHold = false;
+  if (targetKey !== curA) setTarget(targetKey, true);
+}
+// When to lift the loader: 2.5 s at the latest, sooner once the scene is ready (revealSoon). Long timers can be starved
+// while a slow GPU or the poster is busy, so the deadline is also checked on every animation frame (and by the frame
+// loop), and CSS lifts the loader on its own by 2.5 s even if the script is held up or never gets that far.
+let revealDue = 2500;
+function revealCheck() { if (!revealed && performance.now() - t0 >= revealDue) reveal(); }
+function revealWatch() { revealCheck(); if (!revealed) requestAnimationFrame(revealWatch); }
+function revealSoon(minMs) { revealDue = Math.min(revealDue, Math.max(minMs, performance.now() - t0)); setTimeout(reveal, Math.max(0, minMs - (performance.now() - t0))); revealCheck(); }
+hardCap = setTimeout(reveal, 2500);
+requestAnimationFrame(revealWatch);
+(function fonts() {
+  // The font sheet starts as media="print" so it never blocks parsing; switch it on once it has arrived.
+  const gf = doc.getElementById('gf');
+  const on = () => { if (gf) gf.media = 'all'; try { Promise.all(['300 40px "Funnel Display"', '400 16px "Funnel Sans"'].map(f => doc.fonts.load(f))).then(() => measure(), () => {}); } catch (e) {} };
+  if (!gf) return;
+  if (gf.sheet) on(); else { gf.addEventListener('load', on); gf.addEventListener('error', () => {}); }
+  try { doc.fonts.addEventListener('loadingdone', () => measure()); } catch (e) {}
+})();
+
+/* ================= router (plain hash routes: #values is its own view) ================= */
+let view = 'home', swapTm = 0, shutTm = 0, menuNav = false;
+const viewY = { home: 0, values: 0 };
+function hashId() { let h = ''; try { h = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { h = (location.hash || '').slice(1); } return h.replace(/-?nogl/g, ''); }
+// The router owns every scroll position (instant jumps even under html{scroll-behavior:smooth}).
+try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+// el: an element to land on, a scroll position (number), or null for the top
+function jump(el) {
+  const y = typeof el === 'number' ? el : 0, isEl = !!el && typeof el === 'object';
+  try { if (isEl) el.scrollIntoView({ block: 'start', behavior: 'instant' }); else window.scrollTo({ top: y, left: 0, behavior: 'instant' }); return; } catch (e) {}
+  const prev = root.style.scrollBehavior; root.style.scrollBehavior = 'auto'; void root.offsetHeight;
+  try { if (isEl) el.scrollIntoView(true); else window.scrollTo(0, y); } catch (e) {}
+  root.style.scrollBehavior = prev;
+}
+// A smooth scroll still running when the view swaps can carry on past the jump in Chromium: hold the landing briefly.
+let holdEl = null, holdY = 0, holdUntil = 0;
+function jumpHold(el) {
+  jump(el); holdEl = el; holdY = window.scrollY; holdUntil = performance.now() + 700;
+  const tick = () => { if (performance.now() > holdUntil) return; if (Math.abs(window.scrollY - holdY) > 2) { jump(holdEl); holdY = window.scrollY; } requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(t => window.addEventListener(t, () => { holdUntil = 0; }, { passive: true }));
+function focusHeading(el) {
+  const h = el.matches('h1,h2,h3') ? el : el.querySelector('h1,h2,h3'); if (!h) return;
+  if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1');
+  try { h.focus({ preventScroll: true }); } catch (e) {}
+}
+function shutter(fn) {
+  const s = $('#shutter'); s.classList.remove('run'); void s.offsetWidth; s.classList.add('run');
+  clearTimeout(swapTm); swapTm = setTimeout(fn, 300);
+  clearTimeout(shutTm); shutTm = setTimeout(() => s.classList.remove('run'), 800);
+}
+function route(first) {
+  clearTimeout(swapTm);   // a newer hash always wins over a swap still waiting behind the shutter
+  const viaMenu = menuNav; menuNav = false;
+  const id = hashId();
+  if (id === 'main') { const h = $('h1', views[view]); if (h) h.focus({ preventScroll: false }); return; }
+  let next = 'home', el = null;
+  if (id === 'values') next = 'values';
+  else if (id) { el = doc.getElementById(id); const v = el && el.closest('[data-view]'); if (v) next = v.getAttribute('data-view'); else el = null; }
+  const changed = next !== view;
+  const go = () => {
+    // Back or Forward to the bare address returns the reader to where they were on that view, not to its top.
+    let restoreY = 0;
+    if (changed) { viewY[view] = window.scrollY || 0; restoreY = !first && id === '' ? viewY[next] : 0; views[view].hidden = true; views[next].hidden = false; view = next; onViewChange(); }
+    if (el) { if (changed || first) jumpHold(el); else if (reduce) jump(el); else el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+    else if (restoreY > 0) jumpHold(restoreY);
+    else if (changed || first) jumpHold(null);
+    else if (reduce) jump(null);
+    else if (id === '' || id === 'values') window.scrollTo({ top: 0, behavior: 'smooth' });
+    // re-measure and pick the section now in view (the frame loop is not running in still / poster mode)
+    measure(); updateActive();
+    if (!first) {
+      if (restoreY > 0 && secs[activeIdx]) focusHeading(secs[activeIdx].el);
+      else if (changed && !el) { const h = $('h1', views[view]); if (h) h.focus({ preventScroll: true }); }
+      else if (el && (changed || viaMenu)) focusHeading(el);
+    }
+  };
+  if (changed && !first && !reduce) shutter(go); else go();
+}
+function onViewChange() {
+  $$('[data-values-link]').forEach(a => { if (view === 'values') a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  railEl.hidden = view !== 'values';
+  const m = META[view]; doc.title = m.title; if (metaDesc) metaDesc.setAttribute('content', m.desc);
+  activeIdx = -1;
+}
+window.addEventListener('hashchange', () => { closeMenu(); route(false); });
+// The skip link moves focus to this view's headline without rewriting the address (a reload keeps the view).
+$('.skip').addEventListener('click', e => { const h = $('h1', views[view]); if (!h) return; e.preventDefault(); try { h.focus({ preventScroll: true }); } catch (x) {} jump(h.closest('section') || h); });
+$$('[data-values-link], a[href="#values"]').forEach(a => a.addEventListener('click', () => { if (hashId() === 'values') { closeMenu(); window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); } }));
+
+/* ================= menu ================= */
+const menu = $('#menu'), menuBtn = $('#menu-btn');
+const behindMenu = [$('main'), $('#foot'), $('.skip')];
+let menuOpen = false;
+// While the full-screen menu is open, everything behind it is inert and the page does not scroll.
+function menuState(on) { behindMenu.forEach(el => { if (el) { if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); } }); root.classList.toggle('menu-open', on); }
+function openMenu() { menuOpen = true; menu.hidden = false; menuState(true); menuBtn.setAttribute('aria-expanded', 'true'); menuBtn.textContent = 'Close'; const a = $('a', menu); if (a) a.focus(); syncLoop(); }
+function closeMenu() { if (!menuOpen) return; menuOpen = false; menu.hidden = true; menuState(false); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.textContent = 'Menu'; syncLoop(); }
+menuBtn.addEventListener('click', () => { if (menuOpen) { closeMenu(); menuBtn.focus(); } else openMenu(); });
+doc.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) { closeMenu(); menuBtn.focus(); } });
+$$('a', menu).forEach(a => a.addEventListener('click', () => {
+  closeMenu();
+  const id = (a.getAttribute('href') || '').slice(1);
+  if (id === hashId()) { const el = id === 'values' ? $('h1', views.values) : doc.getElementById(id); if (el) setTimeout(() => focusHeading(el), 0); }
+  else { menuNav = true; setTimeout(() => { menuNav = false; }, 1000); }
+}));
+onMQ(mq('(min-width: 900px)'), e => { if (e.matches) closeMenu(); });
+
+/* ================= copy address (clipboard, with a selection fallback) ================= */
+(function () {
+  const btn = $('#copy-btn'), status = $('#copy-status'), email = $('#email-text');
+  const addr = 'admin@hummingbolt.com';
+  const select = () => { try { const r = doc.createRange(); r.selectNodeContents(email); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} };
+  const legacy = () => { select(); try { return !!(doc.execCommand && doc.execCommand('copy')); } catch (e) { return false; } };
+  let tm = 0;
+  const done = ok => {
+    status.textContent = ok ? 'Copied. Paste it into your email app.' : 'Copy is blocked here. The address is selected, so you can copy it yourself.';
+    if (!ok) select();
+    btn.textContent = ok ? 'Copied' : 'Copy address';
+    clearTimeout(tm); tm = setTimeout(() => { btn.textContent = 'Copy address'; }, 2400);
+  };
+  btn.addEventListener('click', () => {
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(addr).then(() => done(true), () => done(legacy())); return; } } catch (e) {}
+    done(legacy());
+  });
+})();
+
+/* ================= sections & scroll ================= */
+const secs = [];
+let activeIdx = -1, secProg = 0.5, targetKey = 'wing', sideKey = 'hero';
+function measure() {
+  secs.length = 0;
+  const sy = window.scrollY || 0;
+  $$('[data-form]', views[view]).forEach(el => { const r = el.getBoundingClientRect(); secs.push({ el, key: el.getAttribute('data-form'), side: el.getAttribute('data-side') || 'right', top: r.top + sy, h: Math.max(1, r.height) }); });
+  activeIdx = -1;
+}
+function updateActive() {
+  if (!secs.length) return;
+  const y = (window.scrollY || 0) + window.innerHeight * 0.5;
+  let idx = secs.length - 1, prog = 1;
+  for (let i = 0; i < secs.length; i++) { const s = secs[i]; if (y < s.top + s.h) { idx = i; prog = (y - s.top) / s.h; break; } }
+  secProg = clamp(prog, 0, 1);
+  if (idx !== activeIdx) { activeIdx = idx; onSection(secs[idx]); }
+}
+function onSection(s) {
+  targetKey = s.key; sideKey = s.side; DBG.form = s.key;
+  if (!introHold) setTarget(s.key);
+  if (view === 'values') $$('a', railEl).forEach(a => { if (a.getAttribute('data-for') === s.el.id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+  if (mode === 'still') scheduleStill();
+}
+
+/* ================= 5. flow between formations =================
+   Feathers never respawn. When the section changes, each feather leaves formation A for formation B on its own clock:
+   its delay mixes a sweep across the new shape (left to right) with a per-feather random, then it flies for DUR seconds
+   along an arc stirred by a little turbulence. The shader does the per-feather part; this keeps the two keys and the clock. */
+const STAG = 0.85, DUR = 1.25, FLOW_T = STAG + DUR;
+let curA = 'wing', curB = 'wing', mixT = 99, blending = false, introHold = true;
+function setTarget(key, force) {
+  if (!FORMATIONS[key]) return;
+  if (!force && (key === curB)) return;
+  const dom = (blending && mixT > FLOW_T * 0.5) ? curB : curA;   // where most feathers are right now
+  if (dom === key && !force) { curA = curB = key; blending = false; mixT = 99; return; }
+  curA = dom; curB = key; mixT = 0; blending = curA !== curB;
+  if (!blending) mixT = 99;
+  // Long sessions: the shader clock is 32-bit, so after an hour it is rebased while the feathers are in flight anyway.
+  if (blending && simT > 3600) simT = 60;
+}
+function advanceFlow(dt) {
+  if (!blending) return;
+  mixT += dt;
+  if (mixT >= FLOW_T) { curA = curB; blending = false; mixT = 99; }
+}
+
+/* ================= 6. camera ================= */
+const CKEYS = ['az', 'el', 'dist', 'fov', 'tx', 'ty', 'tz', 'roll', 'sx', 'sy'];
+const C = {}, T = {}, CV = {};
+CKEYS.forEach(k => { C[k] = T[k] = CV[k] = 0; });
+C.dist = T.dist = 6; C.fov = T.fov = 34;
+function camSnap() { for (let i = 0; i < CKEYS.length; i++) { C[CKEYS[i]] = T[CKEYS[i]]; CV[CKEYS[i]] = 0; } }
+const VPm = new Float32Array(16);
+const cam = { px: 0, py: 0, pz: 0, fx: 0, fy: 0, fz: -1, rx: 1, ry: 0, rz: 0, ux: 0, uy: 1, uz: 0, A: 1, B: 1, dist: 6 };
+let cssW = window.innerWidth, cssH = window.innerHeight;
+// Lens shift keeps the form on the side away from the text (data-side), or above it on a portrait phone.
+function shiftFor(side, out) {
+  const wide = cssW >= 900, portrait = cssH > cssW * 1.05;
+  if (wide) {
+    const sq = clamp(1.6 - cssW / cssH, 0, 0.5) * 0.36;   // squarer desktop screens: the form sits further out
+    if (side === 'right') { out.sx = 0.38 + sq; out.sy = 0.02; }
+    else if (side === 'left') { out.sx = -0.38 - sq; out.sy = 0.02; }
+    else { out.sx = 0.45; out.sy = 0.16; }  // hero: up and to the right of the headline
+  } else if (portrait) { out.sx = 0; out.sy = 0.42; }
+  else { out.sx = side === 'left' ? -0.32 : 0.32; out.sy = 0.06; }
+}
+let ptrSX = 0, ptrSY = 0;
+function camTarget(key, side, prog, t, out) {
+  const c = FORMATIONS[key].cam;
+  const aspect = cssW / cssH;
+  const pm = aspect < 1 ? 1 + (1 - aspect) * 1.32 : 1;   // portrait: step back so the form fits the width
+  out.az = c[0] + (prog - 0.5) * 0.42 + Math.sin(t * 0.07) * 0.08 + ptrSX * 0.05;
+  out.el = c[1] - (prog - 0.5) * 0.1 + ptrSY * 0.035;
+  out.dist = c[2] * (1 - (prog - 0.5) * 0.06) * pm * (cssW >= 900 && aspect < 1.6 ? 1 + (1.6 - aspect) * 0.5 : 1);
+  out.fov = c[3] * (aspect < 1 ? 1 + (1 - aspect) * 0.3 : 1);
+  // the target's x offset keeps a form clear of the text column on wide screens; on a phone the form is centred
+  out.tx = c[4] * (cssW >= 900 ? 1 : 0.3); out.ty = c[5]; out.tz = c[6]; out.roll = c[7];
+  shiftFor(side, out);
+}
+// Where the camera starts: square on to the wingpath, at the distance that makes the feather stroke exactly as large as
+// the loader's drawn mark (both centred on the screen).
+let markW = 0;   // the loader mark's width in CSS px, measured once (and again on resize) rather than every frame
+function introPose(out) {
+  const f1 = 1 / Math.tan(34 * Math.PI / 360);
+  if (!(markW > 20)) { try { markW = ldMark.getBoundingClientRect().width; } catch (e) {} }
+  if (!(markW > 20)) markW = Math.min(440, Math.max(Math.min(cssW, cssH) * 0.46, cssW * 0.62));
+  const ppu = markW * (WING.svgW / WING.viewW) / WING.worldW;      // CSS px per world unit
+  CKEYS.forEach(k => { out[k] = 0; });
+  out.fov = 34; out.dist = f1 * cssH / (2 * ppu);
+}
+function buildCamera(c, w, h) {
+  const dist = c.dist, az = c.az, el = clamp(c.el, -1.35, 1.35);
+  const ce = Math.cos(el), se = Math.sin(el), ca = Math.cos(az), sa = Math.sin(az);
+  const px = c.tx + dist * ce * sa, py = c.ty + dist * se, pz = c.tz + dist * ce * ca;
+  let fx = c.tx - px, fy = c.ty - py, fz = c.tz - pz; let l = Math.hypot(fx, fy, fz) || 1; fx /= l; fy /= l; fz /= l;
+  let rx = -fz, rz = fx; l = Math.hypot(rx, rz) || 1; rx /= l; rz /= l; const ry = 0;
+  const ux = ry * fz - rz * fy, uy = rz * fx - rx * fz, uz = rx * fy - ry * fx;
+  const cr = Math.cos(c.roll), sr = Math.sin(c.roll);
+  const Rx = rx * cr + ux * sr, Ry = ry * cr + uy * sr, Rz = rz * cr + uz * sr;
+  const Ux = ux * cr - rx * sr, Uy = uy * cr - ry * sr, Uz = uz * cr - rz * sr;
+  const f1 = 1 / Math.tan(c.fov * Math.PI / 360), asp = w / h, A = f1 / asp, B = f1;
+  const n = 0.05, fa = 40, Cc = (fa + n) / (n - fa), D = 2 * fa * n / (n - fa), sx = c.sx, sy = c.sy;
+  const tr = -(Rx * px + Ry * py + Rz * pz), tu = -(Ux * px + Uy * py + Uz * pz), tf = fx * px + fy * py + fz * pz;
+  VPm[0] = A * Rx + sx * fx; VPm[4] = A * Ry + sx * fy; VPm[8] = A * Rz + sx * fz; VPm[12] = A * tr - sx * tf;
+  VPm[1] = B * Ux + sy * fx; VPm[5] = B * Uy + sy * fy; VPm[9] = B * Uz + sy * fz; VPm[13] = B * tu - sy * tf;
+  VPm[2] = -Cc * fx; VPm[6] = -Cc * fy; VPm[10] = -Cc * fz; VPm[14] = Cc * tf + D;
+  VPm[3] = fx; VPm[7] = fy; VPm[11] = fz; VPm[15] = -tf;
+  cam.px = px; cam.py = py; cam.pz = pz; cam.fx = fx; cam.fy = fy; cam.fz = fz;
+  cam.rx = Rx; cam.ry = Ry; cam.rz = Rz; cam.ux = Ux; cam.uy = Uy; cam.uz = Uz; cam.A = A; cam.B = B; cam.dist = dist;
+}
+const P3 = new Float32Array(3);
+function project(x, y, z, out) {
+  const cx = VPm[0] * x + VPm[4] * y + VPm[8] * z + VPm[12];
+  const cy = VPm[1] * x + VPm[5] * y + VPm[9] * z + VPm[13];
+  const cw = VPm[3] * x + VPm[7] * y + VPm[11] * z + VPm[15];
+  const iw = cw > 1e-4 ? 1 / cw : 0;
+  out[0] = (cx * iw * 0.5 + 0.5) * cssW; out[1] = (0.5 - cy * iw * 0.5) * cssH; out[2] = cw;
+}
+
+/* ================= 7. ruffle input =================
+   Pointer or finger -> a ray through the scene, a world-space velocity (the drift) and a strength. Touch listeners are
+   passive and nothing calls preventDefault, so a finger on the feathers ruffles them and still scrolls the page. */
+const ptr = { x: cssW * 0.62, y: cssH * 0.4, has: false, inside: false, dx: 0, dy: 0, touchUntil: 0, touching: false };
+const ray = { ox: 0, oy: 0, oz: 6, dx: 0, dy: 0, dz: -1 };
+const pv = new Float32Array(3);
+const seg = new Float32Array([0, 0, 0, 0]);   // the pointer's path since the last frame, aspect-corrected NDC
+DBG.seg = seg;
+let pulse = 0, ruffleS = 0, segFresh = true;
+function pointerRay() {
+  const nx = ptr.x / cssW * 2 - 1, ny = 1 - ptr.y / cssH * 2;
+  const xv = (nx - C.sx) / cam.A, yv = (ny - C.sy) / cam.B;
+  let dx = cam.fx + cam.rx * xv + cam.ux * yv, dy = cam.fy + cam.ry * xv + cam.uy * yv, dz = cam.fz + cam.rz * xv + cam.uz * yv;
+  const l = Math.hypot(dx, dy, dz) || 1;
+  ray.ox = cam.px; ray.oy = cam.py; ray.oz = cam.pz; ray.dx = dx / l; ray.dy = dy / l; ray.dz = dz / l;
+}
+function ptrAt(x, y, isTouch) {
+  if (ptr.has) { ptr.dx += x - ptr.x; ptr.dy += y - ptr.y; }
+  ptr.x = x; ptr.y = y; ptr.has = true; ptr.inside = true;
+  if (isTouch) ptr.touchUntil = performance.now() + 450;
+}
+window.addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch') return;                                  // touch is followed through touch events
+  if (!ptr.has && e.clientX === 0 && e.clientY === 0) return;             // the synthetic (0,0) move some browsers send on load
+  ptrAt(e.clientX, e.clientY, false);
+}, { passive: true });
+window.addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') { ptrAt(e.clientX, e.clientY, false); pulse = 1; } }, { passive: true });
+window.addEventListener('touchstart', e => { const t = e.touches[0]; if (!t) return; ptr.has = false; segFresh = true; ptrAt(t.clientX, t.clientY, true); ptr.touching = true; pulse = 1; }, { passive: true });
+window.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) ptrAt(t.clientX, t.clientY, true); }, { passive: true });
+window.addEventListener('touchend', e => { if (!e.touches.length) { ptr.touching = false; ptr.touchUntil = performance.now() + 450; } }, { passive: true });
+doc.addEventListener('mouseout', e => { if (!e.relatedTarget) ptr.inside = false; });
+window.addEventListener('blur', () => { ptr.inside = false; });
+if (!mqFine.matches) { const h = $('#hint-text'); if (h) h.textContent = 'Touch the feathers'; }
+function updatePointer(dt, now) {
+  pointerRay();
+  const nx = (ptr.x / cssW * 2 - 1) * (cssW / cssH), ny = 1 - ptr.y / cssH * 2;
+  if (segFresh || !ptr.has) { seg[0] = nx; seg[1] = ny; segFresh = !ptr.has; } else { seg[0] = seg[2]; seg[1] = seg[3]; }
+  seg[2] = nx; seg[3] = ny;
+  const wpp = (2 * cam.dist / cam.B) / cssH;            // world units per CSS px at the focus distance
+  const inv = dt > 0 ? 1 / dt : 0;
+  const sx = ptr.dx * wpp * inv, sy = -ptr.dy * wpp * inv;
+  ptr.dx = 0; ptr.dy = 0;
+  let vx = cam.rx * sx + cam.ux * sy, vy = cam.ry * sx + cam.uy * sy, vz = cam.rz * sx + cam.uz * sy;
+  const l = Math.hypot(vx, vy, vz); if (l > 6) { vx *= 6 / l; vy *= 6 / l; vz *= 6 / l; }
+  pv[0] = pv[0] * 0.6 + vx * 0.4; pv[1] = pv[1] * 0.6 + vy * 0.4; pv[2] = pv[2] * 0.6 + vz * 0.4;
+  const speed = Math.hypot(pv[0], pv[1], pv[2]);
+  const touchOn = ptr.touching || now < ptr.touchUntil;
+  const on = ptr.has && (touchOn || (ptr.inside && mqFine.matches));
+  // a resting pointer lifts the feathers under it a little; moving through them ruffles them properly
+  const want = on ? clamp((touchOn ? 0.55 : 0.32) + speed * 0.35, 0, 1) : 0;
+  ruffleS = lerp(ruffleS, want, 1 - Math.exp(-dt * 10));
+  pulse *= Math.exp(-dt * 9); if (pulse < 0.01) pulse = 0;
+}
+
+/* ================= 8. GL =================
+   UPDATE_VS: one vertex per feather, rasteriser off, results captured with transform feedback.
+   form(kind) returns the target frame for this feather in one formation; main() blends, springs, ruffles, orients. */
+const UPDATE_VS = `#version 300 es
+precision highp float;
+precision highp int;
+layout(location=0) in vec4 aP;
+layout(location=1) in vec4 aV;
+layout(location=2) in vec4 aF;
+layout(location=3) in vec4 aN;
+layout(location=4) in vec4 aT;
+out vec4 oP;
+out vec4 oV;
+out vec4 oF;
+out vec4 oN;
+out vec4 oT;
+uniform float uT;
+uniform float uDt;
+uniform int uKA;
+uniform int uKB;
+uniform vec4 uPA;
+uniform vec4 uPB;
+uniform float uMixT;
+uniform float uStag;
+uniform float uDur;
+uniform float uN;
+uniform float uFlut;
+uniform vec3 uRO;
+uniform vec3 uRD;
+uniform vec3 uPV;
+uniform mat4 uVP;
+uniform vec4 uSeg;
+uniform float uAsp;
+uniform float uPR;
+uniform float uPS;
+uniform float uPulse;
+uniform float uBloom;
+uniform float uSnap;
+uniform float uK;
+uniform highp sampler2D uPath;
+const float TAU=6.28318530718;
+const float PI=3.14159265359;
+uint hu(uint x){x^=x>>16u;x*=0x7feb352du;x^=x>>15u;x*=0x846ca68bu;x^=x>>16u;return x;}
+float hf(uint x){return float(hu(x)>>8u)*(1.0/16777216.0);}
+float gI;   // this feather's index as a fraction of the active count (for phyllotaxis); set in main()
+
+/* ---- the target frame a formation hands each feather ---- */
+struct F{vec3 p;vec3 t;vec3 n;float a;float s;float g;};
+F mk(vec3 p,vec3 t,vec3 n,float a,float s,float g){F o;o.p=p;o.t=t;o.n=n;o.a=a;o.s=s;o.g=g;return o;}
+vec3 rotA(vec3 v,vec3 k,float a){float c=cos(a),s=sin(a);return v*c+cross(k,v)*s+k*dot(k,v)*(1.0-c);}
+void rotF(inout F o,vec3 k,float a){o.p=rotA(o.p,k,a);o.t=rotA(o.t,k,a);o.n=rotA(o.n,k,a);}
+// a cheap divergence-free stir (curl of a trigonometric potential)
+vec3 flow(vec3 p,float t){
+  float ay=1.7*cos(1.7*p.y+0.3+t*0.11),az=1.45*cos(2.9*p.z+1.1-t*0.07),bz=1.9*cos(1.9*p.z+2.1+t*0.05);
+  float bx=1.55*cos(3.1*p.x+0.4),cx=1.6*cos(1.6*p.x+0.7-t*0.09),cy=1.35*cos(2.7*p.y+2.5);
+  return vec3(cy-bz,az-cx,bx-ay)*0.6;
+}
+// a closed curve from the path atlas, s in [0,1)
+vec3 path(int row,float s){
+  float x=fract(s)*512.0;int i=int(x);float f=x-float(i);
+  return mix(texelFetch(uPath,ivec2(i,row),0).xyz,texelFetch(uPath,ivec2((i+1)&511,row),0).xyz,f);
+}
+
+/* WING - the wingpath figure-eight as a feathered ribbon that flows along the stroke.
+   P: x ribbon width, y flow (path fraction per second), z halo spread, w twist. uBloom scales the width (loader). */
+F fWing(vec4 q,vec4 r,vec4 P,float t){
+  float s=q.x+t*P.y;
+  vec3 c=path(0,s);
+  vec3 T=normalize(path(0,s+0.003)-path(0,s-0.003));
+  vec3 sd=normalize(cross(vec3(0.0,0.0,1.0),T));
+  vec3 up=cross(T,sd);
+  float tw=P.w*sin(s*TAU*2.0+t*0.3);
+  vec3 sd2=sd*cos(tw)+up*sin(tw);
+  vec3 n=up*cos(tw)-sd*sin(tw);
+  float lane=q.y-0.5;
+  bool halo=r.w>0.88;
+  vec3 off=sd2*(lane*P.x)+n*((q.z-0.5)*P.x*0.14);
+  if(halo){float rr=P.x*(0.58+P.z*r.z*r.z);float an=q.z*TAU;off=(sd2*cos(an)+n*sin(an)*0.5)*rr;}
+  vec3 tt=normalize(T+sd2*(lane*0.75));  // a soft chevron: feathers lean out from the stroke like barbs from a shaft
+  return mk(c+off*uBloom,tt,n,1.0,halo?0.8:1.0,0.0);
+}
+
+/* APPS - a web window and a phone, drawn by feathers travelling their outlines and lines of content.
+   P: y current along the outlines. */
+F fApps(vec4 q,vec4 r,vec4 P,float t){
+  bool ph=q.x>=0.5;
+  float lx=ph?(q.x-0.5)*2.0:q.x*2.0;
+  vec3 p;vec3 T;float a=1.0,sz=1.0,g=0.0;
+  if(lx<0.6){
+    int row=ph?2:1;
+    float s=lx/0.6+t*P.y*(ph?-1.3:1.0);
+    vec3 c=path(row,s);
+    T=normalize(path(row,s+0.004)-c);
+    vec3 o=normalize(cross(vec3(0.0,0.0,1.0),T));
+    p=c+o*(q.y-0.5)*0.045+vec3(0.0,0.0,(q.z-0.5)*0.03);
+  }else{
+    float k=(lx-0.6)/0.4;
+    float bi=floor(k*5.0),u=fract(k*5.0);
+    vec3 L;   // a line of content: y, start x, length (card units)
+    if(!ph) L=bi<1.0?vec3(0.46,-0.88,1.76):bi<2.0?vec3(0.2,-0.84,0.92):bi<3.0?vec3(0.0,-0.84,1.3):bi<4.0?vec3(-0.2,-0.84,1.06):vec3(-0.4,-0.84,0.6);
+    else L=bi<1.0?vec3(0.5,-0.24,0.48):bi<2.0?vec3(0.3,-0.24,0.34):bi<3.0?vec3(0.12,-0.24,0.42):bi<4.0?vec3(-0.06,-0.24,0.28):vec3(-0.5,-0.15,0.3);
+    float s=fract(u+t*P.y*2.2);
+    p=vec3(L.y+s*L.z,L.x+(q.y-0.5)*(bi<1.0&&!ph?0.02:0.035),(q.z-0.5)*0.02);
+    T=vec3(1.0,0.0,0.0);
+    a=smoothstep(0.0,0.08,s)*(1.0-smoothstep(0.9,1.0,s));
+    sz=0.9;
+  }
+  F o=mk(p,T,vec3(0.0,0.0,1.0),a,sz,g);
+  rotF(o,vec3(0.0,1.0,0.0),ph?-0.3:0.34);
+  rotF(o,vec3(1.0,0.0,0.0),-0.06);
+  o.p+=ph?vec3(0.98,-0.24+0.035*sin(t*0.55+1.7),0.55):vec3(-0.32,0.14+0.03*sin(t*0.55),-0.25);
+  return o;
+}
+
+/* DIE - a die tumbling slowly: feathered edges, whorled pips, a faint scatter on the faces.
+   P: x half side, y tumble speed. */
+const vec2 PIP[21]=vec2[21](vec2(0,0),vec2(-1,-1),vec2(1,1),vec2(-1,-1),vec2(0,0),vec2(1,1),vec2(-1,-1),vec2(1,-1),vec2(-1,1),vec2(1,1),vec2(-1,-1),vec2(1,-1),vec2(-1,1),vec2(1,1),vec2(0,0),vec2(-1,-1),vec2(-1,0),vec2(-1,1),vec2(1,-1),vec2(1,0),vec2(1,1));
+void dieFace(int v,out vec3 n,out vec3 u,out vec3 w){
+  if(v==1){n=vec3(0,0,1);u=vec3(1,0,0);w=vec3(0,1,0);}
+  else if(v==6){n=vec3(0,0,-1);u=vec3(-1,0,0);w=vec3(0,1,0);}
+  else if(v==2){n=vec3(1,0,0);u=vec3(0,0,-1);w=vec3(0,1,0);}
+  else if(v==5){n=vec3(-1,0,0);u=vec3(0,0,1);w=vec3(0,1,0);}
+  else if(v==3){n=vec3(0,1,0);u=vec3(1,0,0);w=vec3(0,0,-1);}
+  else{n=vec3(0,-1,0);u=vec3(1,0,0);w=vec3(0,0,1);}
+}
+F fDie(vec4 q,vec4 r,vec4 P,float t){
+  float h=P.x;vec3 p;vec3 T;vec3 n;float g=0.0,sz=1.0,a=1.0;
+  if(q.x<0.46){
+    float e=floor(q.x/0.46*12.0),s=fract(q.x/0.46*12.0);
+    int ax=int(e)/4;int k=int(e)-ax*4;
+    float s1=(k&1)==1?1.0:-1.0,s2=(k&2)==2?1.0:-1.0;
+    float al=(s*2.0-1.0)*h*0.9;
+    vec2 o=vec2(s1,s2)*(h-0.025)+(q.yz-0.5)*0.04;
+    if(ax==0){p=vec3(al,o.x,o.y);T=vec3(1,0,0);n=normalize(vec3(0,s1,s2));}
+    else if(ax==1){p=vec3(o.x,al,o.y);T=vec3(0,1,0);n=normalize(vec3(s1,0,s2));}
+    else{p=vec3(o.x,o.y,al);T=vec3(0,0,1);n=normalize(vec3(s1,s2,0));}
+  }else if(q.x<0.86){
+    int j=int(floor((q.x-0.46)/0.4*21.0));
+    int v=j<1?1:j<3?2:j<6?3:j<10?4:j<15?5:6;
+    vec3 fu;vec3 fw;dieFace(v,n,fu,fw);
+    vec2 c2=PIP[j]*h*0.5;
+    float rho=sqrt(q.y)*h*0.17,an=q.z*TAU;
+    vec2 d=vec2(cos(an),sin(an));
+    vec2 pp=c2+d*rho;
+    p=n*(h+0.01)+fu*pp.x+fw*pp.y;
+    vec2 tg=vec2(-d.y,d.x)*0.85+d*0.5;
+    T=fu*tg.x+fw*tg.y;
+    g=0.1;sz=0.85;
+  }else{
+    int v=1+int(floor(q.y*6.0));
+    vec3 fu;vec3 fw;dieFace(v,n,fu,fw);
+    vec2 pp=(vec2(fract(q.y*6.0),q.z)*2.0-1.0)*h*0.86;
+    p=n*h+fu*pp.x+fw*pp.y;
+    T=normalize(fu*cos(r.x*TAU)+fw*sin(r.x*TAU));
+    a=0.6;g=-0.05;sz=0.8;
+  }
+  F o=mk(p,T,n,a,sz,g);
+  rotF(o,normalize(vec3(0.42,1.0,0.18)),t*P.y+0.6);
+  rotF(o,vec3(1.0,0.0,0.0),0.42);
+  o.p.y+=0.04*sin(t*0.8);
+  return o;
+}
+
+/* ORB - AI: a calm feathered sphere. Its feathers run in bands around it that twist slowly with latitude, so the
+   surface reads as smooth, orderly flow; a smaller shell inside turns the other way. P: x radius, y turn speed. */
+F fOrb(vec4 q,vec4 r,vec4 P,float t){
+  float z=1.0-2.0*q.x,rr=sqrt(max(0.0,1.0-z*z)),an=q.y*TAU;
+  vec3 d=vec3(rr*cos(an),z,rr*sin(an));
+  bool inner=r.w>0.88;
+  float R=P.x*(inner?0.56:1.0);
+  float br=1.0+0.02*sin(z*7.0-t*0.9);
+  vec3 p=d*(R*br+(q.z-0.5)*0.035);
+  vec3 lon=normalize(cross(vec3(0.0,1.0,0.0),d)+vec3(1e-4));
+  vec3 lat=cross(d,lon);
+  float tw=0.4*sin(z*2.6+t*0.25);
+  F o=mk(p,normalize(lon*cos(tw)+lat*sin(tw)),d,1.0,inner?0.8:1.0,inner?0.1:0.0);
+  rotF(o,vec3(0.0,1.0,0.0),t*P.y*(inner?-1.8:1.0));
+  rotF(o,vec3(0.0,0.0,1.0),0.32);
+  return o;
+}
+
+/* box surface for slabs: mostly the top, then the long sides, a few on the ends; shafts along the long axis */
+F slabPt(vec3 hs,vec4 q,float lq){
+  vec3 p;vec3 n;vec3 T;
+  if(lq<0.3){
+    // the twelve edges (four long, four across, four short uprights)
+    float e=floor(lq/0.3*12.0),s=fract(lq/0.3*12.0)*2.0-1.0;
+    int ax=int(e)/4;int k=int(e)-ax*4;
+    float s1=(k&1)==1?1.0:-1.0,s2=(k&2)==2?1.0:-1.0;
+    if(ax==0){p=vec3(s*hs.x,s1*hs.y,s2*hs.z);T=vec3(1,0,0);n=normalize(vec3(0,s1*0.6+0.8,s2));}
+    else if(ax==1){p=vec3(s1*hs.x,s2*hs.y,s*hs.z);T=vec3(0,0,1);n=normalize(vec3(s1,s2*0.6+0.8,0));}
+    else{p=vec3(s1*hs.x,s*hs.y,s2*hs.z);T=vec3(0,1,0);n=normalize(vec3(s1,0,s2));}
+    return mk(p,T,n,1.0,0.9,0.04);
+  }
+  lq=(lq-0.3)/0.7;
+  if(lq<0.5){p=vec3((q.y*2.0-1.0)*hs.x,hs.y,(q.z*2.0-1.0)*hs.z);n=vec3(0,1,0);T=vec3(1,0,0);}
+  else if(lq<0.86){float sg=lq<0.68?1.0:-1.0;p=vec3((q.y*2.0-1.0)*hs.x,(q.z*2.0-1.0)*hs.y,sg*hs.z);n=vec3(0,0,sg);T=vec3(1,0,0);}
+  else{float sg=lq<0.93?1.0:-1.0;p=vec3(sg*hs.x,(q.z*2.0-1.0)*hs.y,(q.y*2.0-1.0)*hs.z);n=vec3(sg,0,0);T=vec3(0,0,1);}
+  return mk(p,T,n,1.0,1.0,0.0);
+}
+
+/* TOWER - Toppleton: planks of different lengths stacked into a tall, balanced tower that sways about its foot. Each
+   plank sits a little off the one below and turned a little, the way a careful stack is built. P: x planks, y sway. */
+F fTower(vec4 q,vec4 r,vec4 P,float t){
+  float n=P.x,k=floor(q.x*n),lq=fract(q.x*n);
+  float hy=0.07,st=2.0*hy+0.035,base=-0.5*n*st;
+  F o=slabPt(vec3(0.62-0.032*k+0.09*sin(k*2.3+0.5),hy,0.2-0.006*k),q,lq);
+  o.g=o.n.y>0.5?0.1:0.0;   // the tops of the planks catch a little colour
+  o.t=normalize(o.t+cross(o.n,o.t)*(r.x-0.5)*0.3);
+  rotF(o,vec3(0.0,1.0,0.0),0.28*sin(k*1.9+0.3)+0.06*k);
+  o.p+=vec3(0.15*sin(k*1.31+0.9)-0.05,hy+k*st,0.06*cos(k*1.7));
+  float sw=P.y*sin(t*0.7-k*0.12);
+  rotF(o,vec3(0.0,0.0,1.0),sw);rotF(o,vec3(1.0,0.0,0.0),sw*0.5);
+  o.p.y+=base;
+  return o;
+}
+
+/* NEST - Where we started: a warm woven bowl turning slowly, and an updraft of loose feathers. P: y turn speed. */
+F fNest(vec4 q,vec4 r,vec4 P,float t){
+  if(r.w<0.84){
+    float rho=mix(0.5,1.12,q.y);
+    float th=q.x*TAU+t*P.y*(0.7+0.6*q.z);
+    float lay=floor(q.z*7.0);
+    float e=(rho-0.5)/0.62;
+    vec3 c=vec3(cos(th)*rho,-0.42+0.5*pow(e,1.6)+0.05*sin(th*5.0+lay*2.1)+(q.z-0.5)*0.12,sin(th)*rho);
+    vec3 tg=vec3(-sin(th),0.0,cos(th)),rd=vec3(cos(th),0.0,sin(th));
+    vec3 nr=normalize(vec3(0.0,1.0,0.0)-rd*0.8*pow(max(e,0.0),0.6));
+    float wv=(mod(lay,2.0)<0.5?1.0:-1.0)*0.55;
+    return mk(c,normalize(tg+nr*wv*0.6+rd*wv*0.4),nr,1.0,1.0,0.04);
+  }
+  // loose feathers rise out of the bowl on a warm, soft spiral and drift apart as they go
+  float h=fract(q.y+t*0.03*(0.7+0.6*r.z));
+  float th=q.x*TAU+t*0.2+h*2.2,rad=(0.2+0.75*h)*(0.45+0.55*r.y);
+  vec3 c=vec3(cos(th)*rad,-0.3+h*1.45,sin(th)*rad)+flow(vec3(q.x*3.0,h*2.0,r.z*3.0),t*0.4)*0.09*h;
+  float a=smoothstep(0.0,0.2,h)*(1.0-smoothstep(0.55,1.0,h))*0.9;
+  return mk(c,normalize(vec3(-sin(th),0.35,cos(th))),normalize(vec3(cos(th),0.6,sin(th))),a,0.9,0.08);
+}
+
+/* FOUR - the values teaser: four feather rosettes, the first the boldest and the last the smallest. */
+F fFour(vec4 q,vec4 r,vec4 P,float t){
+  float i=floor(q.x*4.0),lq=fract(q.x*4.0);
+  float sc=i<1.0?1.12:i<2.0?0.78:i<3.0?0.92:0.6;
+  float rho=pow(lq,0.55);
+  float an=q.y*TAU+t*0.12*(mod(i,2.0)<0.5?1.0:-1.0)+rho*1.2;
+  vec3 rd=vec3(cos(an),sin(an),0.0);
+  // petals overlap like scales, lying almost flat and cupping a little toward the centre
+  vec3 p=rd*rho*0.46*sc+vec3(0.0,0.0,(1.0-rho)*0.12*sc+(q.z-0.5)*0.02);
+  vec3 T=normalize(rd+vec3(-sin(an),cos(an),0.0)*0.18+vec3(0.0,0.0,-0.12));
+  vec3 n=normalize(vec3(0.0,0.0,1.0)-rd*0.35*(1.0-rho));
+  F o=mk(p,T,n,1.0,0.85+0.25*sc,0.0);
+  rotF(o,vec3(1.0,0.0,0.0),-0.35);rotF(o,vec3(0.0,1.0,0.0),0.3*sin(i*1.3+t*0.2));
+  vec2 at=i<1.0?vec2(-0.5,0.4):i<2.0?vec2(0.48,0.52):i<3.0?vec2(-0.36,-0.5):vec2(0.52,-0.36);
+  o.p+=vec3(at.x,at.y+0.05*sin(t*0.4+i*1.7),0.2*cos(i*2.3+0.2));
+  return o;
+}
+
+/* SETTLE - Contact: feathers come to rest one by one on a low heap, laid along a golden spiral, while a slow glint
+   travels over them; a few are still drifting down, rocking. P: x radius, y heap height. */
+F fSettle(vec4 q,vec4 r,vec4 P,float t){
+  if(r.w<0.935){
+    float k=gI;
+    float rho=P.x*sqrt(clamp(k,0.0,1.0)),an=gI*uN*2.39996323;   // phyllotaxis: index times the golden angle
+    float e=rho/P.x;
+    float y=-0.6+P.y*pow(max(1.0-e*e,0.0),0.85)+0.018*sin(rho*9.0-t*0.5);
+    vec3 rd=vec3(cos(an),0.0,sin(an)),tg=vec3(-sin(an),0.0,cos(an));
+    vec3 c=vec3(rd.x*rho,y,rd.z*rho);
+    float sl=1.7*P.y*e*pow(max(1.0-e*e,0.001),-0.15)/P.x;              // slope of the heap here
+    vec3 n=normalize(vec3(0.0,1.0,0.0)+rd*sl);
+    vec3 T=normalize(rd*0.42+tg*0.9-n*0.1);                              // laid around the spiral, tips outward
+    return mk(c,T,n,1.0,1.0,0.0);
+  }
+  float h=fract(q.y+t*0.022*(0.6+0.8*r.z));
+  float rock=sin(t*0.9+r.x*TAU);
+  float ra=0.15+0.85*sqrt(fract(q.z*3.7)),aa=q.x*TAU+t*0.05;
+  vec3 c=vec3(cos(aa)*ra*P.x+rock*0.14,1.2-h*1.5,sin(aa)*ra*P.x*0.8);
+  float a=smoothstep(0.0,0.12,h)*(1.0-smoothstep(0.78,1.0,h));
+  return mk(c,normalize(vec3(cos(r.x*TAU),rock*0.35,sin(r.x*TAU))),normalize(vec3(rock*0.5,1.0,0.0)),a,1.0,0.05);
+}
+
+/* SWEEP - Be bold: one broad band of feathers rushing forward, widening and banking as it goes.
+   P: x width, y speed. Feathers fade at both ends and re-enter at the back while invisible. */
+vec3 sweepC(float s){return vec3(mix(-1.75,1.25,s),-0.7+1.1*s*s-0.1*sin(s*PI),0.8*sin(s*PI)-0.45*s);}
+F fSweep(vec4 q,vec4 r,vec4 P,float t){
+  float s=fract(q.x+t*P.y*(0.9+0.2*r.z));
+  vec3 c=sweepC(s);vec3 T=normalize(sweepC(s+0.004)-c);
+  vec3 sd=normalize(cross(vec3(0.0,0.25,1.0),T));vec3 n=normalize(cross(T,sd));
+  float w=P.x*(0.12+0.88*pow(s,1.25)),lane=q.y-0.5,bk=0.6*s;
+  vec3 sd2=sd*cos(bk)+n*sin(bk),n2=n*cos(bk)-sd*sin(bk);
+  float a=smoothstep(0.0,0.07,s)*(1.0-smoothstep(0.88,1.0,s));
+  return mk(c+sd2*lane*w*2.0+n2*(q.z-0.5)*0.06,normalize(T-sd2*lane*0.9),n2,a,1.0+0.3*s,0.06*s);
+}
+
+/* TINKER - twenty small clusters, each trying a new shape every few seconds (ring, square, helix, bars, shell,
+   triangle), each on its own clock, flashing briefly as it changes. P: x cluster size, y seconds per shape. */
+vec3 tShape(int k,float u,float v,out vec3 T){
+  if(k==0){float a=u*TAU;T=vec3(-sin(a),cos(a),0.0);return vec3(cos(a),sin(a),(v-0.5)*0.15);}
+  if(k==1){float e=floor(u*4.0),s=fract(u*4.0)*2.0-1.0;
+    T=e<1.0?vec3(1,0,0):e<2.0?vec3(0,1,0):e<3.0?vec3(-1,0,0):vec3(0,-1,0);
+    return (e<1.0?vec3(s,-1,0):e<2.0?vec3(1,s,0):e<3.0?vec3(-s,1,0):vec3(-1,-s,0))*0.8;}
+  if(k==2){float a=u*TAU*2.0;T=normalize(vec3(-sin(a)*0.7,0.25,cos(a)*0.7));return vec3(cos(a)*0.7,u*2.0-1.0,sin(a)*0.7);}
+  if(k==3){float b=floor(u*3.0),s=fract(u*3.0)*2.0-1.0;T=vec3(1,0,0);return vec3(s*(1.0-b*0.22),(b-1.0)*0.55,(v-0.5)*0.2);}
+  if(k==4){float a=u*TAU,b=acos(1.0-2.0*v);T=normalize(vec3(-sin(a),0.0,cos(a)));return vec3(sin(b)*cos(a),cos(b),sin(b)*sin(a))*0.85;}
+  float e=floor(u*3.0),s=fract(u*3.0);
+  vec3 A=vec3(0,1,0),B=vec3(0.87,-0.5,0),Cc=vec3(-0.87,-0.5,0);
+  vec3 p0=e<1.0?A:e<2.0?B:Cc,p1=e<1.0?B:e<2.0?Cc:A;
+  T=normalize(p1-p0);return mix(p0,p1,s);
+}
+F fTinker(vec4 q,vec4 r,vec4 P,float t){
+  float c=floor(q.x*20.0),u=fract(q.x*20.0);
+  float gx=mod(c,5.0),gy=floor(c/5.0);
+  vec3 ctr=vec3((gx-2.0)*0.5+0.09*sin(c*3.1),(gy-1.5)*0.47+0.07*cos(c*2.3),0.3*sin(c*1.7+0.5));
+  float ph=t/P.y+c*0.37,i0=floor(ph),f=smoothstep(0.62,1.0,fract(ph));
+  vec3 Ta;vec3 Tb;
+  vec3 pa=tShape(int(mod(i0+c,6.0)),u,q.y,Ta),pb=tShape(int(mod(i0+c+1.0,6.0)),u,q.y,Tb);
+  vec3 T=normalize(mix(Ta,Tb,f)+vec3(1e-4));
+  vec3 n=vec3(0.0,0.0,1.0);n=n-T*dot(n,T);n=length(n)>1e-3?normalize(n):vec3(0.0,1.0,0.0);
+  F o=mk(mix(pa,pb,f)*P.x,T,n,1.0,0.85,0.16*sin(PI*f));
+  rotF(o,normalize(vec3(sin(c),1.0,cos(c*1.3))),t*0.35*(mod(c,2.0)<0.5?1.0:-1.0)+c);
+  o.p+=ctr;
+  return o;
+}
+
+/* COLLAPSE - Fail fast. Learn faster: a stack wobbles, topples (top slab first), lies scattered, then re-forms bottom
+   first with a flash. Each slab turns a full 2 pi over the cycle, so the loop has no seam. P: x slabs, y cycle seconds. */
+F fCollapse(vec4 q,vec4 r,vec4 P,float t){
+  float n=P.x,k=floor(q.x*n),lq=fract(q.x*n);
+  float hy=0.075,st=2.0*hy+0.02,base=-0.62;
+  F o=slabPt(vec3(0.5-0.02*k,hy,0.18),q,lq);
+  rotF(o,vec3(0.0,1.0,0.0),(mod(k,2.0)<0.5?0.0:1.5708)+0.1*sin(k*2.1));
+  float tc=mod(t,P.y);
+  float dir=mod(k*7.0+1.0,2.0)<0.5?1.0:-1.0;
+  float fall=clamp((tc-3.6-(n-1.0-k)*0.07)/0.75,0.0,1.0);
+  float back=smoothstep(0.0,1.0,clamp((tc-5.9-k*0.16)/0.9,0.0,1.0));
+  rotF(o,vec3(0.0,0.0,1.0),dir*PI*(smoothstep(0.0,1.0,fall)+back));
+  vec3 cs=vec3(0.05*sin(k*2.3),base+hy+k*st,0.0);
+  vec3 gr=vec3(dir*(0.42+0.1*k),-1.02+hy+0.025*k,0.32*sin(k*3.7));
+  vec3 pos=mix(mix(cs,gr,fall*fall),cs,back)+vec3(0.0,sin(PI*fall)*0.12*(1.0-back)+sin(PI*back)*0.38,0.0);
+  // the wobble before it goes
+  float wb=0.05*smoothstep(2.6,3.6,tc)*(1.0-fall)*sin(tc*11.0)*(k/n);
+  pos.x+=wb*(pos.y-base);
+  o.p+=pos;o.g=0.14*sin(PI*back);
+  return o;
+}
+
+/* MACRO - Sweat the small stuff: one large feather built from small ones - a rachis, barbs that leave it toward the
+   tip (with a couple of natural splits), and a downy afterfeather at the base. Seen close. */
+vec3 rach(float s){return vec3(-0.1+0.3*s+0.12*sin(s*PI*0.9),-1.7+3.4*s,0.12*sin(s*PI));}
+F fMacro(vec4 q,vec4 r,vec4 P,float t){
+  F o;
+  if(q.x<0.1){
+    float s=q.x/0.1;
+    vec3 c=rach(s),T=normalize(rach(s+0.01)-c),sd=normalize(cross(vec3(0.0,0.0,1.0),T));
+    o=mk(c+sd*(q.y-0.5)*0.05*(1.0-0.8*s)+vec3(0.0,0.0,(q.z-0.5)*0.02),T,vec3(0.0,0.0,1.0),1.0,1.1,0.06);
+  }else if(q.x<0.93){
+    float k=(q.x-0.1)/0.83;
+    float side=q.y<0.5?-1.0:1.0;
+    float nb=floor(clamp(uN/190.0,30.0,110.0));
+    float bi=floor(k*nb),a=fract(k*nb);
+    float s0=0.06+0.92*(bi+0.5)/nb;
+    vec3 c0=rach(s0),T0=normalize(rach(s0+0.01)-c0),sd=normalize(cross(vec3(0.0,0.0,1.0),T0))*side;
+    float L=(side<0.0?0.42:0.62)*pow(sin(PI*pow(s0,0.72)),0.75)*(1.0-0.25*s0);
+    float sp=side>0.0?smoothstep(0.022,0.0,abs(s0-0.47))*0.1+smoothstep(0.016,0.0,abs(s0-0.71))*0.08:smoothstep(0.02,0.0,abs(s0-0.58))*0.1;
+    vec3 dir=normalize(sd+T0*(0.55+0.25*s0));
+    float bend=0.18+sp*2.0;
+    vec3 p=c0+dir*(a*L)+T0*(a*a*L*bend);
+    p.z+=-0.12*a*a*L+0.04*sin(s0*9.0-t*0.9)*a;
+    vec3 n=normalize(vec3(0.0,0.0,1.0)+sd*0.25*a);
+    o=mk(p+n*(q.z-0.5)*0.008,normalize(dir+T0*(2.0*a*bend)),n,1.0,0.78+0.32*(1.0-a),0.0);
+  }else{
+    float s=0.02+0.12*q.y,an=q.z*TAU;
+    vec3 d=vec3(cos(an),sin(an)*0.6+0.3,sin(an)*0.4);
+    vec3 p=rach(s)+d*(0.12+0.25*r.z)*sqrt(r.y)+vec3(0.0,0.05*sin(t*1.2+r.x*6.0),0.0);
+    vec3 T=normalize(d+vec3(0.0,0.4,0.0)+0.3*vec3(sin(t+r.x*9.0),0.0,cos(t*0.8+r.y*7.0)));
+    o=mk(p,T,normalize(cross(T,vec3(0.0,0.0,1.0))+vec3(0.0,0.0,0.6)),0.85,0.8,0.03);
+  }
+  rotF(o,vec3(0.0,0.0,1.0),-0.62);
+  rotF(o,vec3(0.0,1.0,0.0),0.18*sin(t*0.25));
+  return o;
+}
+
+F form(int k,vec4 q,vec4 r,vec4 P,float t){
+  if(k==0)return fWing(q,r,P,t);
+  if(k==1)return fApps(q,r,P,t);
+  if(k==2)return fDie(q,r,P,t);
+  if(k==3)return fOrb(q,r,P,t);
+  if(k==4)return fTower(q,r,P,t);
+  if(k==5)return fNest(q,r,P,t);
+  if(k==6)return fFour(q,r,P,t);
+  if(k==7)return fSettle(q,r,P,t);
+  if(k==8)return fSweep(q,r,P,t);
+  if(k==9)return fTinker(q,r,P,t);
+  if(k==10)return fCollapse(q,r,P,t);
+  return fMacro(q,r,P,t);
+}
+
+void main(){
+  uint id=uint(gl_VertexID);
+  float fi=float(gl_VertexID);
+  vec4 r=vec4(hf(id*4u+1u),hf(id*4u+2u),hf(id*4u+3u),hf(id*4u+4u));
+  // q.x: a golden-ratio sequence, so any prefix of the buffer (tiers draw prefixes) covers every curve evenly;
+  // q.y, q.z: plain hashes across it (a 2D/3D lattice shows as rows once a shape stretches it 20:1)
+  vec4 q=vec4(fract(0.5+fi*0.6180339887),hf(id*9u+7u),hf(id*9u+8u),r.x);
+  float t=uT;
+  gI=(fi+0.5)/uN;
+
+  /* ---- target: the joining formation, blended from the leaving one on this feather's own clock ---- */
+  F fo=form(uKB,q,r,uPB,t);
+  float m=1.0;
+  if(uMixT<uStag+uDur){
+    float key=clamp(fo.p.x*0.28+0.5,0.0,1.0);
+    m=clamp((uMixT-uStag*(0.6*key+0.4*r.y))/uDur,0.0,1.0);
+    m=m*m*(3.0-2.0*m);
+    if(m<1.0){
+      F fa=form(uKA,q,r,uPA,t);
+      fo.p=mix(fa.p,fo.p,m);fo.t=mix(fa.t,fo.t,m);fo.n=mix(fa.n,fo.n,m);
+      fo.a=mix(fa.a,fo.a,m);fo.s=mix(fa.s,fo.s,m);fo.g=mix(fa.g,fo.g,m);
+    }
+  }
+  float fl=(m>0.0&&m<1.0)?sin(PI*m):0.0;            // in flight between formations
+  if(r.w>0.982){                                     // a few loose feathers always drift around the scene
+    float th=r.x*TAU+t*0.03*(r.y-0.5)*2.0,ph=acos(1.0-2.0*r.y),R=1.9+1.1*r.z;
+    vec3 d=vec3(sin(ph)*cos(th),cos(ph)*0.7,sin(ph)*sin(th));
+    vec3 dp=d*R+flow(d*2.0,t*0.3)*0.12;
+    fo.p=mix(fo.p,dp,smoothstep(0.3,1.0,uBloom));
+    fo.t=normalize(flow(dp,t)+vec3(1e-3));fo.n=d;fo.a=0.75;fo.s=0.8;fo.g=0.0;
+  }
+  vec3 Tg=fo.p;
+  Tg+=flow(Tg*1.3+vec3(0.0,t*0.07,0.0),t)*uFlut*0.02;
+  Tg+=flow(Tg*0.7+vec3(r.z*3.0),t)*fl*0.32+vec3(0.0,0.28,0.18)*fl;   // arc and stir while flying
+
+  /* ---- follow on a spring, feeding forward the target's own motion ---- */
+  vec3 p=aP.xyz,v=aV.xyz;
+  vec3 Tv=(uSnap>0.5||aT.w<=0.0)?vec3(0.0):(Tg-aT.xyz)/max(uDt,1e-3);
+  float tvl=length(Tv);if(tvl>3.0)Tv*=3.0/tvl;
+  // a ruffled feather hangs on a softer, slightly springy tether: it drifts with the motion, floats back and settles
+  float ru=clamp(aP.w,0.0,1.0);
+  float K=uK*(0.75+0.5*r.z)*mix(1.0,0.38,fl)*mix(1.0,0.3,ru);
+  float Cd=2.0*sqrt(K)*mix(0.86,0.56,ru);
+  v+=((Tg-p)*K-(v-Tv)*Cd)*uDt;
+
+  /* ---- ruffle: lift, drift with the motion, swirl a little, spin, then settle ---- */
+  float rf=aP.w*exp(-uDt*0.85);
+  float spin=aV.w*exp(-uDt*1.5);
+  // distance on screen to the pointer's path since the last frame: a continuous wake at any frame rate, and a
+  // finger-sized radius whatever the depth
+  float fall=0.0;
+  vec4 cp=uVP*vec4(p,1.0);
+  if(uPS>0.001&&cp.w>0.05){
+    vec2 sp=cp.xy/cp.w;sp.x*=uAsp;
+    vec2 ab=uSeg.zw-uSeg.xy;float l2=dot(ab,ab);
+    float h=l2>1e-8?clamp(dot(sp-uSeg.xy,ab)/l2,0.0,1.0):0.0;
+    vec2 dv=sp-uSeg.xy-ab*h;
+    fall=exp(-dot(dv,dv)/(uPR*uPR));
+  }
+  if(fall>0.004){
+    vec3 w=p-uRO;vec3 rr=w-uRD*dot(w,uRD);
+    float d=length(rr)+0.02,k=min(1.0,uDt*8.0)*fall;
+    v+=uPV*k*1.1;
+    v+=cross(uRD,rr)/d*length(uPV)*0.3*k;
+    vec3 nf=aN.xyz*(dot(aN.xyz,uRD)>0.0?-1.0:1.0);
+    v+=nf*fall*uPS*uDt*7.0;
+    v+=rr/d*uPulse*fall;
+    rf=max(rf,fall*uPS);
+    spin+=uDt*fall*uPS*(4.0+5.0*r.x)*(r.y<0.5?-1.0:1.0);
+  }
+
+  /* ---- orientation: lie along the formation; while flying or pushed, turn into the motion ---- */
+  vec3 ft=normalize(fo.t+vec3(1e-5));
+  float fly=smoothstep(0.35,1.6,length(v-Tv));
+  float vl=length(v);
+  if(fly>0.0&&vl>1e-3)ft=normalize(mix(ft,v/vl,fly*0.7)+vec3(1e-5));
+  vec3 f=mix(aF.xyz,ft,1.0-exp(-uDt*7.0))+aN.xyz*1e-3;
+  f=length(f)>1e-4?normalize(f):ft;
+  vec3 n=mix(aN.xyz,fo.n,1.0-exp(-uDt*5.0));
+  float vis=mix(aF.w,fo.a,1.0-exp(-uDt*4.0));
+  float sz=mix(aT.w>0.0?aT.w:fo.s,fo.s,1.0-exp(-uDt*3.0));
+  float gw=mix(aN.w,fo.g,1.0-exp(-uDt*3.0));
+  if(fo.a<0.02&&vis<0.05){p=Tg;v=Tv;}                // invisible feathers step straight to their next place
+  if(uSnap>0.5){p=Tg;v=vec3(0.0);f=ft;n=fo.n;vis=fo.a;sz=fo.s;gw=fo.g;rf=0.0;spin=0.0;}
+  n-=f*dot(n,f);
+  n=length(n)>1e-3?normalize(n):normalize(cross(f,vec3(0.31,0.83,0.46)));
+  float sp=length(v);if(sp>6.0)v*=6.0/sp;
+  p+=v*uDt;
+  if(!(dot(p,p)<1e4)||!(dot(v,v)<1e4)){p=Tg;v=vec3(0.0);}   // never let a bad step escape
+  if(!(dot(f,f)<2.0)){f=ft;}
+  oP=vec4(p,rf);oV=vec4(v,spin);oF=vec4(f,vis);oN=vec4(n,gw);oT=vec4(Tg,max(sz,0.05));
+}`;
+const UPDATE_FS = `#version 300 es
+precision mediump float;
+out vec4 o;
+void main(){o=vec4(0.0);}`;
+
+/* DRAW: one instanced quad per feather (4 vertices: x across, y from quill to tip); outline, shaft, bow and the curl
+   of the vanes are all drawn in the fragment shader, which keeps the vertex work small. Material = Gorget: dark warm bronze and graphite at rest, flashing gold, copper, ruby and rose
+   where the half-vector meets the vane; ruffled feathers turn their faces to the light. */
+const DRAW_VS = `#version 300 es
+precision highp float;
+layout(location=0) in vec2 aC;
+layout(location=1) in vec4 aP;
+layout(location=2) in vec4 aV;
+layout(location=3) in vec4 aF;
+layout(location=4) in vec4 aN;
+layout(location=5) in vec4 aT;
+uniform mat4 uVP;
+uniform vec3 uCam;
+uniform float uPxK;
+uniform float uLen;
+uniform float uMinW;
+uniform float uMinL;
+uniform float uFocus;
+uniform float uT;
+out vec2 vUV;
+out vec3 vN;
+out vec3 vS;
+out vec3 vF;
+out vec3 vW;
+out float vA;
+out float vHeat;
+out float vSeed;
+out float vGlint;
+out float vDim;
+out float vFog;
+out float vBow;
+uint hu(uint x){x^=x>>16u;x*=0x7feb352du;x^=x>>15u;x*=0x846ca68bu;x^=x>>16u;return x;}
+float hf(uint x){return float(hu(x)>>8u)*(1.0/16777216.0);}
+void main(){
+  uint id=uint(gl_InstanceID);
+  float h1=hf(id*7u+3u),h2=hf(id*7u+5u),h3=hf(id*7u+6u);
+  vec3 p=aP.xyz,f=aF.xyz,n=aN.xyz;
+  float rf=aP.w,spin=aV.w,vis=aF.w,sz=aT.w;
+  vUV=aC;vN=n;vS=n;vF=f;vW=p;vA=0.0;vHeat=0.0;vSeed=h1;vGlint=0.0;vDim=1.0;vFog=0.0;vBow=0.0;
+  if(vis<0.01){gl_Position=vec4(2.0,2.0,2.0,1.0);return;}
+  vec3 s=normalize(cross(n,f));
+  float sp=length(aV.xyz);
+  // ruffle: the feather lifts off its surface (it stands up, as ruffled feathers do), tilts and rolls; at rest it keeps
+  // a calm idle flutter. Each feather also sits at its own small tilt, so neighbours catch the light at different moments.
+  float lift=rf*0.8+min(sp*0.06,0.22)+(h3-0.5)*0.12;
+  vec3 f2=f*cos(lift)+n*sin(lift);
+  vec3 n2=n*cos(lift)-f*sin(lift);
+  // ruffled feathers also fan out sideways, each its own way, so the wake reads as a parting in the plumage
+  float yaw=rf*(h1-0.5)*1.7;
+  f2=f2*cos(yaw)+s*sin(yaw);
+  float roll=spin+(h2-0.5)*0.36+0.2*sin(uT*(1.2+h2)+h1*6.2832)*(0.25+rf);
+  s=normalize(cross(n2,f2));
+  vec3 s2=s*cos(roll)+n2*sin(roll);
+  vec3 n3=n2*cos(roll)-s*sin(roll);
+  vec3 V=normalize(uCam-p);
+  vec3 sg=s2-V*dot(s2,V)*0.55;           // never quite edge-on: bias the width toward the screen plane
+  float len=uLen*sz*(0.8+0.4*h1)*(1.0+0.35*rf);
+  float wid=len*(0.36+0.06*h2);          // slender: the vane is about a third as wide as the feather is long
+  p+=n*(rf*len*0.55);                     // a ruffled feather stands off the surface
+  vec4 cc=uVP*vec4(p,1.0);
+  float wc=max(cc.w,0.05);
+  float ppu=uPxK/wc;                      // device pixels per world unit at this depth
+  float dim=1.0;
+  float lpx=len*ppu;
+  if(lpx<uMinL){float k=uMinL/lpx;len*=k;dim/=k;}
+  float wpx=wid*ppu*max(length(sg),0.3);
+  if(wpx<uMinW){float k=uMinW/max(wpx,1e-3);wid*=k;dim*=mix(1.0,1.0/k,0.6);}
+  // a slight sideways sweep of the shaft, drawn in the fragment shader: widen the quad to hold it
+  float bow=(h3-0.5)*0.9;
+  float y=aC.y,x=aC.x*(1.0+abs(bow));
+  vec3 P=p+f2*((y-0.45)*len)+sg*(x*wid*0.5);
+  gl_Position=uVP*vec4(P,1.0);
+  vUV=vec2(x,y);vBow=bow;vN=n3;vS=s2;vF=f2;vW=P;
+  float dz=wc-uFocus;
+  vFog=smoothstep(0.25,2.4,dz)*0.78+smoothstep(-0.8,-2.8,dz)*0.45;   // soft depth: far feathers sink into the night
+  // a slow sheen travels across every form, so even a shape square-on to the light has its moment of colour
+  float sw=sin(dot(p,vec3(0.82,0.38,0.22))*2.1-uT*0.5+h1*0.5);
+  vA=vis;vDim=dim;vHeat=rf;vGlint=aN.w+min(sp*0.035,0.1)+0.3*smoothstep(0.84,1.0,sw);
+}`;
+const DRAW_FS = `#version 300 es
+precision highp float;
+in vec2 vUV;
+in vec3 vN;
+in vec3 vS;
+in vec3 vF;
+in vec3 vW;
+in float vA;
+in float vHeat;
+in float vSeed;
+in float vGlint;
+in float vDim;
+in float vFog;
+in float vBow;
+uniform vec3 uCam;
+uniform vec3 uL;
+uniform vec3 uBg;
+uniform float uExpo;
+uniform float uWarm;
+uniform float uIntro;
+uniform float uAT;
+out vec4 o;
+const float PI=3.14159265359;
+vec3 ramp(float k){
+  vec3 c=mix(vec3(0.085,0.088,0.074),vec3(0.18,0.155,0.104),smoothstep(0.0,0.14,k));   // graphite -> dark bronze
+  c=mix(c,vec3(0.37,0.295,0.172),smoothstep(0.12,0.28,k));                              // warm bronze
+  c=mix(c,vec3(0.70,0.53,0.25),smoothstep(0.28,0.4,k));                                 // a touch of gold
+  c=mix(c,vec3(0.74,0.45,0.29),smoothstep(0.4,0.5,k));                                  // copper
+  c=mix(c,vec3(0.74,0.24,0.35),smoothstep(0.5,0.66,k));                                 // ruby
+  c=mix(c,vec3(0.87,0.54,0.6),smoothstep(0.68,0.84,k));                                 // rose
+  return mix(c,vec3(0.96,0.8,0.82),smoothstep(0.86,1.0,k));                             // crest
+}
+void main(){
+  float v=vUV.y,u=vUV.x-vBow*v*v,au=abs(u);   // the shaft bows a little sideways toward the tip
+  float fw=fwidth(u);                         // u per pixel across the feather
+  // outline: a bare quill, then the vane opening out, widest a little below the middle, tapering to a fine tip.
+  // The outer vane (u > 0) is narrower than the inner one, as on a real contour feather.
+  float t=clamp((v-0.08)/0.92,0.0,1.0);
+  float hw=1.2*smoothstep(0.0,0.24,t)*pow(1.0-t,0.85)*(u>0.0?0.7:1.0);
+  float body=1.0-smoothstep(hw-fw*1.3-0.05,hw+fw*0.5,au);     // a soft, slightly fibrous edge
+  // the rachis: a fine line from the quill almost to the tip, never thinner than a pixel
+  float sw=max(0.075*(1.0-0.6*v),fw*0.75);
+  float shaft=(1.0-smoothstep(sw,sw+fw,au))*(1.0-smoothstep(0.86,0.94,v))*step(0.0,v);
+  float cov=max(body,shaft)*vA;
+  if(cov<uAT)discard;
+  vec3 V=normalize(uCam-vW);
+  vec3 nn=normalize(vN+vS*(u*0.55)+vF*(0.34*v-0.12));   // vanes cup away from the shaft, the tip curls
+  if(dot(nn,V)<0.0)nn=-nn;
+  vec3 H=normalize(uL+V);
+  nn=normalize(mix(nn,H,0.62*vHeat));      // a ruffled feather turns its face to the light, as a throat does
+  float ndh=max(dot(nn,H),0.0),ndv=max(dot(nn,V),0.0),ndl=dot(nn,uL);
+  // at rest: graphite to warm bronze, shaded by the light, with a broad olive-bronze sheen
+  float dif=0.5+0.5*ndl;
+  vec3 bronze=vec3(0.31,0.245,0.16)+uWarm*vec3(0.045,0.018,-0.01);
+  vec3 c=mix(vec3(0.072,0.077,0.066),bronze,pow(dif,1.6));
+  c+=vec3(0.1,0.095,0.048)*pow(ndh,6.0)*0.6;
+  c+=bronze*0.28*pow(1.0-ndv,3.0);         // a soft rim, so every form keeps its silhouette against the night
+  // the flash lives in the outer two thirds of the vane (the downy base stays matte, as on a real gorget feather).
+  // A narrow lobe; its strength and the grazing angle pick the hue on the throat ramp: gold, copper, ruby, rose.
+  float iri=smoothstep(0.1,0.42,v);
+  float g=(pow(ndh,18.0)*(0.7+0.6*vSeed)+vHeat*0.62+vGlint)*iri+uIntro;
+  float hue=clamp(0.3+0.42*g+0.15*(1.0-ndv)+(vSeed-0.5)*0.3+u*0.06-uWarm*0.14+vHeat*0.14,0.0,0.9);
+  c=mix(c,ramp(hue)*(0.72+0.6*min(g,1.2)),smoothstep(0.03,0.5,g));
+  c*=1.0+0.3*vHeat;                         // a touched feather brightens into throat colour
+  // the feather itself: a darker downy base, vanes darkening toward their edge, fine barbs only where they resolve
+  c*=mix(0.62,1.0,smoothstep(0.08,0.42,v));
+  float edge=clamp(au/max(hw,0.05),0.0,1.0);
+  c*=0.74+0.26*(1.0-edge*edge);
+  float bf=v*15.0-au*4.2;                  // barbs angle out toward the tip
+  c*=1.0-0.13*clamp(1.0-fwidth(bf)*0.9,0.0,1.0)*(0.5+0.5*cos(6.2832*bf));
+  // the quill: pale against a resting vane, a dark line through a flash
+  vec3 quill=mix(vec3(0.22,0.195,0.155),c*0.45,smoothstep(0.08,0.5,g));
+  c=mix(c,quill,shaft*0.7);
+  c*=uExpo*vDim;
+  c=mix(c,uBg,vFog);
+  o=vec4(c,cov);
+}`;
+/* full-screen passes: a faint lift of the night behind the form (before), then vignette and grain (after) */
+const POST_VS = `#version 300 es
+out vec2 vUv;
+void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));vUv=p;gl_Position=vec4(p*2.0-1.0,0.0,1.0);}`;
+const POST_FS = `#version 300 es
+precision highp float;
+in vec2 vUv;
+out vec4 o;
+uniform vec2 uRes;
+uniform vec2 uC;
+uniform float uT;
+uniform vec3 uBg;
+uniform float uMode;
+uniform float uWarm;
+float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+void main(){
+  vec2 a=vec2(uRes.x/uRes.y,1.0);
+  float d=length((vUv-uC)*a);
+  if(uMode<0.5){
+    float g=exp(-d*d*2.6);
+    vec3 tint=mix(vec3(0.025,0.03,0.026),vec3(0.05,0.035,0.024),uWarm);
+    o=vec4(uBg+tint*g,1.0);
+  }else{
+    float v=smoothstep(0.35,1.3,d)*0.62;
+    float gr=(h(mod(gl_FragCoord.xy,512.0)+uT*91.7)-0.5)*0.04;
+    o=vec4(uBg,clamp(v+gr,0.0,1.0));
+  }
+}`;
+
+let mode = 'init', gl = null, G = null;
+let cap = 0, active = 0, minActive = 0, dpr = 1, W = 1, H = 1, simT = 0, frameNo = 0;
+let dprLock = false;   // set once the downgrade (or a software renderer) has chosen the pixel ratio
+let raf = 0, lastNow = 0, ema = 16.7, slowRun = 0, winMs = 0, winN = 0, winBusy = 0, canvasVisible = true, lockTier = false;
+let bloom = 0, expoC = 1, warmC = 0, flutC = 0.5, lightAz = 0, lightEl = 0.62, lightPh = 0, lenBase = 0.045;
+const dprCap = isPhone ? 1.25 : 1.75;
+const LV = new Float32Array(3);
+const BG = [15 / 255, 18 / 255, 17 / 255];
+
+// Shaders compile without asking for status straight away; with KHR_parallel_shader_compile the driver works off the
+// main thread while the loader draws, and status is read once it says it is done.
+function program(vs, fs, varyings) {
+  const p = gl.createProgram(), v = gl.createShader(gl.VERTEX_SHADER), f = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(v, vs); gl.compileShader(v); gl.shaderSource(f, fs); gl.compileShader(f);
+  gl.attachShader(p, v); gl.attachShader(p, f);
+  if (varyings) gl.transformFeedbackVaryings(p, varyings, gl.INTERLEAVED_ATTRIBS);
+  gl.linkProgram(p);
+  return { p, v, f };
+}
+function linked(o) {
+  let log = '';
+  [o.v, o.f].forEach(sh => { if (!log && !gl.getShaderParameter(sh, gl.COMPILE_STATUS)) log = 'shader: ' + (gl.getShaderInfoLog(sh) || ''); });
+  if (!log && !gl.getProgramParameter(o.p, gl.LINK_STATUS)) log = 'link: ' + (gl.getProgramInfoLog(o.p) || '');
+  gl.deleteShader(o.v); gl.deleteShader(o.f);
+  if (log) { gl.deleteProgram(o.p); o.p = null; throw new Error(log); }
+  const p = o.p; o.p = null; return p;
+}
+function locs(p, names) { const o = {}; names.forEach(n => { o[n] = gl.getUniformLocation(p, n); }); return o; }
+
+function initGL(cb) {
+  const fin = e => { DBG.tGL1 = Math.round(performance.now() - t0); try { cb(e); } catch (x) { logErr('init: ' + (x && x.message)); } };
+  DBG.tGL0 = Math.round(performance.now() - t0);
+  try {
+    gl = glCanvas.getContext('webgl2', { antialias: true, alpha: false, depth: true, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
+    if (!gl) throw new Error('WebGL2 unavailable');
+    if (gl.isContextLost && gl.isContextLost()) throw new Error('context lost');
+    // An opaque context shows black until its first frame: paint it night now, in case the shaders take a while
+    // (the loader lifts at 2.5 s whatever happens).
+    gl.clearColor(BG[0], BG[1], BG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    const g = G = {};
+    const par = gl.getExtension('KHR_parallel_shader_compile');
+    g.pending = [program(UPDATE_VS, UPDATE_FS, ['oP', 'oV', 'oF', 'oN', 'oT']), program(DRAW_VS, DRAW_FS), program(POST_VS, POST_FS)];
+    const t1 = performance.now();
+    const poll = () => {
+      if (G !== g) return;
+      let done = true;
+      if (par) { try { done = g.pending.every(o => gl.getProgramParameter(o.p, par.COMPLETION_STATUS_KHR)) || performance.now() - t1 > 10000; } catch (e) { done = true; } }
+      if (!done) { setTimeout(poll, 30); return; }
+      try { finishGL(g); } catch (e) { fin(e); return; }
+      fin(null);
+    };
+    if (par) setTimeout(poll, 0); else poll();
+  } catch (e) { fin(e); }
+}
+function finishGL(g) {
+  g.pU = linked(g.pending[0]); g.pD = linked(g.pending[1]); g.pO = linked(g.pending[2]); g.pending = null;
+  g.uU = locs(g.pU, ['uT', 'uDt', 'uKA', 'uKB', 'uPA', 'uPB', 'uMixT', 'uStag', 'uDur', 'uN', 'uFlut', 'uRO', 'uRD', 'uPV', 'uVP', 'uSeg', 'uAsp', 'uPR', 'uPS', 'uPulse', 'uBloom', 'uSnap', 'uK', 'uPath']);
+  g.uD = locs(g.pD, ['uVP', 'uCam', 'uPxK', 'uLen', 'uMinW', 'uMinL', 'uFocus', 'uT', 'uL', 'uBg', 'uExpo', 'uWarm', 'uIntro', 'uAT']);
+  g.uO = locs(g.pO, ['uRes', 'uC', 'uT', 'uBg', 'uMode', 'uWarm']);
+  let rend = '';
+  try { rend = String(gl.getParameter(gl.RENDERER) || ''); if (/^webkit webgl$/i.test(rend) || !rend) { const ext = gl.getExtension('WEBGL_debug_renderer_info'); if (ext) rend = String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || ''); } } catch (e) {}
+  const software = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(rend);
+  const cores = navigator.hardwareConcurrency || 4;
+  // Feather counts by tier: desktop high ~20k, mid ~10k, phone ~4k (software renderers start at the mid count;
+  // tablets and other touch-first screens start at mid, and the frame-time downgrade takes it from there).
+  let tier = FORCE || (isPhone ? 'phone' : software ? 'software' : coarse ? 'mid' : cores >= 8 ? 'high' : 'mid');
+  const TIERS = { high: [24576, 20480, 8192], mid: [12288, 10240, 4096], phone: [5120, 4096, 2048], software: [12288, 8192, 3072] };
+  [cap, active, minActive] = TIERS[tier];
+  lockTier = !!FORCE;
+  DBG.tier = tier;
+  // the same look at every count: fewer feathers are drawn a little larger
+  lenBase = 0.05 * Math.pow(20480 / active, 0.25);
+  const stride = 20;   // floats per feather
+  const data = new Float32Array(cap * stride);
+  let s = 1234567;
+  const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  for (let i = 0; i < cap; i++) {
+    const o = i * stride, u = rnd() * TAU, z = rnd() * 2 - 1, rr = 1.4 * Math.cbrt(rnd()), q = Math.sqrt(1 - z * z);
+    data[o] = q * Math.cos(u) * rr; data[o + 1] = q * Math.sin(u) * rr; data[o + 2] = z * rr;
+    data[o + 8] = 1; data[o + 13] = 1;   // a valid shaft and normal before the first step
+  }
+  G.buf = [gl.createBuffer(), gl.createBuffer()];
+  for (let i = 0; i < 2; i++) { gl.bindBuffer(gl.ARRAY_BUFFER, G.buf[i]); gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_COPY); }
+  // the feather quad, shared by every instance
+  const strip = new Float32Array([-1, 0, 1, 0, -1, 1, 1, 1]);
+  G.strip = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, G.strip); gl.bufferData(gl.ARRAY_BUFFER, strip, gl.STATIC_DRAW);
+  G.vaoU = []; G.vaoD = [];
+  for (let i = 0; i < 2; i++) {
+    const vu = gl.createVertexArray(); gl.bindVertexArray(vu);
+    gl.bindBuffer(gl.ARRAY_BUFFER, G.buf[i]);
+    for (let a = 0; a < 5; a++) { gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 4, gl.FLOAT, false, stride * 4, a * 16); }
+    G.vaoU.push(vu);
+    const vd = gl.createVertexArray(); gl.bindVertexArray(vd);
+    gl.bindBuffer(gl.ARRAY_BUFFER, G.strip); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 8, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, G.buf[i]);
+    for (let a = 0; a < 5; a++) { gl.enableVertexAttribArray(a + 1); gl.vertexAttribPointer(a + 1, 4, gl.FLOAT, false, stride * 4, a * 16); gl.vertexAttribDivisor(a + 1, 1); }
+    G.vaoD.push(vd);
+  }
+  G.path = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, G.path);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, PATH_N, PATH_ROWS, 0, gl.RGBA, gl.FLOAT, PATHS);
+  gl.bindTexture(gl.TEXTURE_2D, null);
+  G.vaoO = gl.createVertexArray();
+  gl.bindVertexArray(null); gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  G.src = 0;
+  G.fq = [null, null]; G.fqAt = [0, 0]; G.fi = 0;   // GPU fences for the last two frames (see gpuBusy)
+  // multisampled edges: alpha-to-coverage gives soft, order-independent feather edges with correct occlusion
+  G.msaa = (gl.getParameter(gl.SAMPLES) || 0) > 0;
+  dpr = software && !FORCE ? 1 : Math.min(window.devicePixelRatio || 1, dprCap); dprLock = software && !FORCE;
+  resizeGL(true);
+  const err = gl.getError();
+  if (err !== gl.NO_ERROR && err !== gl.CONTEXT_LOST_WEBGL) throw new Error('GL error ' + err);
+  mode = 'gl'; DBG.mode = 'gl'; DBG.active = active; DBG.msaa = G.msaa;
+  glCanvas.hidden = false; posterCanvas.hidden = true;
+}
+function teardownGL() {
+  if (gl && G && !(gl.isContextLost && gl.isContextLost())) {
+    try {
+      (G.buf || []).forEach(b => gl.deleteBuffer(b)); if (G.strip) gl.deleteBuffer(G.strip);
+      (G.vaoU || []).concat(G.vaoD || []).forEach(v => gl.deleteVertexArray(v)); if (G.vaoO) gl.deleteVertexArray(G.vaoO);
+      ['pU', 'pD', 'pO'].forEach(k => { if (G[k]) gl.deleteProgram(G[k]); }); if (G.path) gl.deleteTexture(G.path);
+      (G.pending || []).forEach(o => { if (o.p) gl.deleteProgram(o.p); gl.deleteShader(o.v); gl.deleteShader(o.f); });
+      (G.fq || []).forEach(f => { if (f) gl.deleteSync(f); });
+    } catch (e) {}
+  }
+  G = null;
+}
+function resizeGL(force) {
+  cssW = window.innerWidth; cssH = glCanvas.clientHeight || window.innerHeight;
+  const w = Math.max(1, Math.round(cssW * dpr)), h = Math.max(1, Math.round(cssH * dpr));
+  if (force || w !== W || h !== H) { W = w; H = h; glCanvas.width = W; glCanvas.height = H; }
+}
+function stepSim(dt, snap) {
+  const A = FORMATIONS[curA], B = FORMATIONS[curB], u = G.uU;
+  gl.useProgram(G.pU);
+  gl.uniform1f(u.uT, simT); gl.uniform1f(u.uDt, dt);
+  gl.uniform1i(u.uKA, A.kind); gl.uniform1i(u.uKB, B.kind);
+  gl.uniform4fv(u.uPA, A.pf); gl.uniform4fv(u.uPB, B.pf);
+  gl.uniform1f(u.uMixT, blending ? mixT : 99); gl.uniform1f(u.uStag, STAG); gl.uniform1f(u.uDur, DUR);
+  gl.uniform1f(u.uN, active); gl.uniform1f(u.uFlut, flutC);
+  gl.uniform3f(u.uRO, ray.ox, ray.oy, ray.oz); gl.uniform3f(u.uRD, ray.dx, ray.dy, ray.dz);
+  gl.uniform3f(u.uPV, pv[0], pv[1], pv[2]);
+  gl.uniformMatrix4fv(u.uVP, false, VPm);
+  gl.uniform4f(u.uSeg, seg[0], seg[1], seg[2], seg[3]); gl.uniform1f(u.uAsp, cssW / cssH);
+  gl.uniform1f(u.uPR, ptr.touching || performance.now() < ptr.touchUntil ? 0.13 : 0.095);   // in screen heights (NDC y)
+  gl.uniform1f(u.uPS, reduce ? 0 : ruffleS);
+  gl.uniform1f(u.uPulse, pulse * 0.5);
+  gl.uniform1f(u.uBloom, bloom); gl.uniform1f(u.uSnap, snap ? 1 : 0); gl.uniform1f(u.uK, 34);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, G.path); gl.uniform1i(u.uPath, 0);
+  const dst = 1 - G.src;
+  gl.bindVertexArray(G.vaoU[G.src]);
+  gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, G.buf[dst]);
+  gl.enable(gl.RASTERIZER_DISCARD);
+  gl.beginTransformFeedback(gl.POINTS);
+  gl.drawArrays(gl.POINTS, 0, active);
+  gl.endTransformFeedback();
+  gl.disable(gl.RASTERIZER_DISCARD);
+  gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
+  gl.bindVertexArray(null);
+  G.src = dst; frameNo++;
+}
+// the key light lives in camera space (upper left, in front) and wanders slowly, so glints travel across the form
+function updateLight(dt) {
+  lightPh += dt * FORMATIONS[curB].light[1];
+  const az = lightAz + Math.sin(lightPh * TAU * 0.5) * 0.45 - 1.0, el = lightEl;   // off to the left: only feathers tilted toward it flash
+  const lx = Math.sin(az) * Math.cos(el), ly = Math.sin(el), lz = Math.cos(az) * Math.cos(el);
+  let x = cam.rx * lx + cam.ux * ly - cam.fx * lz, y = cam.ry * lx + cam.uy * ly - cam.fy * lz, z = cam.rz * lx + cam.uz * ly - cam.fz * lz;
+  const l = Math.hypot(x, y, z) || 1; LV[0] = x / l; LV[1] = y / l; LV[2] = z / l;
+}
+function renderGL(intro) {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, W, H);
+  gl.clearColor(BG[0], BG[1], BG[2], 1); gl.clearDepth(1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  project(C.tx, C.ty, C.tz, P3);
+  const cx = P3[0] / cssW, cy = 1 - P3[1] / cssH;
+  // background lift
+  gl.disable(gl.DEPTH_TEST); gl.disable(gl.BLEND);
+  gl.useProgram(G.pO);
+  gl.uniform2f(G.uO.uRes, W, H); gl.uniform2f(G.uO.uC, cx, cy); gl.uniform1f(G.uO.uT, 0);
+  gl.uniform3f(G.uO.uBg, BG[0], BG[1], BG[2]); gl.uniform1f(G.uO.uMode, 0); gl.uniform1f(G.uO.uWarm, warmC);
+  gl.bindVertexArray(G.vaoO); gl.drawArrays(gl.TRIANGLES, 0, 3);
+  // feathers
+  gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS); gl.depthMask(true);
+  if (G.msaa) gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+  gl.useProgram(G.pD);
+  const u = G.uD;
+  gl.uniformMatrix4fv(u.uVP, false, VPm);
+  gl.uniform3f(u.uCam, cam.px, cam.py, cam.pz);
+  gl.uniform1f(u.uPxK, cam.B * H * 0.5);
+  gl.uniform1f(u.uLen, lenBase);
+  gl.uniform1f(u.uMinW, 1.15 * Math.max(1, dpr * 0.85));
+  gl.uniform1f(u.uMinL, 3.2 * Math.max(1, dpr * 0.85));
+  gl.uniform1f(u.uFocus, cam.dist);
+  gl.uniform1f(u.uT, simT);
+  gl.uniform3f(u.uL, LV[0], LV[1], LV[2]);
+  gl.uniform3f(u.uBg, BG[0], BG[1], BG[2]);
+  gl.uniform1f(u.uExpo, expoC); gl.uniform1f(u.uWarm, warmC); gl.uniform1f(u.uIntro, intro);
+  gl.uniform1f(u.uAT, G.msaa ? 0.02 : 0.45);
+  gl.bindVertexArray(G.vaoD[G.src]);
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, active);
+  if (G.msaa) gl.disable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+  gl.disable(gl.DEPTH_TEST);
+  // vignette + grain
+  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.useProgram(G.pO);
+  gl.uniform1f(G.uO.uMode, 1); gl.uniform1f(G.uO.uT, (frameNo * 0.6180339887) % 1);
+  gl.bindVertexArray(G.vaoO); gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.disable(gl.BLEND); gl.bindVertexArray(null);
+}
+function downgrade() {
+  if (lockTier) return;
+  if (active > minActive) { active = Math.max(minActive, Math.round(active * 0.7 / 256) * 256); }
+  else if (dpr > 1) { dpr = 1; dprLock = true; resizeGL(true); }
+  else if (dpr > 0.7) { dpr = 0.7; dprLock = true; resizeGL(true); }
+  DBG.active = active; DBG.dpr = dpr;
+}
+// colour, light and flutter ease toward the joining formation
+function updateLook(dt) {
+  const f = FORMATIONS[curB], k = 1 - Math.exp(-dt * 1.3);
+  expoC = lerp(expoC, f.expo, k); warmC = lerp(warmC, f.warm, k); flutC = lerp(flutC, f.flut, k);
+  lightAz = lerp(lightAz, f.light[0], k); lightEl = lerp(lightEl, f.light[2], k);
+}
+function updateCamera(dt) {
+  if (introHold) { introPose(C); for (let i = 0; i < CKEYS.length; i++) CV[CKEYS[i]] = 0; }
+  else {
+    camTarget(targetKey, sideKey, secProg, simT, T);
+    // critically damped spring per channel: a section change starts gently, glides, and settles (~1.8 s to 95 %)
+    const w = 2.5, w2 = w * w, dmp = 2 * w;
+    for (let i = 0; i < CKEYS.length; i++) { const key = CKEYS[i]; const v = CV[key] + ((T[key] - C[key]) * w2 - dmp * CV[key]) * dt; CV[key] = v; C[key] += v * dt; }
+    if (mqFine.matches && ptr.has && ptr.inside) { const k = 1 - Math.exp(-dt * 1.6); ptrSX = lerp(ptrSX, ptr.x / cssW * 2 - 1, k); ptrSY = lerp(ptrSY, 1 - ptr.y / cssH * 2, k); }
+  }
+  buildCamera(C, cssW, cssH);
+}
+function shouldRun() { return mode === 'gl' && !doc.hidden && canvasVisible && !menuOpen; }
+function syncLoop() {
+  if (shouldRun()) {
+    if (!raf) {
+      // resuming (tab shown, menu closed, context restored): drop pointer travel and frame timing gathered while paused
+      lastNow = performance.now(); ptr.dx = 0; ptr.dy = 0; segFresh = true; winMs = 0; winN = 0; winBusy = 0; slowRun = 0;
+      raf = requestAnimationFrame(loop);
+    }
+  }
+  else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+}
+// GPU back-pressure: at most two frames in flight. A new frame is not submitted while the one from two frames ago is
+// still being drawn. Without this a slow GPU lets the browser queue many frames, then stalls the page (timers, the
+// reveal, scrolling) while they drain. Two (not one) so a fence whose status reaches the page a frame late never
+// halves the frame rate of a GPU that is keeping up.
+function fencePending(i) {
+  const f = G.fq[i];
+  if (!f) return false;
+  let st = 0; try { st = gl.getSyncParameter(f, gl.SYNC_STATUS); } catch (e) { st = gl.SIGNALED; }
+  if (st !== gl.SIGNALED && performance.now() - G.fqAt[i] < 1500) return true;
+  try { gl.deleteSync(f); } catch (e) {}
+  G.fq[i] = null; return false;
+}
+function gpuBusy() {
+  if (!G || !G.fq) return false;
+  // Until the reveal only one frame may be in flight, so the loader's deadline never waits behind a queue.
+  if (!revealed && fencePending(G.fi ^ 1)) return true;
+  return fencePending(G.fi);
+}
+function fence() {
+  if (!G || !G.fq) return;
+  try {
+    if (G.fq[G.fi]) gl.deleteSync(G.fq[G.fi]);
+    G.fq[G.fi] = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0); G.fqAt[G.fi] = performance.now(); G.fi ^= 1;
+    gl.flush();
+  } catch (e) { G.fq[G.fi] = null; }
+}
+// Frame-time downgrade, judged over 1.5 s windows. A browser that caps animation frames at 30 fps (iOS Low Power Mode,
+// Safari's throttled cross-origin frames) is not a slow GPU, so 30 fps alone never costs feathers: a window downgrades
+// when frames average under ~24 fps, or when the GPU could not keep up (back-pressure skips) and frames are under ~42 fps.
+function perfWindow(dtMs) {
+  winMs += dtMs; winN++;
+  if (winMs < 1500) return;
+  const avg = winMs / winN, busy = winBusy / (winN + winBusy);
+  winMs = 0; winN = 0; winBusy = 0;
+  if (avg > 42 || (busy > 0.3 && avg > 24)) downgrade();
+}
+function loop(now) {
+  raf = 0;
+  if (!shouldRun()) return;
+  raf = requestAnimationFrame(loop);
+  if (gpuBusy()) { if (revealed) winBusy++; else revealCheck(); return; }
+  let dtMs = now - lastNow; lastNow = now;
+  if (!(dtMs > 0)) dtMs = 16.7;
+  if (dtMs > 1000) dtMs = 1000;
+  ema = ema * 0.9 + dtMs * 0.1;
+  // A slow frame is caught up with several short spring steps (each <= 1/30 s, which keeps the spring stable),
+  // so a slow GPU shows the same motion at a lower frame rate instead of slow motion.
+  const dt = Math.min(dtMs / 1000, 0.25), subs = Math.min(8, Math.ceil(dt * 30 - 1e-6)), sdt = dt / subs;
+  revealCheck();   // the reveal deadline holds even if timers are starved
+  // the bloom: feathers leave the stroke over ~1.5 s, starting as the loader lifts
+  if (revealAt >= 0 && bloom < 1) bloom = easeInOut((now - revealAt - 120) / 1500);
+  const intro = revealAt < 0 ? 1 : clamp(1 - (now - revealAt) / 1300, 0, 1);
+  if (revealed && !lockTier) {
+    // frame-time auto-downgrade: a burst of very slow frames at once, otherwise a slow 1.5 s window (see perfWindow)
+    if (dtMs > 110 && dtMs < 1000) { if (++slowRun >= 3) { slowRun = 0; downgrade(); downgrade(); winMs = 0; winN = 0; winBusy = 0; } } else slowRun = 0;
+    perfWindow(dtMs);
+  }
+  if (simT > 28800) simT = 60;   // eight hours on one section: rebase the 32-bit shader clock (see setTarget)
+  updateActive();
+  advanceFlow(dt);
+  updateLook(dt);
+  updateCamera(dt);
+  updatePointer(dt, now);
+  updateLight(dt);
+  try { for (let i = 0; i < subs; i++) { simT += sdt; stepSim(sdt, false); } renderGL(intro * 0.45); fence(); } catch (e) { logErr('frame: ' + (e && e.message)); fallBack(); return; }
+  DBG.ema = Math.round(ema * 10) / 10; DBG.frame = frameNo; DBG.active = active; DBG.dpr = dpr; DBG.bloom = Math.round(bloom * 100) / 100;
+}
+function warmup(done) {
+  // Behind the loader: place every feather on the stroke, step twice so the first frame is already alive, draw once.
+  // (Kept short on purpose: a slow GPU would otherwise have a queue of work to get through before the reveal.)
+  requestAnimationFrame(() => {
+    if (mode !== 'gl') { done(); return; }
+    try {
+      updateActive(); introPose(C); buildCamera(C, cssW, cssH); pointerRay(); updateLight(0);
+      stepSim(1 / 60, true); simT += 1 / 60; stepSim(1 / 60, false); simT += 1 / 60; stepSim(1 / 60, false);
+      renderGL(0.45); fence();
+    } catch (e) { logErr('warmup: ' + (e && e.message)); fallBack(); done(); return; }
+    DBG.tWarm = Math.round(performance.now() - t0);
+    done();
+  });
+}
+// QA: time the simulation step and the draw separately (gl.finish), n frames each
+DBG.bench = n => {
+  if (!G) return null; n = n || 10;
+  let a = performance.now(); for (let i = 0; i < n; i++) stepSim(1 / 60, false); gl.finish(); const s = (performance.now() - a) / n;
+  a = performance.now(); for (let i = 0; i < n; i++) renderGL(0); gl.finish(); const r = (performance.now() - a) / n;
+  return { step: Math.round(s * 10) / 10, draw: Math.round(r * 10) / 10, active, W, H, msaa: G.msaa };
+};
+// QA: advance the whole scene by `sec` seconds at once (flow, look, camera, springs), then draw one frame
+DBG.ff = sec => {
+  if (mode !== 'gl' || !G) return false;
+  updateActive();
+  const n = Math.round(sec * 30), dt = 1 / 30;
+  for (let i = 0; i < n; i++) { simT += dt; advanceFlow(dt); updateLook(dt); updateCamera(dt); updatePointer(dt, performance.now()); updateLight(dt); stepSim(dt, false); }
+  if (revealAt >= 0) bloom = 1;
+  renderGL(0); fence();
+  return true;
+};
+function fallBack() {
+  if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  teardownGL();
+  enterPoster();
+}
+glCanvas.addEventListener('webglcontextlost', e => { e.preventDefault(); logErr('context lost'); if (raf) { cancelAnimationFrame(raf); raf = 0; } G = null; enterPoster(); }, false);
+glCanvas.addEventListener('webglcontextrestored', () => {
+  if (NOGL) return;
+  initGL(err => {
+    if (err) { logErr('restore: ' + (err && err.message)); teardownGL(); if (mode !== 'poster') enterPoster(); return; }
+    bloom = 1; introHold = false; curA = curB = targetKey; blending = false;
+    if (reduce) { mode = 'still'; DBG.mode = 'still'; drawStill(); return; }
+    root.classList.remove('static'); root.classList.add('live'); DBG.restored = (DBG.restored || 0) + 1;
+    camTarget(targetKey, sideKey, secProg, simT, T); camSnap(); buildCamera(C, cssW, cssH); updateLight(0); stepSim(1 / 60, true); syncLoop();
+  });
+}, false);
+if ('IntersectionObserver' in window) { new IntersectionObserver(es => { canvasVisible = es[es.length - 1].isIntersecting || mode !== 'gl'; syncLoop(); }).observe(glCanvas); }
+doc.addEventListener('visibilitychange', syncLoop);
+
+/* ================= 9a. reduced motion: calm GL still frames =================
+   The same feathers, snapped onto the current section's formation and drawn once. No flow, no ruffle, no glide. */
+let stillTm = 0;
+function scheduleStill() { clearTimeout(stillTm); stillTm = setTimeout(drawStill, 60); }
+function drawStill() {
+  if (mode !== 'still' || !G) return;
+  root.classList.add('static'); root.classList.remove('live');
+  try {
+    resizeGL(false);
+    curA = curB = targetKey; blending = false; bloom = 1; introHold = false;
+    const f = FORMATIONS[targetKey];
+    expoC = f.expo; warmC = f.warm; flutC = 0; lightAz = f.light[0]; lightEl = f.light[2]; lightPh = 0.35;
+    simT = 2.2;
+    camTarget(targetKey, sideKey, 0.5, 0, T); T.az = f.cam[0]; camSnap(); buildCamera(C, cssW, cssH);
+    ray.ox = 0; ray.oy = 0; ray.oz = 50; ray.dx = 0; ray.dy = 0; ray.dz = 1; pv[0] = pv[1] = pv[2] = 0; ruffleS = 0; pulse = 0;
+    updateLight(0);
+    stepSim(1 / 60, true); stepSim(1 / 60, true);
+    renderGL(0);
+    DBG.still = targetKey;
+  } catch (e) { logErr('still: ' + (e && e.message)); teardownGL(); enterPoster(); }
+}
+
+/* ================= 9b. no WebGL: a Canvas 2D still of the feathered wingpath, drawn once (and on resize) ================= */
+let posterTm = 0, posterJob = 0;
+function enterPoster() {
+  mode = 'poster'; DBG.mode = 'poster'; root.classList.add('static'); root.classList.remove('live');
+  glCanvas.hidden = true; posterCanvas.hidden = false;
+  drawPoster();
+}
+function rampJS(k, out) {
+  const stops = [[0, .085, .088, .074], [.14, .18, .155, .104], [.28, .37, .295, .172], [.4, .70, .53, .25], [.5, .74, .45, .29], [.66, .74, .24, .35], [.84, .87, .54, .6], [1, .96, .8, .82]];
+  k = clamp(k, 0, 1);
+  for (let i = 1; i < stops.length; i++) if (k <= stops[i][0]) { const a = stops[i - 1], b = stops[i], f = smooth((k - a[0]) / (b[0] - a[0])); out[0] = lerp(a[1], b[1], f); out[1] = lerp(a[2], b[2], f); out[2] = lerp(a[3], b[3], f); return out; }
+  out[0] = .96; out[1] = .8; out[2] = .82; return out;
+}
+function drawPoster() {
+  if (mode !== 'poster') return;
+  const job = ++posterJob;
+  const vw = window.innerWidth, vh = posterCanvas.clientHeight || window.innerHeight;
+  const pd = Math.min(window.devicePixelRatio || 1, 2);
+  let ctx = null; try { ctx = posterCanvas.getContext('2d'); } catch (e) {}
+  if (!ctx) return;
+  // the hero camera, frozen
+  cssW = vw; cssH = vh;
+  camTarget('wing', 'hero', 0.5, 0, T); camSnap(); buildCamera(C, vw, vh);
+  const P = FORMATIONS.wing.p, N = isPhone ? 3600 : 7600, items = [];
+  let s0 = 777;
+  const rnd = () => { s0 = (s0 * 1664525 + 1013904223) >>> 0; return s0 / 4294967296; };
+  const at = (s, o) => { const x = ((s % 1) + 1) % 1 * PATH_N, i = Math.floor(x), f = x - i, a = i * 4, b = ((i + 1) % PATH_N) * 4; for (let k = 0; k < 3; k++) o[k] = lerp(PATHS[a + k], PATHS[b + k], f); return o; };
+  const c = [0, 0, 0], c2 = [0, 0, 0], c1 = [0, 0, 0], tip = new Float32Array(3);
+  // the same ribbon as the WING shader: lanes across the stroke, a light twist, a few feathers in a loose halo
+  for (let i = 0; i < N; i++) {
+    const sx0 = (0.5 + i * 0.6180339887) % 1, lane = rnd() - 0.5, halo = rnd() > 0.88, rz = rnd(), rs = rnd();
+    at(sx0, c); at(sx0 + 0.003, c2); at(sx0 - 0.003, c1);
+    let tx = c2[0] - c1[0], ty = c2[1] - c1[1]; const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+    const nx = -ty, ny = tx, tw = P[3] * Math.sin(sx0 * TAU * 2);
+    let off = lane * P[0] * Math.cos(tw), oz = lane * P[0] * Math.sin(tw);
+    if (halo) { const an = rnd() * TAU, rr = P[0] * (0.58 + P[2] * rz * rz); off = Math.cos(an) * rr; oz = Math.sin(an) * rr * 0.5; }
+    const x = c[0] + nx * off, y = c[1] + ny * off, z = c[2] + oz;
+    project(x, y, z, P3); const X = P3[0], Y = P3[1], Wd = P3[2];
+    const dx = tx + nx * lane * 0.75, dy = ty + ny * lane * 0.75;
+    project(x + dx * 0.05, y + dy * 0.05, z, tip);
+    // a stand-in for the shader's light: shading across the twist, narrow glint bands travelling along the stroke
+    const lit = 0.5 + 0.5 * Math.cos(tw * 2.2 + sx0 * TAU * 1.0 + lane * 1.4 - 0.6);
+    // (only some feathers in a band catch it, so the glint sparkles rather than paints a stripe)
+    const g = Math.pow(Math.max(0, Math.cos(sx0 * TAU * 3.0 - 0.35 + lane * 1.1)), 14) * (0.4 + 0.45 * rs) * (rs > 0.3 ? 1 : 0.35) + (halo ? 0.04 : 0);
+    items.push([Wd, X, Y, Math.atan2(tip[1] - Y, tip[0] - X), lit, g, halo ? 0.82 : 1, rs]);
+  }
+  items.sort((a, b) => b[0] - a[0]);
+  const ppu0 = cam.B * vh * 0.5, col = [0, 0, 0];
+  let i = 0;
+  const paintGround = () => {
+    posterCanvas.width = Math.round(vw * pd); posterCanvas.height = Math.round(vh * pd);
+    ctx.setTransform(pd, 0, 0, pd, 0, 0);
+    project(0, 0, 0, P3);
+    const g = ctx.createRadialGradient(P3[0], P3[1], 0, P3[0], P3[1], Math.max(vw, vh) * 0.7);
+    g.addColorStop(0, '#151A17'); g.addColorStop(1, '#0F1211');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, vw, vh);
+  };
+  // drawn in slices so a slow device never sees one long task
+  const slice = () => {
+    if (job !== posterJob || mode !== 'poster') return;
+    if (i === 0) paintGround();
+    const end = performance.now() + 12;
+    for (; i < items.length && performance.now() < end; i++) {
+      const it = items[i], L = Math.max(5, 0.05 * it[6] * ppu0 / it[0] * (isPhone ? 1.35 : 1)), Wf = L * 0.16;
+      const rest = [lerp(0.075, 0.24, it[4] * it[4]), lerp(0.08, 0.195, it[4] * it[4]), lerp(0.07, 0.13, it[4] * it[4])];
+      rampJS(clamp(0.3 + 0.42 * it[5] + (it[7] - 0.5) * 0.3, 0, 0.9), col);
+      const k = smooth((it[5] - 0.03) / 0.52), b = 0.75 + 0.55 * Math.min(it[5], 1.2);
+      const fog = clamp((it[0] - cam.dist - 0.25) / 2.2, 0, 1) * 0.78;
+      const rgb = [0, 1, 2].map(j => clamp(lerp(lerp(rest[j], col[j] * b, k), BG[j], fog), 0, 1) * 255);
+      ctx.save(); ctx.translate(it[1], it[2]); ctx.rotate(it[3]);
+      ctx.beginPath(); ctx.moveTo(-L * 0.45, 0);
+      // the same silhouette as the GL feather: full near the base, a long taper to a fine tip, the outer vane narrower
+      ctx.bezierCurveTo(-L * 0.3, -Wf * 1.35, L * 0.05, -Wf * 1.2, L * 0.55, 0);
+      ctx.bezierCurveTo(L * 0.05, Wf * 0.85, -L * 0.3, Wf * 0.9, -L * 0.45, 0);
+      ctx.fillStyle = 'rgb(' + (rgb[0] | 0) + ',' + (rgb[1] | 0) + ',' + (rgb[2] | 0) + ')';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,236,214,' + (0.07 + 0.2 * k).toFixed(3) + ')'; ctx.lineWidth = 0.6;
+      ctx.beginPath(); ctx.moveTo(-L * 0.42, 0); ctx.lineTo(L * 0.45, 0); ctx.stroke();
+      ctx.restore();
+    }
+    if (i < items.length) setTimeout(slice, 0); else DBG.poster = N;
+  };
+  slice();
+}
+
+/* ================= resize ================= */
+let rzT = 0, lastW = window.innerWidth, lastH = window.innerHeight;
+window.addEventListener('resize', () => {
+  clearTimeout(rzT);
+  rzT = setTimeout(() => {
+    const w = window.innerWidth, h = window.innerHeight;
+    const big = w !== lastW || Math.abs(h - lastH) > 120 || !('ontouchstart' in window);
+    lastW = w; lastH = h;
+    markW = 0;
+    measure(); updateActive();
+    if (!big) return;
+    // browser zoom or a move to another screen changes the pixel ratio: follow it unless the downgrade has chosen one
+    if ((mode === 'gl' || mode === 'still') && !dprLock) dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+    if (mode === 'gl') resizeGL(false); else if (mode === 'still') drawStill(); else if (mode === 'poster') { clearTimeout(posterTm); posterTm = setTimeout(drawPoster, 60); }
+  }, 140);
+});
+// When the frame loop is not running (still frames, poster, paused) sections are still tracked on scroll.
+let scrollQ = false;
+window.addEventListener('scroll', () => { if (raf || scrollQ) return; scrollQ = true; requestAnimationFrame(() => { scrollQ = false; updateActive(); }); }, { passive: true });
+onMQ(mqReduce, e => {
+  reduce = e.matches;
+  if (reduce && mode === 'gl') { if (raf) { cancelAnimationFrame(raf); raf = 0; } mode = 'still'; DBG.mode = 'still'; drawStill(); }
+  else if (!reduce && mode === 'still') { mode = 'gl'; DBG.mode = 'gl'; root.classList.remove('static'); root.classList.add('live'); camTarget(targetKey, sideKey, secProg, simT, T); camSnap(); syncLoop(); }
+});
+
+/* ================= 10. boot ================= */
+route(true);
+measure();
+updateActive();
+onViewChange();
+introPose(C); buildCamera(C, cssW, cssH); pointerRay();
+requestAnimationFrame(() => setTimeout(() => {
+  if (NOGL) { enterPoster(); revealSoon(1250); return; }
+  initGL(err => {
+    if (err) { logErr(String(err && err.message || err)); teardownGL(); enterPoster(); revealSoon(1250); return; }
+    if (reduce) { mode = 'still'; DBG.mode = 'still'; introHold = false; bloom = 1; drawStill(); revealSoon(300); return; }
+    warmup(() => { revealSoon(1250); if (mode === 'gl') root.classList.add('live'); syncLoop(); });
+  });
+}, 30));
+})();
+</script>

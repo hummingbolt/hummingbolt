@@ -1,0 +1,408 @@
+<title>Hummingbolt Logo Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..600&family=Funnel+Sans:wght@400;500&family=Host+Grotesk:wght@400;500&family=Newsreader:opsz,wght@6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Hummingbolt logo lab. A quiet identity book: fog pages, night plates, one throat colour. */
+:root {
+  color-scheme: light;
+  --fog: #E7E6E2;
+  --paper: #F1F0EC;
+  --stone: #DAD8D2;
+  --rule: #CCCAC3;
+  --ink: #24272A;
+  --ink-2: #55585D;
+  --night: #16181A;
+  --night-2: #1D2023;
+  --night-rule: #2D3135;
+  --on-night: #D9D7D1;
+  --on-night-2: #9A9C9F;
+  --tint-l: #A2A3A5;
+  --tint-d: #54575B;
+  --acc-l: #B4416A;
+  --acc-d: #D9678E;
+  --display: "Funnel Display", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --text: "Funnel Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --word: "Funnel Display", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  --word-w: 400;
+  --word-ls: -0.012em;
+  --ease: cubic-bezier(.22, .7, .16, 1);
+}
+html[data-acc="copper"] { --acc-l: #A85C30; --acc-d: #D88B56; }
+html[data-acc="jade"] { --acc-l: #2E7A66; --acc-d: #63B39A; }
+html[data-acc="ink"] { --acc-l: #24272A; --acc-d: #D9D7D1; }
+html[data-type="host"] { --word: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; --word-ls: -0.018em; }
+html[data-type="news"] { --word: Newsreader, Georgia, "Times New Roman", serif; --word-ls: -0.01em; }
+
+* { box-sizing: border-box; }
+html { background: var(--fog); -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--fog); color: var(--ink); font: 400 1rem/1.55 var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ul, dl, dd, figure { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--acc-l); outline-offset: 3px; border-radius: 2px; }
+.s-night :focus-visible, .s-d :focus-visible { outline-color: var(--acc-d); }
+
+.skip { position: absolute; left: 12px; top: -60px; z-index: 20; background: var(--paper); color: var(--ink); padding: 12px 16px; border-radius: 3px; text-decoration: none; font-weight: 500; }
+.skip:focus { top: 12px; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 700px) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
+
+/* Surfaces: each sets ink, throat colour and tint for the marks inside it. */
+.s-night { background: var(--night); color: var(--on-night); --acc: var(--acc-d); --tint: var(--tint-d); }
+.s-fog { background: var(--fog); color: var(--ink); --acc: var(--acc-l); --tint: var(--tint-l); }
+.s-l { background: var(--paper); color: var(--ink); --acc: var(--acc-l); --tint: var(--tint-l); }
+.s-d { background: var(--night-2); color: var(--on-night); --acc: var(--acc-d); --tint: var(--tint-d); }
+.mk { display: block; overflow: visible; }
+
+/* Header */
+.bar { border-bottom: 1px solid var(--night-rule); }
+@media (min-width: 960px) { .bar { position: sticky; top: 0; z-index: 10; } }
+.bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding-top: 10px; padding-bottom: 10px; }
+.brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.bn { font: 500 1.125rem/1 var(--display); letter-spacing: -0.01em; }
+.bt { font: 400 .75rem/1 var(--mono); color: var(--on-night-2); letter-spacing: .02em; }
+.controls { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: center; }
+.ctl { display: flex; align-items: center; gap: 2px; }
+.ctl-l { font: 400 .6875rem/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--on-night-2); margin-right: 6px; }
+.sw { width: 44px; height: 44px; border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; border-radius: 50%; padding: 0; }
+.sw i { width: 18px; height: 18px; border-radius: 50%; background: var(--sw); box-shadow: 0 0 0 1px rgba(255,255,255,.14); transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.sw-ink { background: linear-gradient(135deg, #D9D7D1 50%, #24272A 50%) !important; }
+.sw[aria-pressed="true"] i { box-shadow: 0 0 0 2px var(--night), 0 0 0 3.5px var(--on-night); }
+.sw:hover i { transform: scale(1.12); }
+.tb { min-height: 44px; min-width: 44px; padding: 0 12px; border: 0; border-radius: 22px; background: transparent; cursor: pointer; font-size: .9375rem; color: var(--on-night-2); transition: color .25s, background-color .25s; }
+.tb:hover { color: var(--on-night); }
+.tb[aria-pressed="true"] { color: var(--on-night); background: #26292D; }
+
+/* Intro */
+.intro-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; padding-top: 48px; padding-bottom: 56px; }
+@media (min-width: 960px) { .intro-in { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); column-gap: 64px; padding-top: 88px; padding-bottom: 88px; align-items: center; } }
+.eyebrow { font: 400 .75rem/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--on-night-2); margin-bottom: 20px; }
+.s-fog .eyebrow { color: var(--ink-2); }
+h1 { font: 300 clamp(2.6rem, 6.4vw, 5.75rem)/.98 var(--display); letter-spacing: -0.03em; max-width: 11ch; text-wrap: balance; }
+.lede { margin-top: 24px; font-size: clamp(1.0625rem, 1.4vw, 1.25rem); line-height: 1.5; max-width: 36rem; color: var(--on-night); }
+.lede.soft { margin-top: 12px; font-size: 1rem; color: var(--on-night-2); }
+.hero-fig { width: min(100%, 520px); justify-self: center; }
+.hero-fig svg { display: block; width: 100%; height: auto; aspect-ratio: 64 / 46; }
+.cons { color: var(--on-night-2); opacity: .55; stroke-width: .18; }
+.cons .pt { fill: currentColor; stroke: none; }
+.eight { stroke: var(--on-night); stroke-width: .42; }
+.strobe { fill: var(--acc); }
+.hero-fig figcaption { margin-top: 12px; font: 400 .8125rem/1.5 var(--mono); color: var(--on-night-2); max-width: 30rem; }
+.material { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--night-rule); margin-top: 8px; }
+.material li { padding: 18px 16px 18px 0; border-bottom: 1px solid var(--night-rule); display: grid; gap: 4px; }
+.material b { font: 400 1.125rem/1.2 var(--display); }
+.material span { font-size: .9375rem; color: var(--on-night-2); line-height: 1.45; }
+@media (min-width: 760px) { .material { grid-template-columns: repeat(4, minmax(0, 1fr)); } .material li { border-bottom: 0; padding-right: 24px; } }
+.palette { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.chip { display: grid; gap: 2px; font: 400 .6875rem/1.3 var(--mono); color: var(--on-night-2); }
+.chip::before { content: ""; height: 44px; border-radius: 3px; background: var(--c); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); margin-bottom: 6px; }
+.chip.acc::before { background: var(--acc-l); }
+.chip span { color: var(--on-night); font-family: var(--text); font-size: .8125rem; }
+.chip code { font: inherit; overflow-wrap: anywhere; }
+
+/* Index */
+.index { border-bottom: 1px solid var(--rule); }
+.index ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (min-width: 900px) { .index ul { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+.index a { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 4px 14px; text-decoration: none; font-size: .8125rem; color: var(--ink-2); min-height: 44px; transition: color .25s; }
+.index a:hover { color: var(--ink); }
+.index a .mk { transition: transform .5s var(--ease); }
+.index a:hover .mk { transform: translateY(-3px); }
+
+/* Plates */
+.marks { padding-top: 8px; }
+.marks:focus { outline: none; }
+.plate { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 56px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 72px; }
+@media (min-width: 960px) { .plate { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; padding: 80px 0; } .ph { position: sticky; top: 96px; align-self: start; } }
+.ph h2 { font: 400 clamp(2rem, 3.6vw, 2.9rem)/1 var(--display); letter-spacing: -0.025em; }
+.idea { margin-top: 16px; font-size: clamp(1.0625rem, 1.35vw, 1.1875rem); line-height: 1.5; max-width: 30rem; text-wrap: pretty; }
+.meta { margin-top: 24px; display: grid; gap: 14px; max-width: 30rem; }
+.meta div { display: grid; gap: 2px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.meta dt { font: 400 .6875rem/1.3 var(--mono); text-transform: uppercase; letter-spacing: .09em; color: var(--ink-2); }
+.meta dd { font-size: .9375rem; line-height: 1.5; color: var(--ink); }
+
+.pg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tile { position: relative; border-radius: 3px; overflow: hidden; }
+.big { aspect-ratio: 1; display: grid; place-items: center; container-type: inline-size; }
+.tl { position: absolute; left: 14px; top: 12px; font: 400 .6875rem/1 var(--mono); letter-spacing: .04em; opacity: .62; }
+.art { position: relative; width: 58%; aspect-ratio: 1; }
+.art .mk, .gridov { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gridov { display: none; color: var(--acc); pointer-events: none; }
+html[data-grid="on"] .gridov { display: block; }
+.big .art .mk { transition: transform .9s var(--ease); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .big:hover .art .mk { transform: scale(1.04); } }
+.bigword { font: var(--word-w) clamp(1.1rem, 12.5cqi, 3.6rem)/1 var(--word); letter-spacing: var(--word-ls); white-space: nowrap; }
+
+.sizes { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+@media (min-width: 560px) { .sizes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.half { display: flex; align-items: flex-end; justify-content: center; gap: clamp(14px, 3vw, 28px); padding: 22px 12px 14px; }
+.sz { display: grid; justify-items: center; gap: 10px; }
+.sz > span { display: grid; place-items: center; min-height: 64px; }
+.sz small { font: 400 .6875rem/1 var(--mono); opacity: .62; }
+.px canvas { display: block; width: 64px; height: 64px; image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.lock { grid-column: 1 / -1; display: grid; place-items: center; min-height: 132px; padding: 28px 16px; container-type: inline-size; }
+@media (min-width: 600px) { .lock { grid-column: auto; min-height: 168px; } }
+.lockup { display: flex; align-items: center; gap: .42em; font: var(--word-w) clamp(1rem, 7.4cqi, 1.9rem)/1 var(--word); letter-spacing: var(--word-ls); white-space: nowrap; }
+.lm { height: 1.36em; width: calc(1.36em * var(--ar)); max-width: 2.3em; flex: none; display: block; overflow: visible; }
+.wm { display: inline-block; transform: translateY(-.02em); }
+.lockup.only { font-size: clamp(1.1rem, 9cqi, 2.3rem); }
+
+/* Tittle: the floating dot sits on a dotless i, raised above the x-height. */
+.ti { display: inline-grid; justify-items: center; }
+.ti > * { grid-area: 1 / 1; align-self: baseline; }
+.td { display: block; width: .16em; height: .16em; border-radius: 50%; background: var(--acc); position: relative; top: calc(-1ex - .21em); }
+
+/* Tab test */
+.tabtest { padding: 72px 0 80px; }
+.tabtest h2, .picks h2 { font: 400 clamp(1.9rem, 3.4vw, 2.75rem)/1.05 var(--display); letter-spacing: -0.025em; }
+.sub { margin-top: 14px; max-width: 38rem; font-size: 1.0625rem; color: var(--ink-2); }
+.s-night .sub { color: var(--on-night-2); }
+.chrome { margin-top: 24px; border-radius: 8px; padding: 10px; }
+.chrome.s-l { background: #DDDBD5; }
+.chrome.s-d { margin-top: 10px; background: #0F1112; }
+.tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+@media (min-width: 760px) { .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tab { display: flex; align-items: center; gap: 9px; height: 36px; padding: 0 10px 0 12px; border-radius: 7px; font: 400 .8125rem/1 var(--text); min-width: 0; }
+.chrome.s-l .tab { background: var(--paper); }
+.chrome.s-d .tab { background: #24272B; }
+.tab .mk { flex: none; }
+.tab span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab i { font-style: normal; opacity: .5; }
+
+/* Picks */
+.picks { padding: 80px 0 88px; }
+.pick-grid { margin-top: 36px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 900px) { .pick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pick { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; border: 1px solid var(--night-rule); border-radius: 4px; overflow: hidden; }
+.pick-art { display: grid; place-items: center; aspect-ratio: 16 / 10; }
+.pick-art .mk { width: 34%; height: auto; aspect-ratio: 1; }
+.pick-body { padding: 24px 20px 24px; }
+.pick h3 { font: 400 1.75rem/1 var(--display); letter-spacing: -0.02em; }
+.pick ul { margin-top: 16px; display: grid; gap: 10px; }
+.pick li { position: relative; padding-left: 18px; color: var(--on-night); font-size: .9875rem; line-height: 1.5; }
+.pick li::before { content: ""; position: absolute; left: 0; top: .68em; width: 6px; height: 6px; border-radius: 50%; background: var(--acc); }
+.pick-small { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+.pick-small span { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 3px; }
+.next { margin-top: 32px; max-width: 40rem; color: var(--on-night-2); }
+
+.foot { border-top: 1px solid var(--night-rule); }
+.foot-in { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; padding-top: 24px; padding-bottom: 28px; font: 400 .8125rem/1.5 var(--mono); color: var(--on-night-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
+}
+
+</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<a class="skip" href="#marks">Skip to the marks</a>
+<header class="bar s-night">
+  <div class="wrap bar-in">
+    <p class="brand"><span class="bn">Hummingbolt</span><span class="bt">Logo lab · Round three</span></p>
+    <div class="controls" role="group" aria-label="Preview options">
+      <div class="ctl" role="group" aria-labelledby="c-acc"><span class="ctl-l" id="c-acc">Colour</span>
+        <button type="button" class="sw" data-acc="rose" aria-pressed="true" aria-label="Rose" title="Rose: the throat of Anna’s hummingbird"><i style="--sw:#B4416A"></i></button>
+        <button type="button" class="sw" data-acc="copper" aria-pressed="false" aria-label="Copper" title="Copper: the throat of Allen’s hummingbird"><i style="--sw:#A85C30"></i></button>
+        <button type="button" class="sw" data-acc="jade" aria-pressed="false" aria-label="Jade" title="Jade: the green of the back feathers"><i style="--sw:#2E7A66"></i></button>
+        <button type="button" class="sw" data-acc="ink" aria-pressed="false" aria-label="Ink only" title="Ink only: one tone"><i class="sw-ink"></i></button>
+      </div>
+      <div class="ctl" role="group" aria-labelledby="c-type"><span class="ctl-l" id="c-type">Type</span>
+        <button type="button" class="tb" data-type="funnel" aria-pressed="true" style="font-family:'Funnel Display',sans-serif">Funnel</button>
+        <button type="button" class="tb" data-type="host" aria-pressed="false" style="font-family:'Host Grotesk',sans-serif">Host</button>
+        <button type="button" class="tb" data-type="news" aria-pressed="false" style="font-family:Newsreader,serif">Newsreader</button>
+      </div>
+      <div class="ctl"><button type="button" class="tb grid-t" data-grid aria-pressed="false">Grid</button></div>
+    </div>
+  </div>
+</header>
+<main id="main">
+<section class="intro s-night" aria-labelledby="h1">
+  <div class="wrap intro-in">
+    <div class="intro-copy">
+      <p class="eyebrow">Identity · Round three</p>
+      <h1 id="h1">Eight marks for Hummingbolt</h1>
+      <p class="lede">Calmer, quieter and more exact than the last round. Each mark is drawn on a 64-unit grid in one or two flat tones, then tested from full size down to a 16-pixel browser tab.</p>
+      <p class="lede soft">Use the controls to try each one in another colour or typeface. Grid shows the construction lines.</p>
+    </div>
+    <figure class="hero-fig">
+      <svg viewBox="0 9 64 46" aria-hidden="true" focusable="false">
+        <g class="cons" fill="none" stroke="currentColor">
+          <circle cx="18.35" cy="38.02" r="12.4"/><circle cx="49.45" cy="22.18" r="8.6"/><path d="M15.57 24.94 L52.89 31.52"/><path d="M43.91 13.9 L27.3 47.97"/><path d="M-0.92 47.84 L72.76 10.3" stroke-dasharray="1.2 1.2"/>
+          <circle class="pt" cx="18.35" cy="38.02" r=".5"/><circle class="pt" cx="49.45" cy="22.18" r=".5"/><circle class="pt" cx="36.71" cy="28.67" r=".5"/>
+        </g>
+        <path id="eight" class="eight" d="M20.51 25.81 L47.95 30.65 A8.6 8.6 0 1 0 41.72 18.41 L29.5 43.46 A12.4 12.4 0 1 1 20.51 25.81 Z" fill="none"/>
+        <g class="strobe"><circle class="sd" r="1.35" opacity="1" transform="translate(30.19 42.03)"/><circle class="sd" r="1.25" opacity="0.9" transform="translate(31.83 38.69)"/><circle class="sd" r="1.15" opacity="0.8" transform="translate(33.62 35.01)"/><circle class="sd" r="1.05" opacity="0.7" transform="translate(35.25 31.66)"/><circle class="sd" r="0.95" opacity="0.6" transform="translate(37.04 27.99)"/><circle class="sd" r="0.85" opacity="0.5" transform="translate(38.68 24.64)"/><circle class="sd" r="0.75" opacity="0.4" transform="translate(40.31 21.3)"/><circle class="sd" r="0.65" opacity="0.3" transform="translate(42.14 17.64)"/><circle class="sd" r="0.55" opacity="0.2" transform="translate(44.72 15)"/></g>
+      </svg>
+      <figcaption>A hovering hummingbird’s wingtip traces a figure-eight, up to about fifty times a second. Here it is slowed right down.</figcaption>
+    </figure>
+    <ul class="material" aria-label="Brand material">
+      <li><b>Hover</b><span>Perfectly still in mid-air while everything else moves.</span></li>
+      <li><b>Figure-eight</b><span>The path each wingtip traces, over and over.</span></li>
+      <li><b>Gorget</b><span>Throat feathers that change colour with the angle of light.</span></li>
+      <li><b>Spark</b><span>From the bolt: speed and energy, kept small.</span></li>
+    </ul>
+    <div class="palette" aria-label="Working palette">
+      <div class="chip" style="--c:#E7E6E2"><span>Fog</span><code>#E7E6E2</code></div>
+      <div class="chip" style="--c:#F1F0EC"><span>Paper</span><code>#F1F0EC</code></div>
+      <div class="chip" style="--c:#24272A"><span>Ink</span><code>#24272A</code></div>
+      <div class="chip" style="--c:#16181A"><span>Night</span><code>#16181A</code></div>
+      <div class="chip acc"><span>Throat</span><code class="acc-hex">#B4416A</code></div>
+    </div>
+  </div>
+</section>
+<nav class="index s-fog" aria-label="Jump to a mark"><div class="wrap"><ul><li><a href="#wingpath"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg><span>Wingpath</span></a></li><li><a href="#chronograph"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg><span>Chronograph</span></a></li><li><a href="#shift"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg><span>Shift</span></a></li><li><a href="#closure"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg><span>Closure</span></a></li><li><a href="#dart"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg><span>Dart</span></a></li><li><a href="#beat"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg><span>Beat</span></a></li><li><a href="#poise"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg><span>Poise</span></a></li><li><a href="#tittle"><svg class="mk " viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg><span>Tittle</span></a></li></ul></div></nav>
+<section id="marks" class="marks s-fog" aria-label="The eight marks" tabindex="-1">
+<div class="wrap">
+<article class="plate" id="wingpath" aria-labelledby="wingpath-h">
+<header class="ph"><h2 id="wingpath-h">Wingpath</h2><p class="idea">The figure-eight a hummingbird’s wing traces as it hovers. The larger loop is the downstroke, which does most of the lifting.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>Two circles and the two lines that touch both. One unbroken stroke that passes over itself once.</dd></div><div><dt>Tones</dt><dd>Ink only.</dd></div><div><dt>In motion</dt><dd>A point of light runs the path, then slows to a hover when you point at it.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-wingpath"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-wingpath"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Wingpath at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-wingpath"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-wingpath-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-wingpath"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-wingpath-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="4.7 11.8 54.6 40.4" style="--ar:1.35" aria-hidden="true" focusable="false"><use href="#mk-wingpath" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="4.7 11.8 54.6 40.4" style="--ar:1.35" aria-hidden="true" focusable="false"><use href="#mk-wingpath" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="chronograph" aria-labelledby="chronograph-h">
+<header class="ph"><h2 id="chronograph-h">Chronograph</h2><p class="idea">One wingbeat shown as three frames, like an early motion study. The newest frame is solid.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>Three identical blades on one pivot, 30° apart. A straight leading edge and a curved trailing edge.</dd></div><div><dt>Tones</dt><dd>Ink and a tint of ink.</dd></div><div><dt>In motion</dt><dd>The blades fan open and fold shut, slowly, like breathing.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-chronograph"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-chronograph"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Chronograph at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-chronograph"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-chronograph-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-chronograph"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-chronograph-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="10.35 8.8 43.3 46.4" style="--ar:0.93" aria-hidden="true" focusable="false"><use href="#mk-chronograph" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="10.35 8.8 43.3 46.4" style="--ar:0.93" aria-hidden="true" focusable="false"><use href="#mk-chronograph" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="shift" aria-labelledby="shift-h">
+<header class="ph"><h2 id="shift-h">Shift</h2><p class="idea">A disc cut at the angle of a wing and nudged a beat forward. Dark above, throat colour below.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>One circle, cut once at 35°. The halves are pulled apart and slid a little along the cut.</dd></div><div><dt>Tones</dt><dd>Ink and throat colour.</dd></div><div><dt>In motion</dt><dd>The halves slide into line as the page loads, then hold still.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-shift"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-shift"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Shift at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-shift"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-shift-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-shift"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-shift-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="12 7.1 40 49.8" style="--ar:0.8" aria-hidden="true" focusable="false"><use href="#mk-shift" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="12 7.1 40 49.8" style="--ar:0.8" aria-hidden="true" focusable="false"><use href="#mk-shift" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="closure" aria-labelledby="closure-h">
+<header class="ph"><h2 id="closure-h">Closure</h2><p class="idea">A lowercase h that closes into a b. The closing stroke carries the colour.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>One stem, one arch and one base stroke, all on the same 8-unit line.</dd></div><div><dt>Tones</dt><dd>Ink and throat colour.</dd></div><div><dt>In motion</dt><dd>The base stroke draws in last, like a signature.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-closure"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-closure"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Closure at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-closure"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-closure-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-closure"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-closure-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="15.5 6 33 52" style="--ar:0.63" aria-hidden="true" focusable="false"><use href="#mk-closure" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="15.5 6 33 52" style="--ar:0.63" aria-hidden="true" focusable="false"><use href="#mk-closure" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="dart" aria-labelledby="dart-h">
+<header class="ph"><h2 id="dart-h">Dart</h2><p class="idea">A capital H whose crossbar has broken loose and is climbing. Two still posts and one quick move between them.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>Two upright bars and one parallelogram rising at about 36°.</dd></div><div><dt>Tones</dt><dd>Ink and throat colour.</dd></div><div><dt>In motion</dt><dd>The bar darts from post to post, then settles in the middle.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-dart"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-dart"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Dart at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-dart"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-dart-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-dart"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-dart-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="8 8 48 48" style="--ar:1" aria-hidden="true" focusable="false"><use href="#mk-dart" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="8 8 48 48" style="--ar:1" aria-hidden="true" focusable="false"><use href="#mk-dart" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="beat" aria-labelledby="beat-h">
+<header class="ph"><h2 id="beat-h">Beat</h2><p class="idea">The top and bottom of one wingbeat, side by side. Read quickly, a spark. Read slowly, a line of code.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>Two rounded strokes at 60°. The second sits 10 units lower.</dd></div><div><dt>Tones</dt><dd>Ink and throat colour.</dd></div><div><dt>In motion</dt><dd>The strokes trade places, like a wing going up and down.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-beat"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-beat"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Beat at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-beat"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-beat-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-beat"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-beat-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="10.6 6.4 42.8 51.2" style="--ar:0.84" aria-hidden="true" focusable="false"><use href="#mk-beat" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="10.6 6.4 42.8 51.2" style="--ar:0.84" aria-hidden="true" focusable="false"><use href="#mk-beat" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="poise" aria-labelledby="poise-h">
+<header class="ph"><h2 id="poise-h">Poise</h2><p class="idea">Two slabs and a point held in balance above them. A quiet nod to Toppleton.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>Two rounded slabs, the top one turned 7°, and a dot on the balance line.</dd></div><div><dt>Tones</dt><dd>Ink and throat colour.</dd></div><div><dt>In motion</dt><dd>The top slab wobbles and settles. The dot never moves.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-poise"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="art"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-poise"/></svg><svg class="gridov" viewBox="0 0 64 64" aria-hidden="true"><use href="#grid"/></svg></div></figure><div class="tile sizes" aria-label="Poise at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-poise"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-poise-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-poise"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-poise-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup"><svg class="lm" viewBox="9 14.7 46 34.6" style="--ar:1.33" aria-hidden="true" focusable="false"><use href="#mk-poise" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div><div class="tile lock s-d"><div class="lockup"><svg class="lm" viewBox="9 14.7 46 34.6" style="--ar:1.33" aria-hidden="true" focusable="false"><use href="#mk-poise" x="0" y="0" width="64" height="64"/></svg><span class="wm">Hummingbolt</span></div></div></div>
+</article>
+<article class="plate" id="tittle" aria-labelledby="tittle-h">
+<header class="ph"><h2 id="tittle-h">Tittle</h2><p class="idea">A plain wordmark with one detail. The dot of the i floats a little higher, in the throat colour, like a bird holding still.</p>
+<dl class="meta"><div><dt>Built from</dt><dd>Set type, a dotless i and one placed dot. The small mark is an h carrying the same dot.</dd></div><div><dt>Tones</dt><dd>Ink and throat colour.</dd></div><div><dt>In motion</dt><dd>The dot lifts as the page loads, then holds still.</dd></div></dl></header>
+<div class="pg"><figure class="tile big s-l"><figcaption class="tl">On paper</figcaption><div class="bigword"><span class="wm tw">Humm<span class="ti"><span>ı</span><b class="td"></b></span>ngbolt</span></div></figure><figure class="tile big s-d"><figcaption class="tl">On night</figcaption><div class="bigword"><span class="wm tw">Humm<span class="ti"><span>ı</span><b class="td"></b></span>ngbolt</span></div></figure><div class="tile sizes" aria-label="Tittle at 64, 32 and 16 pixels"><div class="half s-l"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-tittle"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-tittle-s" data-s="l"></div></div><div class="half s-d"><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-tittle"/></svg></span><small>64</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg></span><small>32</small></div><div class="sz"><span><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg></span><small>16</small></div><div class="sz px" data-m="mk-tittle-s" data-s="d"></div></div></div><div class="tile lock s-l"><div class="lockup only"><span class="wm tw">Humm<span class="ti"><span>ı</span><b class="td"></b></span>ngbolt</span></div></div><div class="tile lock s-d"><div class="lockup only"><span class="wm tw">Humm<span class="ti"><span>ı</span><b class="td"></b></span>ngbolt</span></div></div></div>
+</article>
+</div>
+</section>
+<section class="tabtest s-fog" aria-labelledby="tabs-h">
+  <div class="wrap">
+    <h2 id="tabs-h">At sixteen pixels</h2>
+    <p class="sub">Every mark as a browser-tab icon, at true size, on a light and a dark browser.</p>
+    <div class="chrome s-l"><ul class="tabs"><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg><span>Wingpath</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg><span>Chronograph</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg><span>Shift</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg><span>Closure</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg><span>Dart</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg><span>Beat</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg><span>Poise</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg><span>Tittle</span><i aria-hidden="true">×</i></li></ul></div><div class="chrome s-d"><ul class="tabs"><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg><span>Wingpath</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-chronograph-s"/></svg><span>Chronograph</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg><span>Shift</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-closure-s"/></svg><span>Closure</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-dart-s"/></svg><span>Dart</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-beat-s"/></svg><span>Beat</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-poise-s"/></svg><span>Poise</span><i aria-hidden="true">×</i></li><li class="tab"><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-tittle-s"/></svg><span>Tittle</span><i aria-hidden="true">×</i></li></ul></div>
+  </div>
+</section>
+<section class="picks s-night" aria-labelledby="pick-h">
+  <div class="wrap">
+    <p class="eyebrow">Recommendation</p>
+    <h2 id="pick-h">The two we would take forward</h2>
+    <p class="sub">Wingpath if the mark should tell the story. Shift if it should stay out of the way. Both are calm, both hold at 16 pixels, and both give the site one clear thing to animate.</p>
+    <div class="pick-grid"><article class="pick"><div class="pick-art s-d"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-wingpath"/></svg></div><div class="pick-body"><h3>Wingpath</h3><ul><li>It carries the whole story in one line: hover, the figure-eight, the downstroke.</li><li>The tilt, the uneven loops and the over-and-under crossing make it feel drawn, not typed.</li><li>It is built to move. The site’s signature moment can be a point of light running the path.</li><li>One tone. It needs no colour to work, so it survives every surface.</li></ul><div class="pick-small"><span class="s-l"><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg></span><span class="s-d"><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-wingpath-s"/></svg></span></div></div></article><article class="pick"><div class="pick-art s-d"><svg class="mk " viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" focusable="false"><use href="#mk-shift"/></svg></div><div class="pick-body"><h3>Shift</h3><ul><li>The calmest mark here. One circle, one cut, nothing extra.</li><li>The two halves hold the throat-colour idea: dark one way, bright the other.</li><li>It stays clear at 16 pixels and reads as one solid shape in a crowded tab bar.</li><li>Simple to animate well: the halves slide into line once, then hold still.</li></ul><div class="pick-small"><span class="s-l"><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg></span><span class="s-d"><svg class="mk " viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg><svg class="mk " viewBox="0 0 64 64" width="16" height="16" aria-hidden="true" focusable="false"><use href="#mk-shift-s"/></svg></span></div></div></article></div>
+    <p class="next">Next round: choose one. We then refine the curves by eye, finish the small-size cut, set the wordmark spacing and design the motion.</p>
+  </div>
+</section>
+</main>
+<footer class="foot s-night"><div class="wrap foot-in"><p>© 2026 Hummingbolt LLC</p><p>Logo lab, round three. A working document, not for publication.</p></div></footer>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><mask id="wpm" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M31.99 38.01 L40.94 19.67" stroke="#000" stroke-width="10.8"/></mask><mask id="wpms" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M30.45 40.5 L41.48 17.89" stroke="#000" stroke-width="11.6"/></mask></defs><symbol id="mk-wingpath" viewBox="0 0 64 64"><g transform="translate(0 0)"><path d="M21.31 26.17 L46.92 30.69 A8 8 0 1 0 41.12 19.3 L29.72 42.68 A11.6 11.6 0 1 1 21.31 26.17 Z" fill="none" stroke="currentColor" stroke-width="6" mask="url(#wpm)"/><path d="M31.73 38.55 L41.2 19.14" stroke="currentColor" stroke-width="6"/></g></symbol><symbol id="mk-wingpath-s" viewBox="0 0 64 64"><g transform="translate(0 0)"><path d="M20.42 26.45 L47.34 31.2 A8.7 8.7 0 1 0 41.03 18.82 L29.05 43.39 A11.9 11.9 0 1 1 20.42 26.45 Z" fill="none" stroke="currentColor" stroke-width="7.4" mask="url(#wpms)"/><path d="M30.19 41.04 L41.75 17.35" stroke="currentColor" stroke-width="7.4"/></g></symbol><symbol id="mk-chronograph" viewBox="0 0 64 64"><g transform="translate(-3.65 0.1)"><path d="M14 50 L57.33 42.36 A32.72 32.72 0 0 1 14 50 Z" fill="var(--tint)"/><path d="M14 50 L47.71 21.72 A32.72 32.72 0 0 1 14 50 Z" fill="var(--tint)"/><path d="M14 50 L29.05 8.65 A32.72 32.72 0 0 1 14 50 Z" fill="currentColor"/></g></symbol><symbol id="mk-chronograph-s" viewBox="0 0 64 64"><g transform="translate(-4.75 0.55)"><path d="M14 50 L59.55 43.6 A32.59 32.59 0 0 1 14 50 Z" fill="var(--tint)"/><path d="M14 50 L49.24 20.43 A32.59 32.59 0 0 1 14 50 Z" fill="var(--tint)"/><path d="M14 50 L28.21 6.25 A32.59 32.59 0 0 1 14 50 Z" fill="currentColor"/></g></symbol><symbol id="mk-shift" viewBox="0 0 64 64"><g transform="translate(0 0)"><path d="M50.97 16.03 A21.5 21.5 0 0 0 15.75 40.69 Z" fill="currentColor"/><path d="M48.25 23.31 A21.5 21.5 0 0 1 13.03 47.97 Z" fill="var(--acc)"/></g></symbol><symbol id="mk-shift-s" viewBox="0 0 64 64"><g transform="translate(0 0)"><path d="M50.92 15.09 A22 22 0 0 0 14.88 40.33 Z" fill="currentColor"/><path d="M49.12 23.67 A22 22 0 0 1 13.08 48.91 Z" fill="var(--acc)"/></g></symbol><symbol id="mk-closure" viewBox="0 0 64 64"><g transform="translate(0.5 0)"><path d="M44 46.99 V47 A7 7 0 0 1 37 54 H23" stroke="var(--acc)" stroke-width="8" fill="none"/><path d="M19 6 V58" stroke="currentColor" stroke-width="8" fill="none"/><path d="M19 43.5 A12.5 12.5 0 0 1 44 43.5 V47" stroke="currentColor" stroke-width="8" fill="none"/></g></symbol><symbol id="mk-closure-s" viewBox="0 0 64 64"><g transform="translate(1 0)"><path d="M44 45.74 V45.75 A7.5 7.5 0 0 1 36.5 53.25 H22.75" stroke="var(--acc)" stroke-width="9.5" fill="none"/><path d="M18 6 V58" stroke="currentColor" stroke-width="9.5" fill="none"/><path d="M18 43.75 A13 13 0 0 1 44 43.75 V45.75" stroke="currentColor" stroke-width="9.5" fill="none"/></g></symbol><symbol id="mk-dart" viewBox="0 0 64 64"><g transform="translate(0 0)"><rect x="8" y="8" width="10" height="48" fill="currentColor"/><rect x="46" y="8" width="10" height="48" fill="currentColor"/><path d="M23 32.25 L41 19.25 V31.75 L23 44.75 Z" fill="var(--acc)"/></g></symbol><symbol id="mk-dart-s" viewBox="0 0 64 64"><g transform="translate(0 0)"><rect x="7" y="8" width="10.5" height="48" fill="currentColor"/><rect x="46.5" y="8" width="10.5" height="48" fill="currentColor"/><path d="M23 32.25 L41 19.25 V31.75 L23 44.75 Z" fill="var(--acc)"/></g></symbol><symbol id="mk-beat" viewBox="0 0 64 64"><g transform="translate(0 0)"><path d="M15.38 42.8 L33.63 11.2" stroke="currentColor" stroke-width="9.5" stroke-linecap="round"/><path d="M30.38 52.8 L48.63 21.2" stroke="var(--acc)" stroke-width="9.5" stroke-linecap="round"/></g></symbol><symbol id="mk-beat-s" viewBox="0 0 64 64"><g transform="translate(0 0)"><path d="M14.25 43.02 L32.75 10.98" stroke="currentColor" stroke-width="11" stroke-linecap="round"/><path d="M31.25 53.02 L49.75 20.98" stroke="var(--acc)" stroke-width="11" stroke-linecap="round"/></g></symbol><symbol id="mk-poise" viewBox="0 0 64 64"><g transform="translate(0 0)"><g transform="translate(0 -4.75)"><rect x="9" y="46.5" width="46" height="7.5" rx="2" fill="currentColor"/><rect x="14" y="36.8" width="30" height="7.5" rx="2" fill="currentColor" transform="rotate(-7 29 40.55)"/><circle cx="32" cy="25" r="5.5" fill="var(--acc)"/></g></g></symbol><symbol id="mk-poise-s" viewBox="0 0 64 64"><g transform="translate(0 0)"><g transform="translate(0 0.08)"><rect x="7" y="45" width="50" height="9" rx="2.2" fill="currentColor"/><rect x="13" y="31.9" width="32" height="8.5" rx="2.2" fill="currentColor" transform="rotate(-9 29 36.15)"/><circle cx="32" cy="16.85" r="7" fill="var(--acc)"/></g></g></symbol><symbol id="mk-tittle" viewBox="0 0 64 64"><g transform="translate(-0.15 0)"><g><path d="M20 8 V56 M20 43.75 A11.5 11.5 0 0 1 43 43.75 V56" stroke="currentColor" stroke-width="8.5" fill="none"/><circle cx="43" cy="18.2" r="5.6" fill="var(--acc)"/></g></g></symbol><symbol id="mk-tittle-s" viewBox="0 0 64 64"><g transform="translate(-0.2 0)"><g><path d="M20 8 V56 M20 44.25 A11.5 11.5 0 0 1 43 44.25 V56" stroke="currentColor" stroke-width="9.5" fill="none"/><circle cx="43" cy="17.2" r="6.2" fill="var(--acc)"/></g></g></symbol><symbol id="grid" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" vector-effect="non-scaling-stroke" stroke-width="1"><g opacity=".22"><path d="M8 0V64M0 8H64"/><path d="M16 0V64M0 16H64"/><path d="M24 0V64M0 24H64"/><path d="M32 0V64M0 32H64"/><path d="M40 0V64M0 40H64"/><path d="M48 0V64M0 48H64"/><path d="M56 0V64M0 56H64"/></g><g opacity=".5"><rect x="4" y="4" width="56" height="56"/><circle cx="32" cy="32" r="28"/><circle cx="32" cy="32" r="20"/><path d="M32 0V64M0 32H64"/></g></g></symbol></svg>
+<script>
+(function () {
+  var root = document.documentElement;
+  var store = {
+    get: function (k) { try { return localStorage.getItem('hb-lab-' + k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem('hb-lab-' + k, v); } catch (e) {} }
+  };
+  var HEX = { rose: '#B4416A', copper: '#A85C30', jade: '#2E7A66', ink: '#24272A' };
+
+  function press(sel, attr, val) {
+    document.querySelectorAll(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)); });
+  }
+  function setAcc(v) {
+    if (!HEX[v]) v = 'rose';
+    if (v === 'rose') root.removeAttribute('data-acc'); else root.setAttribute('data-acc', v);
+    press('[data-acc]', 'data-acc', v);
+    var h = document.querySelector('.acc-hex'); if (h) h.textContent = HEX[v];
+    store.set('acc', v); drawPixels();
+  }
+  function setType(v) {
+    if (['funnel', 'host', 'news'].indexOf(v) < 0) v = 'funnel';
+    if (v === 'funnel') root.removeAttribute('data-type'); else root.setAttribute('data-type', v);
+    press('[data-type]', 'data-type', v); store.set('type', v);
+  }
+  function setGrid(on) {
+    root.setAttribute('data-grid', on ? 'on' : 'off');
+    var g = document.querySelector('[data-grid]'); if (g) g.setAttribute('aria-pressed', String(on));
+    store.set('grid', on ? '1' : '0');
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button'); if (!b) return;
+    if (b.hasAttribute('data-acc')) setAcc(b.getAttribute('data-acc'));
+    else if (b.hasAttribute('data-type')) setType(b.getAttribute('data-type'));
+    else if (b.hasAttribute('data-grid')) setGrid(b.getAttribute('aria-pressed') !== 'true');
+  });
+
+  // 16px pixel view: rasterise each small mark at 16 x 16 and show it four times larger.
+  var defs = document.querySelector('svg defs');
+  function drawPixels() {
+    document.querySelectorAll('.px').forEach(function (el) {
+      var symbol = document.getElementById(el.getAttribute('data-m'));
+      var half = el.closest('.half');
+      if (!symbol || !half) return;
+      var cs = getComputedStyle(half);
+      var bg = cs.backgroundColor, ink = cs.color, acc = cs.getPropertyValue('--acc').trim(), tint = cs.getPropertyValue('--tint').trim();
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="16" height="16" style="color:' + ink + ';--acc:' + acc + ';--tint:' + tint + '"><defs>' + (defs ? defs.innerHTML : '') + '</defs>' + symbol.innerHTML + '</svg>';
+      var c = el.querySelector('canvas');
+      if (!c) {
+        c = document.createElement('canvas'); c.width = 16; c.height = 16; c.setAttribute('aria-hidden', 'true');
+        var wrap = document.createElement('span'); wrap.appendChild(c);
+        var lab = document.createElement('small'); lab.textContent = '16 × 4';
+        el.appendChild(wrap); el.appendChild(lab);
+      }
+      var img = new Image();
+      img.onload = function () {
+        try { var x = c.getContext('2d'); x.fillStyle = bg; x.fillRect(0, 0, 16, 16); x.drawImage(img, 0, 0, 16, 16); } catch (err) { el.hidden = true; }
+      };
+      img.onerror = function () { el.hidden = true; };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+  }
+
+  // Hero: a strobe of points runs the figure-eight. Static when motion is reduced or JS is off.
+  function hero() {
+    var fig = document.querySelector('.hero-fig svg');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!fig || reduce || !fig.pauseAnimations) return;
+    var NS = 'http://www.w3.org/2000/svg', dots = fig.querySelectorAll('.sd'), dur = 4, step = 0.1;
+    dots.forEach(function (d, i) {
+      d.removeAttribute('transform');
+      var a = document.createElementNS(NS, 'animateMotion');
+      a.setAttribute('dur', dur + 's'); a.setAttribute('repeatCount', 'indefinite');
+      a.setAttribute('begin', (-(dots.length - i) * step - 1.6).toFixed(3) + 's');
+      var mp = document.createElementNS(NS, 'mpath'); mp.setAttribute('href', '#eight');
+      a.appendChild(mp); d.appendChild(a);
+    });
+    var visible = true;
+    function sync() { if (visible && !document.hidden) fig.unpauseAnimations(); else fig.pauseAnimations(); }
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; sync(); }).observe(fig);
+    document.addEventListener('visibilitychange', sync);
+  }
+
+  setAcc(store.get('acc') || 'rose');
+  setType(store.get('type') || 'funnel');
+  setGrid(store.get('grid') === '1');
+  hero();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawPixels);
+})();
+
+</script>

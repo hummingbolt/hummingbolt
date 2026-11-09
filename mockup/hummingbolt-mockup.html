@@ -1,0 +1,453 @@
+<title>Hummingbolt Redesign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a chalk-paper field on a 12-col grid; one playful moment (the stackable hero), everything else quiet and editorial. */
+:root {
+  --paper: #f1f3ee;      /* cool chalk, slight green bias */
+  --paper-2: #e6e9e2;
+  --ink: #121a17;        /* green-black */
+  --ink-2: #4b5650;
+  --rule: #c9cfc7;
+  --gorget: #d9264f;     /* hummingbird throat */
+  --nectar: #f5b82e;
+  --leaf: #1f6f54;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.6 var(--body); overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: inherit; }
+:focus-visible { outline: 2.5px solid var(--gorget); outline-offset: 3px; border-radius: 3px; }
+.wrap { max-width: 76rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 48rem) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; letter-spacing: -0.035em; line-height: 0.98; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.label { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+
+/* Mockup banner */
+.banner { background: var(--ink); color: var(--paper); font: 500 0.8rem/1.4 var(--mono); }
+.banner .wrap { padding-block: 0.6rem; display: flex; gap: 0.5rem 1rem; flex-wrap: wrap; justify-content: space-between; }
+
+/* Header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.8rem; }
+.brand { display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; font: 800 1.2rem/1 var(--display); letter-spacing: -0.03em; }
+.brand svg { width: 30px; height: 30px; }
+nav ul { display: flex; gap: 1.4rem; list-style: none; margin: 0; padding: 0; font-weight: 500; font-size: 0.95rem; }
+nav a { text-decoration: none; }
+@media (max-width: 30rem) { nav ul { gap: 0.9rem; font-size: 0.88rem; } .brand { font-size: 1.05rem; } .brand svg { width: 26px; height: 26px; } }
+nav a:hover { text-decoration: underline; text-underline-offset: 0.25em; text-decoration-thickness: 2px; text-decoration-color: var(--gorget); }
+
+/* Hero */
+.hero { padding-block: 3rem 2rem; }
+@media (min-width: 60rem) { .hero { padding-block: 5rem 3rem; } }
+.hero-grid { display: grid; gap: 2rem; }
+@media (min-width: 60rem) { .hero-grid { grid-template-columns: 1.05fr 1fr; align-items: end; gap: 3rem; } }
+.hero h1 { font-size: clamp(3rem, 10vw, 7rem); }
+.hero h1 .hl { color: var(--gorget); }
+.hero .intro { margin-top: 1.5rem; max-width: 30rem; font-size: 1.15rem; color: var(--ink-2); }
+.hero .meta { margin-top: 1.5rem; display: flex; gap: 0.5rem 1.25rem; flex-wrap: wrap; }
+.btns { margin-top: 2rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.3rem; border-radius: 999px; font-weight: 600; text-decoration: none; border: 2px solid var(--ink); will-change: transform; transition: background .2s, color .2s; }
+.btn.solid { background: var(--ink); color: var(--paper); }
+.btn.solid:hover { background: var(--gorget); border-color: var(--gorget); }
+.btn.line:hover { background: var(--ink); color: var(--paper); }
+
+.playground { position: relative; border: 2px solid var(--ink); border-radius: 18px; background: var(--paper-2); overflow: hidden; height: 360px; touch-action: pan-y; }
+@media (min-width: 60rem) { .playground { height: 440px; } }
+.playground canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.playground canvas:active { cursor: grabbing; }
+.pg-bar { position: absolute; inset: 0.75rem 0.75rem auto; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+.pg-bar button { pointer-events: auto; font: 500 0.75rem/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; background: var(--paper); color: var(--ink); border: 1.5px solid var(--ink); border-radius: 999px; padding: 0.5rem 0.8rem; cursor: pointer; }
+.pg-bar button:hover { background: var(--ink); color: var(--paper); }
+.pg-hint { font: 500 0.75rem/1 var(--mono); color: var(--ink-2); letter-spacing: .04em; }
+.pg-height { position: absolute; right: 0.9rem; bottom: 0.8rem; font: 500 0.75rem/1 var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* Marquee */
+.strip { border-block: 2px solid var(--ink); background: var(--nectar); overflow: hidden; margin-top: 3rem; }
+.strip-track { display: flex; width: max-content; will-change: transform; }
+.strip span { font: 800 clamp(1.6rem, 4vw, 2.6rem)/1 var(--display); letter-spacing: -0.03em; padding: 1rem 0; white-space: nowrap; }
+.strip span i { font-style: normal; color: var(--gorget); padding: 0 0.6em; }
+
+/* Sections */
+section.block { padding-block: 5rem; }
+@media (min-width: 60rem) { section.block { padding-block: 7rem; } }
+.sec-head { display: grid; gap: 1rem; margin-bottom: 3rem; }
+@media (min-width: 60rem) { .sec-head { grid-template-columns: 14rem 1fr; } }
+.sec-head h2 { font-size: clamp(2.2rem, 6vw, 4rem); }
+
+.make { display: grid; border-top: 2px solid var(--ink); }
+@media (min-width: 48rem) { .make { grid-template-columns: repeat(2, 1fr); } }
+.make article { position: relative; padding: 1.75rem 0 2rem; border-bottom: 1px solid var(--rule); display: grid; gap: 0.6rem; }
+@media (min-width: 48rem) { .make article { padding: 2rem 2rem 2.4rem 0; } .make article:nth-child(even) { padding-left: 2rem; border-left: 1px solid var(--rule); } }
+.make h3 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); transition: color .2s; }
+.make p { color: var(--ink-2); max-width: 26rem; }
+.make .tag { display: inline-flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
+.make .tag b { font: 500 0.72rem/1 var(--mono); letter-spacing: .05em; padding: 0.35rem 0.55rem; border: 1px solid var(--rule); border-radius: 6px; font-weight: 500; }
+.make article:hover h3 { color: var(--gorget); }
+.make .dot { position: absolute; top: 2.15rem; right: 0.4rem; width: 14px; height: 14px; border-radius: 50%; background: var(--sw); transition: transform .35s cubic-bezier(.2,.9,.3,1.4); }
+@media (min-width: 48rem) { .make .dot { right: 2rem; } }
+.make article:hover .dot { transform: scale(2.2); }
+
+/* Toppleton */
+.feature { display: grid; gap: 2.5rem; background: var(--ink); color: var(--paper); border-radius: 24px; padding: 2rem 1.4rem; overflow: hidden; }
+@media (min-width: 48rem) { .feature { padding: 3.5rem; } }
+@media (min-width: 60rem) { .feature { grid-template-columns: 1.1fr 1fr; align-items: center; } }
+.feature .label { color: var(--nectar); }
+.feature h2 { font-size: clamp(3rem, 8vw, 5.5rem); margin-top: 1rem; }
+.feature p.lead { margin-top: 1rem; font-size: 1.2rem; color: #c7d0ca; max-width: 28rem; }
+.feature .stores { margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.feature .stores span { font: 500 0.78rem/1 var(--mono); padding: 0.5rem 0.7rem; border-radius: 999px; border: 1px solid #3a4641; color: #c7d0ca; }
+.feature .stores span.on { background: var(--nectar); color: var(--ink); border-color: var(--nectar); }
+.feature .btn.solid { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.feature .btn.solid:hover { background: var(--nectar); border-color: var(--nectar); }
+.tower { display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; padding-block: 1rem; }
+.tower div { height: 42px; border-radius: 9px; transform-origin: 50% 100%; transition: transform .5s cubic-bezier(.2,.9,.3,1.3); }
+.tower:hover div:nth-child(odd) { transform: rotate(-3deg) translateX(-6px); }
+.tower:hover div:nth-child(even) { transform: rotate(2.5deg) translateX(8px); }
+
+/* Logos */
+.logos { display: grid; gap: 1rem; }
+@media (min-width: 48rem) { .logos { grid-template-columns: repeat(3, 1fr); } }
+.logo-card { border: 2px solid var(--ink); border-radius: 18px; padding: 1.5rem; display: grid; gap: 1.25rem; background: var(--paper); }
+.logo-card .stage { aspect-ratio: 4 / 3; max-width: 100%; display: grid; place-items: center; background: var(--paper-2); border-radius: 12px; }
+.logo-card .stage.dark { background: var(--ink); }
+.logo-card .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.logo-card .pair .stage { aspect-ratio: 1; min-width: 0; }
+.logo-card { min-width: 0; }
+.logo-card h3 { font-size: 1.5rem; letter-spacing: -0.02em; }
+.logo-card p { color: var(--ink-2); font-size: 0.95rem; margin-top: 0.4rem; }
+.mark svg { width: 64%; height: auto; transition: transform .5s cubic-bezier(.2,.9,.3,1.4); }
+.logo-card:hover .mark svg { transform: translateY(-6px) rotate(-4deg); }
+.wordmark { font: 800 clamp(1.5rem, 4vw, 2rem)/1 var(--display); letter-spacing: -0.04em; display: inline-flex; align-items: baseline; }
+.wordmark svg { height: 0.95em; width: auto; margin-left: 0.02em; }
+
+/* Contact */
+.contact { display: grid; gap: 2rem; border-top: 2px solid var(--ink); padding-top: 3rem; }
+@media (min-width: 60rem) { .contact { grid-template-columns: 1fr 1fr; align-items: end; } }
+.contact h2 { font-size: clamp(2.8rem, 9vw, 6rem); }
+.email { font: 800 clamp(1.4rem, 5vw, 2.6rem)/1.1 var(--display); letter-spacing: -0.03em; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 0.18em; text-decoration-color: var(--gorget); word-break: break-word; }
+
+footer { margin-top: 5rem; border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 2rem 3rem; display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; font-size: 0.9rem; color: var(--ink-2); }
+footer ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.25rem; }
+
+/* Reveal: resting state is fully visible; only a short lift plays once. */
+.reveal { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+.reveal.pre { transform: translateY(24px); }
+
+/* Flight path (scroll progress) */
+.flight { position: fixed; right: max(6px, env(safe-area-inset-right, 0px)); top: 12vh; height: 76vh; width: 18px; z-index: 15; pointer-events: none; }
+.flight path.track { stroke: var(--rule); }
+.flight path.done { stroke: var(--gorget); }
+.flight circle { fill: var(--gorget); }
+@media (max-width: 47.99rem) { .flight { width: 10px; right: max(3px, env(safe-area-inset-right, 0px)); } }
+
+/* Hummingbird cursor (fine pointers only) */
+.bird { position: fixed; left: 0; top: 0; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--gorget); pointer-events: none; z-index: 50; mix-blend-mode: multiply; transition: width .25s, height .25s, margin .25s, background .25s, border .25s; display: none; }
+.bird.hover { width: 46px; height: 46px; margin: -23px 0 0 -23px; background: transparent; border: 2px solid var(--gorget); }
+@media (pointer: fine) { .bird { display: block; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .reveal.pre { transform: none; }
+  .bird { display: none !important; }
+}
+</style>
+
+<div class="banner"><div class="wrap"><span>MOCKUP · not the live site</span><span>Drag the blocks · scroll · hover</span></div></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Hummingbolt home">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#logoA"/></svg>Hummingbolt
+    </a>
+    <nav aria-label="Main"><ul><li><a href="#make">Work</a></li><li><a href="#toppleton">Toppleton</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+  </div>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- A: geometric hummingbird, bolt-notched wing -->
+    <symbol id="logoA" viewBox="0 0 100 100">
+      <circle cx="63" cy="33" r="11" fill="currentColor"/>
+      <path d="M73 30 L98 24 L73 37 Z" fill="currentColor"/>
+      <path d="M56 40 C45 52 34 66 20 88 L29 90 C45 76 58 62 70 44 Z" fill="currentColor"/>
+      <path d="M57 50 L28 18 L42 23 L36 6 L64 41 Z" style="fill:var(--gorget)"/>
+      <circle cx="66" cy="31" r="2.4" style="fill:var(--paper)"/>
+    </symbol>
+    <!-- B: lowercase h, stem top becomes a beak -->
+    <symbol id="logoB" viewBox="0 0 100 100">
+      <path d="M22 90 V26 L22 14 L66 10 L38 24 V90 Z" fill="currentColor"/>
+      <path d="M38 54 C38 42 46 36 56 36 C68 36 76 44 76 56 V90 H60 V58 C60 53 57 50 53 50 C45 50 38 54 38 54 Z" fill="currentColor"/>
+      <circle cx="30" cy="20" r="2.6" style="fill:var(--paper)"/>
+      <path d="M70 18 L84 14 L78 22 L88 21 L74 32 L78 24 L68 26 Z" style="fill:var(--gorget)"/>
+    </symbol>
+    <!-- C: bolt-shaped t for the wordmark -->
+    <symbol id="boltT" viewBox="0 0 40 70">
+      <path d="M22 0 L8 38 L19 38 L12 70 L34 26 L22 26 L28 0 Z" style="fill:var(--gorget)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="reveal">
+        <p class="label">Software studio · San Francisco Bay Area</p>
+        <h1 style="margin-top:1rem">Small studio.<br>Quick <span class="hl">wings</span>.</h1>
+        <p class="intro">Hummingbolt makes mobile and web apps, games, and AI: applications, models and agents.</p>
+        <div class="btns">
+          <a class="btn solid magnet" href="https://play.toppleton.app">Play Toppleton →</a>
+          <a class="btn line magnet" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class="playground reveal" id="pg">
+        <canvas id="pgc" aria-label="A pile of blocks labeled with what we make. Drag them to stack or knock them over." role="img"></canvas>
+        <div class="pg-bar"><span class="pg-hint">Drag to stack</span><button type="button" id="restack">Restack</button></div>
+        <div class="pg-height" id="pgh">tower 0 cm</div>
+      </div>
+    </div>
+    <div class="strip" aria-hidden="true"><div class="strip-track" id="strip"></div></div>
+  </section>
+
+  <section class="block" id="make">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="label">What we make</p>
+        <h2>Four things, made well.</h2>
+      </div>
+      <div class="make">
+        <article class="reveal" style="--sw: var(--leaf)"><span class="dot"></span><h3>Mobile &amp; web apps</h3><p>Fast, clear apps for iPhone, Android and the web.</p><div class="tag"><b>iOS</b><b>Android</b><b>Web</b></div></article>
+        <article class="reveal" style="--sw: var(--nectar)"><span class="dot"></span><h3>Games</h3><p>Friendly games people of all ages can pick up and play.</p><div class="tag"><b>All ages</b><b>Web first</b></div></article>
+        <article class="reveal" style="--sw: var(--gorget)"><span class="dot"></span><h3>AI applications</h3><p>Useful products with AI built in, designed around real tasks.</p><div class="tag"><b>Assistants</b><b>Tools</b></div></article>
+        <article class="reveal" style="--sw: var(--ink)"><span class="dot"></span><h3>Models &amp; agents</h3><p>Our own AI models, and agents that can plan and act.</p><div class="tag"><b>Models</b><b>Agents</b></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="toppleton" style="padding-top:0">
+    <div class="wrap">
+      <div class="feature reveal">
+        <div>
+          <p class="label">Our first game</p>
+          <h2>Toppleton</h2>
+          <p class="lead">A stacking game for all ages, children included. Free to play in your browser now.</p>
+          <div class="stores"><span class="on">Free on the web</span><span>App Store: coming later</span><span>Google Play: coming later</span></div>
+          <div class="btns"><a class="btn solid magnet" href="https://play.toppleton.app">Play at play.toppleton.app →</a></div>
+        </div>
+        <div class="tower" aria-hidden="true">
+          <div style="width:78%;background:var(--leaf)"></div>
+          <div style="width:64%;background:var(--nectar)"></div>
+          <div style="width:70%;background:var(--paper)"></div>
+          <div style="width:52%;background:var(--gorget)"></div>
+          <div style="width:58%;background:var(--nectar)"></div>
+          <div style="width:40%;background:var(--paper)"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="logos" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="label">Logo options</p>
+        <h2>Pick a mark.</h2>
+      </div>
+      <div class="logos">
+        <div class="logo-card reveal">
+          <div class="pair">
+            <div class="stage mark"><svg viewBox="0 0 100 100" style="color:var(--ink)"><use href="#logoA"/></svg></div>
+            <div class="stage dark mark"><svg viewBox="0 0 100 100" style="color:var(--paper)"><use href="#logoA"/></svg></div>
+          </div>
+          <div><h3>A · Bolt-wing bird</h3><p>A hummingbird in four flat shapes. The wing is a lightning bolt.</p></div>
+        </div>
+        <div class="logo-card reveal">
+          <div class="pair">
+            <div class="stage mark"><svg viewBox="0 0 100 100" style="color:var(--ink)"><use href="#logoB"/></svg></div>
+            <div class="stage dark mark"><svg viewBox="0 0 100 100" style="color:var(--paper)"><use href="#logoB"/></svg></div>
+          </div>
+          <div><h3>B · Beaked h</h3><p>A lowercase h whose top tips forward into a beak, with a spark.</p></div>
+        </div>
+        <div class="logo-card reveal">
+          <div class="stage"><span class="wordmark">hummingbol<svg viewBox="0 0 40 70" aria-hidden="true"><use href="#boltT"/></svg></span></div>
+          <div><h3>C · Wordmark</h3><p>Just the name, with the t drawn as a bolt. Simple and very readable.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="contact" style="padding-top:0">
+    <div class="wrap">
+      <div class="contact reveal">
+        <h2>Say hello.</h2>
+        <div>
+          <p class="label" style="margin-bottom:0.8rem">Email</p>
+          <a class="email magnet" href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><div>© 2026 Hummingbolt LLC · 2108 N St #18140, Sacramento, CA 95816</div><ul><li><a href="#top">Privacy</a></li><li><a href="#top">Legal notice</a></li></ul></div></footer>
+
+<svg class="flight" viewBox="0 0 18 400" preserveAspectRatio="none" aria-hidden="true">
+  <path class="track" d="M9 0 C 16 50, 2 100, 9 150 S 16 250, 9 300 S 2 370, 9 400" fill="none" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path class="done" id="flightDone" d="M9 0 C 16 50, 2 100, 9 150 S 16 250, 9 300 S 2 370, 9 400" fill="none" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+</svg>
+
+<div class="bird" id="bird" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  /* ---------- Marquee that speeds up with scroll ---------- */
+  const strip = document.getElementById('strip');
+  const words = ['Mobile apps', 'Web apps', 'Games', 'AI applications', 'Models', 'Agents'];
+  const one = words.map(w => `${w}<i>✦</i>`).join('');
+  strip.innerHTML = `<span>${one}</span><span>${one}</span><span>${one}</span>`;
+  let x = 0, vel = 0, lastY = scrollY;
+  function marquee() {
+    const dy = scrollY - lastY; lastY = scrollY;
+    vel += (Math.abs(dy) * 0.15 - vel) * 0.08;
+    x -= 0.6 + vel;
+    const w = strip.firstElementChild.offsetWidth;
+    if (-x > w) x += w;
+    strip.style.transform = `translateX(${x}px)`;
+    requestAnimationFrame(marquee);
+  }
+  if (!reduce) requestAnimationFrame(marquee);
+
+  /* ---------- Flight path scroll progress ---------- */
+  const done = document.getElementById('flightDone');
+  const len = done.getTotalLength();
+  done.style.strokeDasharray = len;
+  function flight() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
+    done.style.strokeDashoffset = len * (1 - p);
+  }
+  addEventListener('scroll', flight, { passive: true }); flight();
+
+  /* ---------- Reveal (content visible at rest) ---------- */
+  if (!reduce && 'IntersectionObserver' in window) {
+    const els = [...document.querySelectorAll('.reveal')];
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('pre'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+    els.forEach(el => { const r = el.getBoundingClientRect(); if (r.top > innerHeight) { el.classList.add('pre'); io.observe(el); } });
+  }
+
+  /* ---------- Hummingbird cursor + magnetic buttons ---------- */
+  const bird = document.getElementById('bird');
+  if (!reduce && matchMedia('(pointer: fine)').matches) {
+    let mx = innerWidth / 2, my = innerHeight / 2, bx = mx, by = my, t = 0, hovering = false;
+    addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('pointerenter', () => { hovering = true; bird.classList.add('hover'); });
+      el.addEventListener('pointerleave', () => { hovering = false; bird.classList.remove('hover'); });
+    });
+    (function fly() {
+      t += 0.12;
+      const k = hovering ? 0.12 : 0.22;
+      bx += (mx - bx) * k; by += (my - by) * k;
+      const hx = hovering ? Math.sin(t) * 3 : 0, hy = hovering ? Math.sin(t * 2) * 2 : 0;
+      bird.style.transform = `translate(${bx + hx}px, ${by + hy}px)`;
+      requestAnimationFrame(fly);
+    })();
+    document.querySelectorAll('.magnet').forEach(el => {
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+        el.style.transform = `translate(${dx * 0.18}px, ${dy * 0.28}px)`;
+      });
+      el.addEventListener('pointerleave', () => { el.style.transition = 'transform .4s cubic-bezier(.2,.9,.3,1.4), background .2s, color .2s'; el.style.transform = ''; setTimeout(() => el.style.transition = '', 400); });
+    });
+  }
+
+  /* ---------- Stackable hero (Matter.js) ---------- */
+  const pg = document.getElementById('pg'), canvas = document.getElementById('pgc'), hEl = document.getElementById('pgh');
+  if (!window.Matter) return;
+  const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
+  const ctx = canvas.getContext('2d');
+  const engine = Engine.create({ gravity: { y: 1 } });
+  let W = 0, H = 0, walls = [], blocks = [];
+  const labels = ['apps', 'games', 'AI', 'models', 'agents', 'web', 'iOS', 'Android'];
+  const colors = ['--leaf', '--nectar', '--gorget', '--ink', '--paper', '--nectar', '--leaf', '--gorget'];
+
+  function size() {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    W = pg.clientWidth; H = pg.clientHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    Composite.remove(engine.world, walls);
+    const t = 60;
+    walls = [
+      Bodies.rectangle(W / 2, H + t / 2 - 2, W * 2, t, { isStatic: true, friction: 0.9 }),
+      Bodies.rectangle(-t / 2, H / 2, t, H * 4, { isStatic: true }),
+      Bodies.rectangle(W + t / 2, H / 2, t, H * 4, { isStatic: true }),
+    ];
+    Composite.add(engine.world, walls);
+  }
+  function build(stacked) {
+    Composite.remove(engine.world, blocks); blocks = [];
+    const s = Math.max(0.72, Math.min(1, W / 520));
+    labels.forEach((lab, i) => {
+      const w = (lab.length * 15 + 54) * s, h = 46 * s;
+      const x = stacked ? W / 2 + (i % 2 ? 10 : -10) * s : 60 + Math.random() * (W - 120);
+      const y = stacked ? H - h / 2 - i * (h + 1) - 2 : -60 - i * 70;
+      const b = Bodies.rectangle(x, y, w, h, { chamfer: { radius: 9 * s }, friction: 0.8, frictionStatic: 1.2, restitution: 0.05, density: 0.002 });
+      b.label = lab; b.w = w; b.h = h; b.color = colors[i];
+      if (!stacked) Body.setAngle(b, (Math.random() - 0.5) * 0.6);
+      blocks.push(b);
+    });
+    Composite.add(engine.world, blocks);
+  }
+  size(); build(true);
+
+  const mouse = Mouse.create(canvas);
+  mouse.element.removeEventListener('mousewheel', mouse.mousewheel);
+  mouse.element.removeEventListener('DOMMouseScroll', mouse.mousewheel);
+  mouse.element.removeEventListener('wheel', mouse.mousewheel);
+  const mc = MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.18, damping: 0.12, render: { visible: false } } });
+  Composite.add(engine.world, mc);
+  // Let the page scroll on touch unless a block is grabbed.
+  ['touchstart', 'touchmove', 'touchend'].forEach(ev => mouse.element.removeEventListener(ev, mouse[ev.replace('touch', 'mouse').replace('start', 'down').replace('end', 'up')]));
+  canvas.addEventListener('touchstart', e => { mouse.mousedown(e); }, { passive: true });
+  canvas.addEventListener('touchmove', e => { if (mc.body) mouse.mousemove(e); }, { passive: false });
+  canvas.addEventListener('touchend', e => { mouse.mouseup(e); }, { passive: true });
+
+  document.getElementById('restack').addEventListener('click', () => build(false));
+  addEventListener('resize', () => { size(); });
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    let top = H;
+    blocks.forEach(b => {
+      ctx.save(); ctx.translate(b.position.x, b.position.y); ctx.rotate(b.angle);
+      const c = css(b.color), r = 9;
+      ctx.fillStyle = c; ctx.strokeStyle = css('--ink'); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(-b.w / 2, -b.h / 2, b.w, b.h, r); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = (b.color === '--ink' || b.color === '--gorget' || b.color === '--leaf') ? css('--paper') : css('--ink');
+      ctx.font = `800 ${Math.round(b.h * 0.46)}px ${css('--display')}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(b.label, 0, 1);
+      ctx.restore();
+      if (b.speed < 0.3 && b !== mc.body) top = Math.min(top, b.bounds.min.y);
+    });
+    hEl.textContent = `tower ${Math.max(0, Math.round((H - top) / 4))} cm`;
+  }
+  const runner = Runner.create();
+  Runner.run(runner, engine);
+  (function loop() { draw(); requestAnimationFrame(loop); })();
+  if (reduce) { engine.gravity.y = 1; }
+})();
+</script>

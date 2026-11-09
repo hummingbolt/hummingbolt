@@ -1,0 +1,862 @@
+<title>Hummingbolt — Gorget</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Hummingbolt is a small software studio in the San Francisco Bay Area. We make mobile and web apps, games, and AI applications, models and agents.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1211'/%3E%3Cg transform='translate(32 32) rotate(12)'%3E%3Cpath d='M0-22L-14 0L0 22Z' fill='%23D98A98'/%3E%3Cpath d='M0-22L14 0L0 22Z' fill='%23C9895D'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" id="gf" media="print" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..500&family=Funnel+Sans:wght@400;500&family=Fragment+Mono&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..500&family=Funnel+Sans:wght@400;500&family=Fragment+Mono&display=swap"></noscript>
+<style>
+/* Hummingbolt — Gorget. Dark and tonal at rest; colour only where you move. */
+@font-face{font-family:"FD Fallback";src:local("Arial");size-adjust:97%;ascent-override:100%;descent-override:25%;line-gap-override:0%}
+@font-face{font-family:"FS Fallback";src:local("Arial");size-adjust:99%;ascent-override:96%;descent-override:25%;line-gap-override:0%}
+:root{
+  color-scheme:dark;
+  --night:#0F1211;--deep:#151917;--hair:#2A302C;--dim:#757770;--moss:#8E8B82;--lichen:#B3AFA5;--bone:#DCD6CA;
+  --rose:#D98A98;--copper:#C9895D;
+  --r-green:#22302A;--r-bronze:#6E7448;--r-copper:#B8784E;--r-ruby:#B8435E;--r-crest:#E3A9B3;
+  --display:"Funnel Display","FD Fallback","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --sans:"Funnel Sans","FS Fallback","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,0,1);
+  --gl:max(16px, env(safe-area-inset-left, 0px));
+  --gr:max(16px, env(safe-area-inset-right, 0px));
+  --sheen:linear-gradient(90deg,transparent 0%,var(--r-bronze) 18%,var(--r-copper) 38%,var(--r-ruby) 56%,var(--r-crest) 66%,var(--r-copper) 82%,transparent 100%);
+  --hdr:56px;
+  --fh:min(118vw,520px,70vh);
+}
+@supports (height:1svh){:root{--fh:min(118vw,520px,70svh)}}
+@media (min-width:700px){:root{--gl:max(clamp(24px,4.6vw,72px), env(safe-area-inset-left, 0px));--gr:max(clamp(24px,4.6vw,72px), env(safe-area-inset-right, 0px));--hdr:64px}}
+html{background:var(--night);overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--night);color:var(--lichen);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip}
+@media (min-width:700px){body{font-size:18px}}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,canvas{display:block}
+a{color:inherit}
+::selection{background:#5A2F3A;color:var(--bone)}
+:focus-visible{outline:2px solid var(--rose);outline-offset:3px;border-radius:4px}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.skip{position:fixed;left:var(--gl);top:8px;z-index:100;padding:12px 18px;min-height:44px;background:var(--bone);color:var(--night);font:500 15px/1.3 var(--sans);text-decoration:none;border-radius:999px;transform:translateY(-160%);transition:transform .2s var(--ease)}
+.skip:focus,.skip:focus-visible{transform:none;outline:2px solid var(--rose);outline-offset:3px}
+.wrap{max-width:1440px;margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
+.wrap{padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+@media (min-width:700px){.wrap{padding-left:var(--gl);padding-right:var(--gr)}}
+.mono{font:400 12px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--moss)}
+
+/* Header */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--hdr);border-bottom:1px solid transparent;transition:background-color .35s var(--ease),border-color .35s var(--ease)}
+.hdr.solid{background:rgba(15,18,17,.97);border-bottom-color:var(--hair)}
+.hdr .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:inline-flex;align-items:center;min-height:44px;color:var(--bone);border-radius:6px;margin-left:-4px;padding:0 4px}
+.logo svg{height:21px;width:auto}
+@media (min-width:700px){.logo svg{height:24px}}
+.nav ul{display:flex;gap:2px;margin:0 -10px 0 0;padding:0;list-style:none}
+.nav a{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:0 10px;color:var(--bone);font:500 15px/1 var(--sans);text-decoration:none;border-radius:6px}
+.nav a::after{content:"";position:absolute;left:10px;right:10px;bottom:9px;height:1px;background:var(--rose);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease)}
+.nav a[aria-current="true"]::after{transform:scaleX(1)}
+.nav .wide{display:none}
+@media (min-width:700px){.nav .wide{display:block}.nav ul{gap:8px}}
+@media (hover:hover) and (pointer:fine){.nav a:hover::after{transform:scaleX(1)}}
+
+/* Hero */
+.hero{position:relative;isolation:isolate;overflow:hidden;overflow:clip;background:var(--night)}
+.field{position:relative;height:var(--fh);touch-action:pan-y pinch-zoom;will-change:transform}
+.field canvas,.field .plate{position:absolute;inset:0;width:100%;height:100%}
+.field canvas{opacity:0;transition:opacity .7s var(--ease)}
+.gl-on .field canvas{opacity:1}
+.gl-done .plate{visibility:hidden}
+.field::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(15,18,17,.78) 0,rgba(15,18,17,0) 96px),linear-gradient(0deg,#0F1211 0,rgba(15,18,17,.86) 22%,rgba(15,18,17,0) 52%)}
+.hero-copy{position:relative;z-index:2;margin-top:calc(var(--fh) * -.34)}
+.hero>.wrap{padding-bottom:40px}
+.eyebrow{margin:0 0 18px}
+h1{margin:0;font:360 clamp(2.5rem,1.35rem + 5.6vw,7.5rem)/.96 var(--display);letter-spacing:-.035em;color:var(--bone)}
+@media (min-width:700px){h1{font-weight:330}}
+h1 span{display:block}
+.lede{margin:22px 0 0;max-width:34ch;font-size:20px;line-height:1.5;color:var(--lichen)}
+@media (min-width:700px){.lede{font-size:22px;margin-top:28px}}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;font:500 16px/1 var(--sans);text-decoration:none;cursor:pointer;border:0;transition:transform .12s var(--ease),background-color .3s var(--ease),color .3s var(--ease)}
+@media (min-width:700px){.btn{min-height:48px;font-size:15px}}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline-offset:7px;border-radius:999px}
+.btn-p{background:var(--rose);color:var(--night)}
+.btn-s{background:transparent;color:var(--bone);box-shadow:inset 0 0 0 1px #3A413C}
+.btn-s{transition:box-shadow .3s var(--ease),transform .12s var(--ease)}
+@media (hover:hover) and (pointer:fine){.btn-s:hover{box-shadow:inset 0 0 0 1px var(--moss)}.btn-p:hover{background:#E19AA6}}
+.btn-s:focus-visible{box-shadow:inset 0 0 0 1px var(--moss)}
+/* the sip: one rose-to-copper sheen along the button's hairline */
+.sip::before{content:"";position:absolute;inset:-4px;border-radius:999px;padding:1px;background:linear-gradient(100deg,var(--hair) 0 35%,var(--r-crest) 45%,var(--rose) 50%,var(--copper) 56%,var(--hair) 66% 100%) 100% 0/320% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:0;transition:opacity .25s var(--ease);pointer-events:none}
+.sip:hover::before,.sip:focus-visible::before{opacity:1;animation:sip 1.1s var(--ease) both}
+@keyframes sip{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.sip:hover::before,.sip:focus-visible::before{animation:none;background-position:48% 0}}
+.caption{display:none;margin:28px 0 0;align-items:center;gap:10px}
+.caption i{display:inline-block;width:7px;height:7px;transform:rotate(57deg) skewX(-24deg);background:linear-gradient(90deg,var(--rose) 50%,var(--copper) 50%)}
+.gl-on .caption{display:flex}
+.cap-touch{display:inline}.cap-fine{display:none}
+@media (hover:hover) and (pointer:fine){.cap-touch{display:none}.cap-fine{display:inline}}
+@media (min-width:900px){
+  .hero{min-height:min(100vh,920px);min-height:min(100svh,920px);display:flex;align-items:flex-end}
+  .hero>.wrap{width:100%;padding-bottom:0}
+  .field{position:absolute;inset:0;height:auto}
+  .field::after{background:linear-gradient(90deg,rgba(15,18,17,.85) 0,rgba(15,18,17,.55) 32%,rgba(15,18,17,0) 55%),linear-gradient(180deg,rgba(15,18,17,.7) 0,rgba(15,18,17,0) 120px),linear-gradient(0deg,#0F1211 0,rgba(15,18,17,0) 18%)}
+  .hero-copy{margin-top:0;padding-top:140px;padding-bottom:clamp(64px,11vh,120px);max-width:760px}
+  .caption{position:absolute;right:var(--gr);bottom:clamp(64px,11vh,120px);margin:0}
+}
+.plate{color:var(--hair)}
+
+/* Sections */
+main{display:block}
+main:focus{outline:none}
+section{scroll-margin-top:var(--hdr)}
+.sec{padding:clamp(80px,11vw,160px) 0}
+h2{margin:0;font:340 clamp(2rem,1.2rem + 3.4vw,4.5rem)/1 var(--display);letter-spacing:-.03em;color:var(--bone)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:clamp(36px,6vw,72px)}
+
+/* What we make */
+.rows{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--hair)}
+.row{position:relative;display:grid;grid-template-columns:1fr auto;grid-template-areas:"label glyph" "title title" "text text";column-gap:16px;padding:28px 0 32px;border-top:1px solid var(--hair)}
+.row .sheen{position:absolute;left:0;right:0;top:-1px;height:1px;background:var(--sheen) calc(var(--x,0) * 100%) 0/240px 1px no-repeat;opacity:var(--o,0);pointer-events:none}
+.row .mono{grid-area:label;align-self:center}
+.row h3{grid-area:title;margin:14px 0 0;font:340 clamp(1.9rem,1rem + 2.8vw,3.6rem)/1.04 var(--display);letter-spacing:-.025em;color:var(--bone);transform:translate3d(0,calc((1 - var(--e,1)) * 12px),0);transition:padding-left .5s var(--ease),letter-spacing .5s var(--ease)}
+.row p{grid-area:text;margin:12px 0 0;max-width:46ch}
+.glyph{grid-area:glyph;width:28px;height:28px;color:var(--lichen);fill:none;stroke:currentColor;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round}
+.glyph .dot{fill:var(--rose);stroke:none}
+@media (min-width:900px){
+  .row{grid-template-columns:minmax(120px,.7fr) 2.6fr 1.5fr 28px;grid-template-areas:"label title text glyph";column-gap:clamp(24px,3vw,48px);align-items:baseline;padding:44px 0 48px}
+  .row h3{margin:0}
+  .row p{margin:0;align-self:baseline}
+  .row .glyph{align-self:center}
+}
+@media (hover:hover) and (pointer:fine){
+  .row:hover h3{padding-left:10px;letter-spacing:-.03em}
+}
+
+/* Toppleton */
+.topple{padding:0}
+.tile{position:relative;background:var(--deep);border-radius:28px;border-top:1px solid var(--hair);overflow:hidden;display:grid;grid-template-columns:1fr;gap:8px;padding:28px 22px 36px}
+@media (min-width:900px){.tile{grid-template-columns:1.05fr 1fr;align-items:center;gap:clamp(24px,4vw,72px);padding:clamp(48px,6vw,96px)}}
+@supports (animation-timeline:view()){@media (prefers-reduced-motion:no-preference){
+  .tile{animation:tileIn linear both;animation-timeline:view();animation-range:entry 0% cover 38%}
+  @keyframes tileIn{from{transform:scale(.965)}to{transform:scale(1)}}
+}}
+.t-copy .mono{margin:0 0 16px}
+.t-copy h2{font-size:clamp(2.6rem,1.4rem + 5vw,6rem);line-height:.96;letter-spacing:-.035em}
+.t-copy p:not(.mono){margin:20px 0 0;max-width:36ch;font-size:20px;line-height:1.5}
+.t-copy p.later{margin-top:10px;font-size:17px;color:var(--moss)}
+.t-act{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:32px}
+.t-act .mono{margin:0;text-transform:none;letter-spacing:.02em}
+.t-vis{order:-1;display:flex;justify-content:center}
+@media (min-width:900px){.t-vis{order:0}}
+.stack{width:min(100%,400px);height:auto;overflow:visible}
+.stack .slab{fill:var(--deep);stroke:var(--bone);stroke-width:1.25;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%;transform:rotate(calc(var(--a,0) * var(--k) * .12deg))}
+.stack .top{fill:var(--copper);stroke:var(--copper)}
+.stack .tower{transform-box:view-box;transform-origin:160px 330px;transform:rotate(calc(var(--a,0) * 1deg))}
+.stack .ground{stroke:var(--hair);stroke-width:1}
+
+/* Studio statement */
+.studio h2{font:400 12px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--moss);margin:0 0 28px}
+.statement{margin:0;max-width:26ch;font:340 clamp(1.75rem,1rem + 2.8vw,3.25rem)/1.18 var(--display);letter-spacing:-.02em;color:var(--bone)}
+@media (min-width:900px){.studio .wrap{display:grid;grid-template-columns:minmax(140px,1fr) 5fr;column-gap:clamp(24px,3vw,48px)}.studio h2{margin-top:.9em}}
+.statement.reveal .w{color:var(--dim);transition:color .5s var(--ease)}
+.statement.reveal .w.on{color:var(--bone)}
+
+/* Contact */
+.contact{border-top:1px solid var(--hair)}
+.contact h2{font-size:clamp(2.6rem,1.4rem + 5vw,6rem);line-height:.96;letter-spacing:-.035em;transform:translate3d(0,calc((1 - var(--e,1)) * 16px),0)}
+.mail{position:relative;display:inline-block;margin-top:clamp(28px,4vw,48px);padding:6px 0 10px;font:340 clamp(1.35rem,.45rem + 5vw,5rem)/1.1 var(--display);letter-spacing:-.02em;color:var(--bone);text-decoration:none;overflow-wrap:anywhere;transform:translate3d(0,calc((1 - var(--e,1)) * 16px),0)}
+.mail::before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--hair)}
+.mail::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--sheen) calc(var(--x,0) * 100%) 0/min(240px,50%) 1px no-repeat;opacity:var(--o,0)}
+@media (hover:hover) and (pointer:fine){.mail:hover::before{background:var(--moss)}}
+.c-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:32px}
+.c-row p{margin:0}
+
+/* Footer */
+.ftr{background:var(--deep);border-top:1px solid var(--hair);padding:56px 0 calc(40px + env(safe-area-inset-bottom, 0px))}
+.ftr .wrap{display:grid;gap:28px}
+.ftr .logo svg{height:20px}
+.ftr p{margin:0}
+.legal{display:grid;gap:4px}
+.ftr ul{display:flex;flex-wrap:wrap;gap:0 4px;margin:0 0 0 -10px;padding:0;list-style:none}
+.ftr ul a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;color:var(--lichen);font:500 15px/1 var(--sans);text-decoration:underline;text-decoration-color:var(--hair);text-underline-offset:6px;text-decoration-thickness:1px;border-radius:6px;transition:text-decoration-color .3s var(--ease)}
+@media (hover:hover) and (pointer:fine){.ftr ul a:hover{text-decoration-color:var(--rose);text-decoration-thickness:2px}}
+@media (min-width:900px){.ftr .wrap{grid-template-columns:1fr 1.4fr auto;align-items:start}.ftr ul{margin-top:-12px}}
+.t-link{color:var(--bone);text-decoration:underline;text-decoration-color:var(--rose);text-underline-offset:5px;text-decoration-thickness:1px}
+@media (hover:hover) and (pointer:fine){.t-link:hover{text-decoration-thickness:2px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<g id="wm"><path fill="currentColor" d="M81 0V-840H193V-503H197Q226 -556 278 -584Q330 -611 400 -611Q513 -611 580 -544Q647 -478 647 -366V0H535V-348Q535 -428 491 -471Q448 -513 364 -513Q281 -513 237 -471Q193 -428 193 -348V0ZM1025 11Q909 11 843 -53Q777 -118 777 -228V-600H889V-251Q889 -170 931 -129Q973 -87 1054 -87Q1137 -87 1184 -131Q1231 -174 1231 -252V-600H1343V-116H1401V0H1281V-92H1239Q1207 -42 1153 -15Q1099 11 1025 11ZM1533 0V-484H1475V-600H1595V-508H1643Q1669 -558 1719 -584Q1768 -611 1838 -611Q1908 -611 1958 -583Q2008 -555 2038 -497H2041Q2104 -611 2248 -611Q2358 -611 2421 -547Q2483 -483 2483 -372V0H2371V-354Q2371 -513 2217 -513Q2064 -513 2064 -354V0H1952V-354Q1952 -513 1797 -513Q1723 -513 1684 -472Q1645 -432 1645 -354V0ZM2629 0V-484H2571V-600H2691V-508H2739Q2765 -558 2815 -584Q2864 -611 2934 -611Q3004 -611 3054 -583Q3104 -555 3134 -497H3137Q3200 -611 3344 -611Q3454 -611 3517 -547Q3579 -483 3579 -372V0H3467V-354Q3467 -513 3313 -513Q3160 -513 3160 -354V0H3048V-354Q3048 -513 2893 -513Q2819 -513 2780 -472Q2741 -432 2741 -354V0ZM3719 0V-600H3831V0ZM4001 0V-484H3943V-600H4063V-508H4105Q4136 -558 4190 -585Q4244 -611 4317 -611Q4433 -611 4500 -544Q4567 -478 4567 -366V0H4455V-348Q4455 -428 4412 -471Q4368 -513 4284 -513Q4201 -513 4157 -471Q4113 -428 4113 -348V0ZM4960 252Q4835 252 4757 200Q4679 148 4665 57H4783Q4811 158 4958 158Q5052 158 5102 113Q5152 69 5152 -13V-110H5147Q5123 -57 5071 -29Q5019 0 4948 0Q4863 0 4800 -38Q4737 -75 4703 -144Q4669 -212 4669 -306Q4669 -447 4745 -530Q4821 -612 4953 -612Q5026 -612 5077 -585Q5129 -559 5159 -508H5201V-600H5321V-484H5263V-8Q5263 115 5184 184Q5104 252 4960 252ZM4975 -97Q5054 -97 5103 -144Q5151 -190 5151 -266V-346Q5151 -422 5102 -468Q5054 -515 4975 -515Q4884 -515 4832 -460Q4781 -405 4781 -306Q4781 -207 4832 -152Q4884 -97 4975 -97ZM5764 12Q5691 12 5639 -15Q5587 -41 5557 -92H5515V0H5395V-116H5453V-840H5565V-503H5569Q5596 -556 5649 -584Q5702 -612 5773 -612Q5858 -612 5920 -574Q5981 -537 6014 -466Q6047 -396 6047 -300Q6047 -204 6013 -134Q5980 -64 5917 -26Q5853 12 5764 12ZM5746 -84Q5836 -84 5885 -141Q5935 -198 5935 -300Q5935 -402 5885 -459Q5836 -516 5746 -516Q5664 -516 5614 -469Q5565 -422 5565 -343V-257Q5565 -178 5614 -131Q5664 -84 5746 -84ZM6425 12Q6332 12 6263 -26Q6194 -65 6155 -135Q6117 -205 6117 -300Q6117 -395 6155 -465Q6193 -535 6262 -574Q6332 -612 6425 -612Q6521 -612 6589 -574Q6658 -536 6695 -466Q6733 -396 6733 -300Q6733 -205 6695 -134Q6658 -64 6589 -26Q6520 12 6425 12ZM6425 -85Q6518 -85 6569 -142Q6621 -199 6621 -300Q6621 -402 6569 -458Q6518 -515 6425 -515Q6333 -515 6281 -458Q6229 -401 6229 -300Q6229 -199 6281 -142Q6333 -85 6425 -85ZM6843 0V-840H6955V0ZM7219 0Q7171 0 7144 -24Q7118 -49 7118 -98V-513H7006V-600H7119V-780H7229V-600H7387V-513H7230V-88H7402V0Z"/><g transform="translate(3775 -812) rotate(12)"><path fill="#D98A98" d="M0-108L-70 0L0 108Z"/><path fill="#C9895D" d="M0-108L70 0L0 108Z"/></g></g>
+</defs></svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr" id="hdr">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Hummingbolt, home"><svg viewBox="60 -935 7370 1200" aria-hidden="true" focusable="false"><use href="#wm"/></svg></a>
+    <nav class="nav" aria-label="Primary">
+      <ul>
+        <li class="wide"><a href="#make" data-sec="make">What we make</a></li>
+        <li><a href="#toppleton" data-sec="toppleton">Toppleton</a></li>
+        <li class="wide"><a href="#studio" data-sec="studio">Studio</a></li>
+        <li><a href="#contact" data-sec="contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <section class="hero" id="top" aria-labelledby="h1">
+    <div class="field" id="field" aria-hidden="true">
+      <svg class="plate" viewBox="0 0 1000 800" preserveAspectRatio="xMaxYMid slice" focusable="false">
+        <defs>
+          <linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset=".4" stop-color="#0A0D0C"/><stop offset="1" stop-color="#1A1F1C"/></linearGradient>
+          <linearGradient id="gm" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" stop-color="#000"/><stop offset=".97" stop-color="#fff"/></linearGradient>
+          <g id="pf"><path d="M0 0C-1 20 4 38 11 54C18 38 23 20 22 0Z"/><path d="M11 24V50" fill="none"/></g>
+          <g id="pr"><use href="#pf" x="11" y="13"/><use href="#pf" x="-11" y="13"/><use href="#pf"/><use href="#pf" x="11" y="-13"/><use href="#pf" x="-11" y="-13"/><use href="#pf" y="-26"/><use href="#pf" x="11" y="-39"/><use href="#pf" x="-11" y="-39"/></g>
+          <pattern id="pp" width="22" height="26" patternUnits="userSpaceOnUse" patternTransform="translate(620 -60) rotate(29) scale(1.7)"><g fill="url(#gf)" stroke="#262B28" stroke-width=".7"><use href="#pr"/></g></pattern>
+          <pattern id="pw" width="22" height="26" patternUnits="userSpaceOnUse" patternTransform="translate(620 -60) rotate(29) scale(1.7)"><g fill="url(#gm)" stroke="#000" stroke-width="1.2"><use href="#pr"/></g></pattern>
+          <radialGradient id="pm" cx=".72" cy=".34" r=".66"><stop offset=".3" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>
+          <radialGradient id="gb"><stop offset="0" stop-color="#6E7448"/><stop offset="1" stop-color="#6E7448" stop-opacity="0"/></radialGradient>
+          <radialGradient id="gh"><stop offset="0" stop-color="#E3A9B3"/><stop offset=".3" stop-color="#B8435E"/><stop offset=".62" stop-color="#B8784E"/><stop offset="1" stop-color="#6E7448" stop-opacity="0"/></radialGradient>
+          <mask id="mk"><rect width="1000" height="800" fill="url(#pm)"/></mask>
+          <mask id="mf"><rect width="1000" height="800" fill="url(#pw)"/></mask>
+        </defs>
+        <g mask="url(#mk)"><rect width="1000" height="800" fill="url(#pp)"/>
+          <g mask="url(#mf)"><ellipse cx="700" cy="330" rx="420" ry="150" transform="rotate(-58 700 330)" fill="url(#gb)" opacity=".7"/><ellipse cx="830" cy="190" rx="150" ry="70" transform="rotate(-58 830 190)" fill="url(#gh)" opacity=".42"/></g></g>
+      </svg>
+      <canvas id="gl"></canvas>
+    </div>
+    <div class="wrap">
+      <div class="hero-copy" id="copy">
+        <p class="mono eyebrow">Software studio · San Francisco Bay Area</p>
+        <h1 id="h1"><span>Small studio.</span> <span>Precise software.</span></h1>
+        <p class="lede">Hummingbolt makes mobile and web apps, games, and AI: applications, models and agents.</p>
+        <div class="ctas">
+          <a class="btn btn-p sip" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="sr"> (opens in a new tab)</span></a>
+          <a class="btn btn-s" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <p class="mono caption" aria-hidden="true"><i></i><span class="cap-fine">Move to catch the light</span><span class="cap-touch">Swipe across the feathers</span></p>
+    </div>
+  </section>
+
+  <section class="sec make" id="make" aria-labelledby="make-h">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="make-h">What we make</h2></div>
+      <ul class="rows">
+        <li class="row"><span class="sheen" aria-hidden="true"></span><span class="mono">Apps</span>
+          <h3>Mobile and web apps</h3>
+          <p>Apps for phones and the web. Quick to open and clear to use.</p>
+          <svg class="glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false"><rect x="8" y="2.5" width="12" height="23" rx="3"/><path d="M12.5 22.2h3"/><circle class="dot" cx="14" cy="6" r="1.4"/></svg>
+        </li>
+        <li class="row"><span class="sheen" aria-hidden="true"></span><span class="mono">Games</span>
+          <h3>Games</h3>
+          <p>Games for all ages, starting with Toppleton.</p>
+          <svg class="glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false"><rect x="4" y="20" width="20" height="5" rx="1"/><rect x="6.5" y="14" width="15" height="5" rx="1"/><rect x="9" y="8" width="11" height="5" rx="1"/><circle class="dot" cx="14.5" cy="4.6" r="1.5"/></svg>
+        </li>
+        <li class="row"><span class="sheen" aria-hidden="true"></span><span class="mono">AI</span>
+          <h3>AI applications, models and agents</h3>
+          <p>Applications, models and agents that do real, useful work.</p>
+          <svg class="glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false"><path d="M12.4 9.6 7.6 18.4M15.6 9.6l4.8 8.8M9.3 21h9.4"/><circle cx="6.5" cy="21" r="2.6"/><circle cx="21.5" cy="21" r="2.6"/><circle class="dot" cx="14" cy="7" r="2.6"/></svg>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="topple" id="toppleton" aria-labelledby="top-h">
+    <div class="wrap">
+      <div class="tile" id="tile">
+        <div class="t-copy">
+          <p class="mono">Our first game</p>
+          <h2 id="top-h">Toppleton</h2>
+          <p>A stacking game for all ages, children included. Free to play in your web browser.</p>
+          <p class="later">App versions for phones and tablets are coming later.</p>
+          <div class="t-act">
+            <a class="btn btn-p sip" href="https://play.toppleton.app" target="_blank" rel="noopener">Play Toppleton<span class="sr"> (opens in a new tab)</span></a>
+            <p class="mono">play.toppleton.app</p>
+          </div>
+        </div>
+        <div class="t-vis" id="tvis">
+          <svg class="stack" id="stack" viewBox="0 0 320 352" aria-hidden="true" focusable="false">
+            <line class="ground" x1="12" y1="330.5" x2="308" y2="330.5"/>
+            <g class="tower">
+              <rect class="slab" style="--k:1" x="58" y="300" width="204" height="30" rx="3"/>
+              <rect class="slab" style="--k:2" x="77" y="271" width="170" height="29" rx="3"/>
+              <rect class="slab" style="--k:3" x="67" y="243" width="188" height="28" rx="3"/>
+              <rect class="slab" style="--k:4" x="93" y="215" width="142" height="28" rx="3"/>
+              <rect class="slab" style="--k:5" x="81" y="188" width="160" height="27" rx="3"/>
+              <rect class="slab" style="--k:6" x="104" y="162" width="118" height="26" rx="3"/>
+              <rect class="slab top" style="--k:7" x="97" y="136" width="130" height="26" rx="3"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec studio" id="studio" aria-labelledby="studio-h">
+    <div class="wrap">
+      <h2 id="studio-h">How we work</h2>
+      <p class="statement" id="statement">We are a small studio. We make a few things and make them well. We like software that is quick to start, simple to follow and exact in how it feels.</p>
+    </div>
+  </section>
+
+  <section class="sec contact" id="contact" aria-labelledby="contact-h">
+    <div class="wrap">
+      <h2 id="contact-h">Say hello.</h2>
+      <a class="mail" id="mail" href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a>
+      <div class="c-row">
+        <button class="btn btn-s" id="copybtn" type="button"><span id="copylabel">Copy email</span></button>
+        <p>Based in the San Francisco Bay Area.</p>
+      </div>
+      <p class="sr" id="copystatus" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Hummingbolt, back to top"><svg viewBox="60 -935 7370 1200" aria-hidden="true" focusable="false"><use href="#wm"/></svg></a>
+    <div class="legal">
+      <p class="mono">© 2026 Hummingbolt LLC</p>
+      <p>Hummingbolt LLC is a California limited liability company.</p>
+      <p>2108 N St #18140, Sacramento, CA 95816</p>
+    </div>
+    <ul>
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Legal notice</a></li>
+      <li><a href="https://play.toppleton.app" target="_blank" rel="noopener">Toppleton<span class="sr"> (opens in a new tab)</span></a></li>
+      <li><a href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function () {
+'use strict';
+var D = document, R = D.documentElement, W = window;
+if (!R.getAttribute('lang')) R.setAttribute('lang', 'en');
+/* Fonts load without blocking first paint; a slow or blocked font host never holds the page. */
+try { var gf = D.getElementById('gf'); if (gf) { var gfOn = function () { gf.media = 'all'; }; if (gf.sheet) gfOn(); else { gf.addEventListener('load', gfOn); gf.addEventListener('error', function () {}); } } } catch (e) {}
+function mq(q) { try { return W.matchMedia(q).matches; } catch (e) { return false; } }
+var RM = mq('(prefers-reduced-motion: reduce)');
+var FINE = mq('(hover: hover) and (pointer: fine)');
+var PHONE = mq('(max-width: 700px)');
+var NOGL = /nowebgl/.test(location.hash + location.search), FORCEGL = /forcegl/.test(location.hash + location.search);
+var hc = navigator.hardwareConcurrency || 4, dm = navigator.deviceMemory || 8;
+var LOW = !!(navigator.connection && navigator.connection.saveData) || dm <= 3 || hc <= 2;
+var TIER = LOW ? { c: 24, r: 20, dpr: 1, fps: 30 } :
+  PHONE ? { c: 30, r: 24, dpr: 1.25, fps: 0 } :
+  (W.innerWidth >= 1024 && hc >= 6) ? { c: 44, r: 40, dpr: 1.75, fps: 0 } :
+  { c: 38, r: 34, dpr: 1.75, fps: 0 };
+function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+function sstep(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
+function warn(m, e) { try { console.warn('[hummingbolt] ' + m, e && e.message ? e.message : (e || '')); } catch (_) {} }
+function now() { return W.performance ? performance.now() : Date.now(); }
+
+/* One rAF for everything. Each actor is isolated: if it throws, it is removed and the rest carry on. */
+var actors = [], raf = 0;
+function kick() { if (!raf) raf = requestAnimationFrame(loop); }
+function loop(t) {
+  raf = 0; var more = false;
+  for (var i = 0; i < actors.length; i++) {
+    var a = actors[i]; if (!a) continue;
+    try { if (a.tick(t)) more = true; }
+    catch (e) { actors[i] = null; warn(a.name + ' stopped', e); try { if (a.fail) a.fail(); } catch (_) {} }
+  }
+  if (more) kick();
+}
+function actor(name, tick, fail) { actors.push({ name: name, tick: tick, fail: fail }); }
+function guard(name, fn) { try { fn(); } catch (e) { warn(name + ' init failed', e); } }
+function setVar(el, k, v, store, key) { if (store[key] === undefined || Math.abs(store[key] - v) > 0.002) { store[key] = v; el.style.setProperty(k, v.toFixed(3)); } }
+
+/* Scroll is stored, never acted on in the handler. Layout is read only on resize. */
+var sy = W.scrollY || 0, vh = W.innerHeight;
+W.addEventListener('scroll', function () { sy = W.scrollY; kick(); }, { passive: true });
+var measures = [], mT = 0;
+function measure() { vh = W.innerHeight; sy = W.scrollY; for (var i = 0; i < measures.length; i++) { try { measures[i](); } catch (e) { warn('measure', e); } } kick(); }
+function remeasure() { clearTimeout(mT); mT = setTimeout(measure, 150); }
+W.addEventListener('resize', remeasure, { passive: true });
+try { if (W.ResizeObserver) new ResizeObserver(remeasure).observe(D.body || R); } catch (e) {}
+try { if (D.fonts && D.fonts.ready) D.fonts.ready.then(remeasure, function () {}); if (D.fonts && D.fonts.addEventListener) D.fonts.addEventListener('loadingdone', remeasure); } catch (e) {}
+function absTop(el) { return el.getBoundingClientRect().top + W.scrollY; }
+
+/* Header: solid after 24px; the section in view gets the rose underline. */
+guard('header', function () {
+  var hdr = D.getElementById('hdr'), solid = null;
+  actor('header', function () { var s = sy > 24; if (s !== solid) { solid = s; hdr.classList.toggle('solid', s); } return false; });
+  if (!W.IntersectionObserver) return;
+  var links = D.querySelectorAll('.nav a[data-sec]');
+  var io = new IntersectionObserver(function (ents) {
+    for (var e = 0; e < ents.length; e++) {
+      if (!ents[e].isIntersecting) continue;
+      var id = ents[e].target.id;
+      for (var i = 0; i < links.length; i++) {
+        if (links[i].getAttribute('data-sec') === id) links[i].setAttribute('aria-current', 'true'); else links[i].removeAttribute('aria-current');
+      }
+    }
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  ['top', 'make', 'toppleton', 'studio', 'contact'].forEach(function (id) { var el = D.getElementById(id); if (el) io.observe(el); });
+});
+
+/* What we make: a gorget sheen slides along each hairline (scroll, or pointer x on desktop). */
+guard('rows', function () {
+  if (RM) return;
+  var st = [].slice.call(D.querySelectorAll('.row')).map(function (el) { return { el: el, top: 0, hx: 0, hov: false, v: {} }; });
+  measures.push(function () { st.forEach(function (s) { s.top = absTop(s.el); }); });
+  if (FINE) st.forEach(function (s) {
+    s.el.addEventListener('pointermove', function (ev) { var r = s.el.getBoundingClientRect(); s.hx = clamp((ev.clientX - r.left) / r.width, 0, 1); s.hov = true; kick(); }, { passive: true });
+    s.el.addEventListener('pointerleave', function () { s.hov = false; kick(); }, { passive: true });
+  });
+  actor('rows', function () {
+    for (var i = 0; i < st.length; i++) {
+      var s = st[i], p = clamp((vh * 0.74 - (s.top - sy)) / (vh * 0.46), 0, 1);
+      setVar(s.el, '--x', s.hov ? s.hx : p, s.v, 'x');
+      setVar(s.el, '--o', s.hov ? 1 : Math.sin(p * Math.PI), s.v, 'o');
+      setVar(s.el, '--e', sstep(0, 0.7, p), s.v, 'e');
+    }
+    return false;
+  });
+});
+
+/* Toppleton: the stack settles from a 4 degree lean as it enters, sways with scroll speed, never falls. */
+guard('topple', function () {
+  var tile = D.getElementById('tile'), svg = D.getElementById('stack'), vis = D.getElementById('tvis');
+  if (RM) return;
+  var top = 0, a = -99, sw = 0, sv = 0, lastY = sy, lastT = 0, nudge = 0, nT = 0;
+  measures.push(function () { top = absTop(tile); lastY = sy; });
+  if (FINE) {
+    vis.addEventListener('pointermove', function (ev) { var r = vis.getBoundingClientRect(); nT = clamp((ev.clientX - r.left) / r.width * 2 - 1, -1, 1) * 3; kick(); }, { passive: true });
+    vis.addEventListener('pointerleave', function () { nT = 0; kick(); }, { passive: true });
+  }
+  actor('topple', function (t) {
+    var dt = lastT ? Math.min((t - lastT) / 1000, 1 / 30) : 1 / 60; lastT = t;
+    var v = (sy - lastY) / dt; lastY = sy;
+    var enter = clamp((vh - (top - sy)) / (vh * 0.8), 0, 1);
+    if (enter <= 0 && Math.abs(sw) < 0.01 && Math.abs(sv) < 0.01) { lastT = 0; if (a !== 4) { a = 4; svg.style.setProperty('--a', '4'); } return false; }
+    var target = clamp(v * 0.0012, -1.5, 1.5);
+    sv += (-80 * (sw - target) - 9 * sv) * dt; sw += sv * dt;
+    nudge += (nT - nudge) * (1 - Math.exp(-dt / 0.3));
+    var val = 4 * (1 - sstep(0, 1, enter)) + sw + nudge;
+    if (Math.abs(val - a) > 0.004) { a = val; svg.style.setProperty('--a', val.toFixed(3)); }
+    var moving = Math.abs(sv) > 0.01 || Math.abs(sw - target) > 0.01 || Math.abs(nT - nudge) > 0.01;
+    if (!moving) lastT = 0;
+    return moving;
+  });
+});
+
+/* Studio statement: words turn from Dim to Bone as the paragraph crosses the middle of the screen. */
+guard('statement', function () {
+  if (RM) return;
+  var p = D.getElementById('statement');
+  var text = p.textContent.trim(), words = text.split(/\s+/);
+  p.textContent = '';
+  var sr = D.createElement('span'); sr.className = 'sr'; sr.textContent = text; p.appendChild(sr);
+  var vis = D.createElement('span'); vis.setAttribute('aria-hidden', 'true'); p.appendChild(vis);
+  var spans = [];
+  for (var i = 0; i < words.length; i++) {
+    var s = D.createElement('span'); s.className = 'w'; s.textContent = words[i]; vis.appendChild(s); spans.push(s);
+    if (i < words.length - 1) vis.appendChild(D.createTextNode(' '));
+  }
+  var top = 0, h = 1, lit = -1;
+  measures.push(function () { top = absTop(p); h = p.offsetHeight; });
+  top = absTop(p); h = p.offsetHeight;
+  p.classList.add('reveal');
+  actor('statement', function () {
+    var pr = clamp((vh * 0.64 - (top - sy)) / (h + vh * 0.14), 0, 1);
+    var n = Math.round(pr * spans.length);
+    if (n !== lit) { lit = n; for (var i = 0; i < spans.length; i++) spans[i].classList.toggle('on', i < n); }
+    return false;
+  });
+});
+
+/* Contact: heading and email ease up 16px; the email's hairline carries one sheen sweep. Copy button. */
+guard('contact', function () {
+  var sec = D.getElementById('contact'), mail = D.getElementById('mail'), h2 = sec.querySelector('h2');
+  var btn = D.getElementById('copybtn'), lab = D.getElementById('copylabel'), stat = D.getElementById('copystatus'), tm = 0;
+  btn.addEventListener('click', function () {
+    function done(ok) {
+      lab.textContent = ok ? 'Copied' : 'Selected';
+      stat.textContent = ok ? 'Email address copied.' : 'Email address selected.';
+      clearTimeout(tm); tm = setTimeout(function () { lab.textContent = 'Copy email'; stat.textContent = ''; }, 2400);
+    }
+    function sel() { try { var r = D.createRange(); r.selectNodeContents(mail); var s = W.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} done(false); }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText('admin@hummingbolt.com').then(function () { done(true); }, sel);
+      else sel();
+    } catch (e) { sel(); }
+  });
+  if (RM) return;
+  var top = 0, hov = false, hx = 0, v1 = {}, v2 = {};
+  measures.push(function () { top = absTop(sec); });
+  if (FINE) {
+    mail.addEventListener('pointermove', function (ev) { var r = mail.getBoundingClientRect(); hx = clamp((ev.clientX - r.left) / r.width, 0, 1); hov = true; kick(); }, { passive: true });
+    mail.addEventListener('pointerleave', function () { hov = false; kick(); }, { passive: true });
+  }
+  actor('contact', function () {
+    var p = clamp((vh - (top - sy)) / (vh * 0.62), 0, 1), q = clamp((p - 0.3) / 0.7, 0, 1);
+    var e = sstep(0, 1, p);
+    setVar(h2, '--e', e, v1, 'e');
+    setVar(mail, '--e', e, v2, 'e');
+    setVar(mail, '--x', hov ? hx : q, v2, 'x');
+    setVar(mail, '--o', hov ? 1 : Math.sin(q * Math.PI), v2, 'o');
+    return false;
+  });
+});
+
+/* ---------------------------------------------------------------------------------------------
+   The gorget field. One program, one instanced draw call, no textures, no extra passes.
+   Feathers are tapered strips on a curved throat; the pointer wake tilts them toward the light.
+--------------------------------------------------------------------------------------------- */
+var VS = [
+'precision highp float;',
+'attribute vec2 aC;attribute vec3 aI;',
+'uniform float uT,uAsp,uSig,uBre;uniform vec4 uSh,uCm,uTp;uniform vec2 uGd;uniform vec4 uTr[16];',
+'varying vec2 vUV;varying vec3 vN,vS,vD,vP;varying float vW,vSd,vF;',
+'vec3 sheet(vec2 q){',
+' vec3 p=vec3(q.x,-1.5*q.y,.62*(1.-q.x*q.x)+.3*(1.-q.y*q.y)-.2*q.y+uBre*sin(2.6*q.x+1.7*q.y-.7*uT));',
+' p*=uSh.z;float c=cos(uSh.w),s=sin(uSh.w);p.xy=mat2(c,s,-s,c)*p.xy;',
+' c=cos(uCm.z);s=sin(uCm.z);p.xz=mat2(c,s,-s,c)*p.xz;',
+' p+=vec3(uSh.xy,-uCm.x);c=cos(uCm.y);s=sin(uCm.y);p.yz=mat2(c,s,-s,c)*p.yz;return p;}',
+'vec4 proj(vec3 p){return vec4(p.x*uCm.w/uAsp,p.y*uCm.w,-1.33333*p.z-4.66667,-p.z);}',
+'void main(){',
+' vec2 st=aI.xy;float sd=aI.z;',
+' vec3 P0=sheet(st);',
+' vec3 Ts=normalize(sheet(st+vec2(.01,0.))-P0);',
+' vec3 Tt=normalize(sheet(st+vec2(0.,.01))-P0);',
+' vec3 N0=normalize(cross(Tt,Ts));',
+' float j=(fract(sd*7.31)-.5)*.24;Tt=Tt*cos(j)+cross(N0,Tt)*sin(j);Ts=cross(N0,Tt);',
+' float len=uGd.y*(.86+.28*fract(sd*3.71)),wid=uGd.x*(.9+.2*fract(sd*5.37));',
+' vec4 cc=proj(P0+Tt*len*.6);vec2 q=cc.xy/cc.w*vec2(uAsp,1.);',
+' float acc=0.;',
+' for(int i=0;i<15;i++){',
+'  vec4 a=uTr[i];vec4 b=uTr[i+1];float on=min(a.w,b.w);if(on<=0.)continue;',
+'  vec2 ab=b.xy-a.xy;float l2=dot(ab,ab);float h=l2>1e-6?clamp(dot(q-a.xy,ab)/l2,0.,1.):0.;',
+'  vec2 dv=q-a.xy-ab*h;float age=mix(a.z,b.z,h);float sg=uSig*mix(1.,.55,smoothstep(0.,.3,sqrt(l2)));',
+'  acc+=on*exp(-dot(dv,dv)/(2.*sg*sg))*exp(-age/.45)*(1.-smoothstep(.45,.78,age));}',
+' if(uTp.w>0.){float dd=length(q-uTp.xy)-uTp.z*1.25;acc+=1.5*exp(-dd*dd*150.)*(1.-smoothstep(0.,.62,uTp.z));}',
+' float w=1.-exp(-1.1*acc);',
+' float lift=.24+.5*w+(uBre>0.?.035*sin(.7*uT+2.*st.x-1.3*st.y):0.);',
+' vec3 d=Tt*cos(lift)+N0*sin(lift);vec3 nF=cross(d,Ts);float y=aC.y;',
+' vec3 P=P0+Ts*(aC.x*wid*.5)+d*(y*len)-nF*(.08*y*y*len)+N0*(((sd-.5)*.014+.1*w)*len);',
+' gl_Position=proj(P);',
+' vUV=aC;vN=normalize(nF+d*(.16*y));vS=Ts;vD=d;vP=P;vW=w;vSd=sd;',
+' vF=(1.-smoothstep(.35,1.02,-st.x))*(1.-smoothstep(.9,1.04,st.x))*(1.-smoothstep(.15,.95,st.y))*(1.-smoothstep(.9,1.04,-st.y));',
+'}'].join('\n');
+
+var FS = [
+'#ifdef GL_FRAGMENT_PRECISION_HIGH',
+'precision highp float;',
+'#else',
+'precision mediump float;',
+'#endif',
+'uniform vec3 uL,uVg;uniform vec4 uSf,uFx;uniform vec2 uRs;uniform float uDpr,uAT;',
+'varying vec2 vUV;varying vec3 vN,vS,vD,vP;varying float vW,vSd,vF;',
+'vec3 ramp(float k){',
+' vec3 c=mix(vec3(.059,.071,.067),vec3(.133,.188,.165),smoothstep(0.,.16,k));',
+' c=mix(c,vec3(.431,.455,.282),smoothstep(.16,.3,k));',
+' c=mix(c,vec3(.722,.471,.306),smoothstep(.3,.45,k));',
+' c=mix(c,vec3(.722,.263,.369),smoothstep(.47,.64,k));',
+' return mix(c,vec3(.890,.663,.702),smoothstep(.8,1.,k));}',
+'void main(){',
+' float u=vUV.x,v=clamp(vUV.y,0.,1.),au=abs(u);',
+' float hw=pow(sin(3.14159*pow(v,1.25)),.45);',
+' float bl=.5+.5*cos(6.2832*(v*22.-au*4.));',
+' float hr=hw*(1.-.05*smoothstep(.75,1.,v)*bl);',
+' float a=smoothstep(hr,hr-.16,au);if(a<uAT)discard;',
+' vec3 V=normalize(-vP);vec3 H=normalize(uL+V);',
+' vec3 n=normalize(vN+vS*(u*.35)+vD*((bl-.5)*.05));',
+' n=normalize(mix(n,H,.66*vW));float ndh=max(dot(n,H),0.);',
+' float e=pow(ndh,14.);float ndv=max(dot(n,V),0.);',
+' float boost=max(vW,uFx.y);',
+' float heat=e*(.26+.62*boost)+.16*vW*vW+(vSd-.5)*.1*e+(1.-ndv)*.08*e;',
+' vec3 c=ramp(heat)*(.6+.4*e)*mix(.62,1.,boost);',
+' c+=vec3(.19,.17,.14)*(.8*pow(ndh,7.)+.14*ndh*ndh)+vec3(.133,.188,.165)*(.08*max(dot(n,uL),0.)+.26*pow(max(1.-ndv,0.),3.));',
+' c*=.92+.08*bl;',
+' c*=mix(.5,1.,smoothstep(.01,.05,au));',
+' c*=mix(.36,1.,smoothstep(.3,.62,v));',
+' c*=1.-.5*smoothstep(.78,1.,v);',
+' c*=1.-.3*smoothstep(.6,1.,au/max(hw,.01));',
+' vec3 nt=vec3(.059,.071,.067);',
+' c=mix(nt*.8,c,vF)*uFx.x;',
+' vec2 fc=gl_FragCoord.xy;float f=80.*uDpr;',
+' float m=smoothstep(uSf.x-f,uSf.x,fc.x)*(1.-smoothstep(uSf.z,uSf.z+f,fc.x))*smoothstep(uSf.y-f,uSf.y,fc.y)*(1.-smoothstep(uSf.w,uSf.w+f,fc.y));',
+' c=mix(c,nt+(c-nt)*.3,m);',
+' vec2 uv=fc/uRs;',
+' float vg=1.-smoothstep(.4,1.2,length((uv-uVg.xy)*vec2(1.,1.15)));',
+' c=mix(nt,c,mix(uVg.z,1.,vg));',
+' c=mix(nt,c,smoothstep(0.,.2,uv.y));',
+' c=mix(nt,c,1.-.6*smoothstep(uRs.y-uFx.w,uRs.y,fc.y));',
+' float g=fract(52.9829189*fract(dot(fc,vec2(.06711056,.00583715))));',
+' c+=(g-.5)*uFx.z*(.5+.5*vF);',
+' gl_FragColor=vec4(c,a);',
+'}'].join('\n');
+
+guard('gl', function () {
+  var hero = D.getElementById('top'), field = D.getElementById('field'), cvs = D.getElementById('gl'), copy = D.getElementById('copy');
+  function off(why) { ready = false; hero.classList.remove('gl-on', 'gl-done'); hero.classList.add('gl-off'); if (why) warn('WebGL off: ' + why); }
+  var ready = false;
+  if (NOGL || !cvs) { off(); return; }
+
+  var gl = null, ext = null, prog = null, U = {}, N = 0, draw = null, lost = 0;
+  var Wc = 1, Hc = 1, dpr = 1, dprCap = Math.min(TIER.dpr, W.devicePixelRatio || 1), asp = 1, wide = false, desk = false;
+  var heroH = 1, fTop = 0, fLeft = 0, par = -1, cRel = [0, 0, 0, 0];
+  var visible = true, pageVis = !D.hidden, left = false, lastTouch = -1e9;
+  var TR = new Float32Array(64), ring = new Float32Array(60), rHead = 0, lastPush = 0;
+  var SF = new Float32Array(4), CM = new Float32Array(4), FX = new Float32Array(4), TP = new Float32Array(4), LV = new Float32Array(3);
+  var ptr = { x: 0, y: 0, active: false, last: 0, on: 0, moved: false };
+  var hx = 0, hy = 0, headOn = 0;
+  var vp = { t0: -1, dur: 1.9, amp: 1, cx: 0, cy: 0, ax: 0, ay: 0 };
+  var tapT = -1e9, tapX = 0, tapY = 0;
+  var pAz = 0, pEl = 0, t0 = now(), lastNow = 0, lastDraw = 0;
+  var ft = new Float32Array(90), fi = 0, fn = 0, lastF = 0, fps = TIER.fps, steps = 0, calmY = -1;
+  var cam = [6, 0, -0.36, 3], sh = [1.2, 0.3, 1.7, -0.52];
+  var needOne = true;
+
+  function build() {
+    function sh_(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+    var vs = sh_(gl.VERTEX_SHADER, VS), fs = sh_(gl.FRAGMENT_SHADER, FS), p = gl.createProgram();
+    gl.attachShader(p, vs); gl.attachShader(p, fs);
+    gl.bindAttribLocation(p, 0, 'aC'); gl.bindAttribLocation(p, 1, 'aI');
+    gl.linkProgram(p);
+    return { p: p, vs: vs, fs: fs };
+  }
+  function linked(b) {
+    if (gl.getProgramParameter(b.p, gl.LINK_STATUS)) return true;
+    throw new Error('link failed ' + (gl.getShaderInfoLog(b.vs) || '') + (gl.getShaderInfoLog(b.fs) || '') + (gl.getProgramInfoLog(b.p) || ''));
+  }
+
+  function initGL() {
+    try {
+      var o = { antialias: !LOW, alpha: false, depth: true, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'default', failIfMajorPerformanceCaveat: !FORCEGL };
+      gl = cvs.getContext('webgl2', o); var g2 = !!gl;
+      if (!gl) {
+        gl = cvs.getContext('webgl', o) || cvs.getContext('experimental-webgl', o);
+        if (!gl) return off('no context');
+        ext = gl.getExtension('ANGLE_instanced_arrays');
+        if (!ext) return off('no instancing');
+      }
+      var kp = gl.getExtension('KHR_parallel_shader_compile');
+      var b = build();
+      var wait = function () {
+        try {
+          if (gl.isContextLost()) return;
+          if (kp && !gl.getProgramParameter(b.p, kp.COMPLETION_STATUS_KHR)) { setTimeout(wait, 32); return; }
+          linked(b); finish(b.p, g2);
+        } catch (e) { off(e.message || 'link'); }
+      };
+      wait();
+    } catch (e) { off(e && e.message || 'init'); }
+  }
+
+  function finish(p, g2) {
+    prog = p; gl.useProgram(prog);
+    ['uT', 'uAsp', 'uSig', 'uBre', 'uSh', 'uCm', 'uTp', 'uGd', 'uTr', 'uL', 'uVg', 'uSf', 'uFx', 'uRs', 'uDpr', 'uAT'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n === 'uTr' ? 'uTr[0]' : n); });
+    var cb = new Float32Array(20);
+    for (var j = 0; j <= 4; j++) { cb[j * 4] = -1; cb[j * 4 + 1] = j / 4; cb[j * 4 + 2] = 1; cb[j * 4 + 3] = j / 4; }
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, cb, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    var C = TIER.c, Rr = TIER.r, k = 0, seed = 11; N = C * Rr;
+    var ib = new Float32Array(N * 3);
+    function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+    for (var r = 0; r < Rr; r++) for (var c = 0; c < C; c++) {
+      ib[k++] = -1 + 2 * (c + 0.25 + 0.5 * (r & 1) + (rnd() - 0.5) * 0.3) / C;
+      ib[k++] = -1 + 2 * (r + 0.5 + (rnd() - 0.5) * 0.25) / Rr;
+      ib[k++] = rnd();
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, ib, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+    if (g2) { gl.vertexAttribDivisor(1, 1); draw = function () { gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 10, N); }; }
+    else { ext.vertexAttribDivisorANGLE(1, 1); draw = function () { ext.drawArraysInstancedANGLE(gl.TRIANGLE_STRIP, 0, 10, N); }; }
+    gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.disable(gl.CULL_FACE);
+    var msaa = (gl.getParameter(gl.SAMPLES) || 0) > 0;
+    if (msaa) gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+    gl.uniform1f(U.uAT, msaa ? 0.02 : 0.5);
+    gl.uniform2f(U.uGd, 0, 0);
+    gl.clearColor(15 / 255, 18 / 255, 17 / 255, 1);
+    layout();
+    render(now());
+    var err = gl.getError();
+    if (err) throw new Error('gl error ' + err);
+    ready = true;
+    hero.classList.remove('gl-off'); hero.classList.add('gl-on');
+    setTimeout(function () { if (ready) hero.classList.add('gl-done'); }, 800);
+    if (!RM && !ptr.moved) pass(700, FINE ? 1.9 : 2.2, 1);
+    kick();
+  }
+
+  /* Composition per frame shape. Pure numbers; scroll only changes camera, light and exposure. */
+  function layout() {
+    var r = field.getBoundingClientRect();
+    Wc = Math.max(1, r.width); Hc = Math.max(1, r.height); asp = Wc / Hc; wide = asp >= 1.15; desk = mq('(min-width: 900px)');
+    fTop = r.top + W.scrollY - Math.max(par, 0); fLeft = r.left;
+    heroH = desk ? hero.offsetHeight : Hc;
+    var c = copy.getBoundingClientRect();
+    cRel[0] = c.left - r.left; cRel[2] = c.right - r.left; cRel[1] = c.top - r.top; cRel[3] = c.bottom - r.top;
+    if (!gl) return;
+    /* pixel budget: big monitors get a lower ratio instead of a 10-megapixel canvas */
+    dpr = Math.max(0.75, Math.min(dprCap, W.devicePixelRatio || 1, Math.sqrt((PHONE ? 1.1e6 : 4.2e6) / (Wc * Hc))));
+    var w = Math.max(1, Math.round(Wc * dpr)), h = Math.max(1, Math.round(Hc * dpr));
+    if (cvs.width !== w || cvs.height !== h) { cvs.width = w; cvs.height = h; }
+    if (wide) { cam = [6, 0, -0.3, 3]; sh = [0.5 * 2 * asp, 0.62, 2.15, -0.56]; vp.cx = 0.66 * Wc; vp.cy = 0.42 * Hc; vp.ax = 0.2 * Wc; vp.ay = 0.56 * Hc; }
+    else { cam = [6, 0, -0.26, 3]; sh = [0.66 * 2 * asp, 0.95, 1.95, -0.52]; vp.cx = 0.6 * Wc; vp.cy = 0.33 * Hc; vp.ax = 0.28 * Wc; vp.ay = 0.46 * Hc; }
+    gl.uniform1f(U.uAsp, asp);
+    gl.uniform4f(U.uSh, sh[0], sh[1], sh[2], sh[3]);
+    gl.uniform2f(U.uGd, (2 / TIER.c) * 1.3 * sh[2], (3 / TIER.r) * 2.5 * sh[2]);
+    gl.uniform1f(U.uSig, wide ? 0.088 : 0.11);
+    if (wide) gl.uniform3f(U.uVg, 0.66, 0.6, 0.3); else gl.uniform3f(U.uVg, 0.68, 0.7, 0.4);
+    gl.uniform2f(U.uRs, w, h);
+    gl.uniform1f(U.uDpr, dpr);
+    needOne = true;
+  }
+  measures.push(function () { layout(); });
+
+  function pass(delay, dur, amp) { vp.t0 = now() + delay; vp.dur = dur; vp.amp = amp; kick(); }
+
+  function render(t) {
+    var dt = lastNow ? Math.min((t - lastNow) / 1000, 0.1) : 1 / 60; lastNow = t;
+    var tx = 0, ty = 0, on = 0, vOn = 0, vx = 0, vy = 0;
+    if (!RM && vp.t0 > 0) {
+      var u = (t - vp.t0) / (vp.dur * 1000);
+      if (u >= 1) vp.t0 = -1;
+      else if (u >= 0) {
+        var e = 0.5 - 0.5 * Math.cos(Math.PI * u), th = -Math.PI / 2 + 2 * Math.PI * e;
+        vx = vp.cx + vp.ax * Math.sin(th); vy = vp.cy + vp.ay * Math.sin(th) * Math.cos(th);
+        vOn = vp.amp * sstep(0, 0.1, u) * (1 - sstep(0.84, 1, u));
+      }
+    }
+    var still = (t - ptr.last) / 1000, target = ptr.active ? 1 - 0.4 * sstep(0.8, 2.6, still) : 0;
+    ptr.on += (target - ptr.on) * (1 - Math.exp(-dt / (target > ptr.on ? 0.1 : 0.3)));
+    if (ptr.on >= vOn) { tx = ptr.x; ty = ptr.y; on = ptr.on; } else { tx = vx; ty = vy; on = vOn; }
+    if (RM) { on = 0.9; if (ptr.active) { tx = ptr.x; ty = ptr.y; } else { tx = (wide ? 0.78 : 0.7) * Wc; ty = (wide ? 0.26 : 0.24) * Hc; } hx = tx; hy = ty; }
+    else {
+      if (headOn < 0.002) { hx = tx; hy = ty; }
+      var kk = 1 - Math.exp(-dt / 0.07); hx += (tx - hx) * kk; hy += (ty - hy) * kk;
+    }
+    headOn = on;
+    var qx = (hx / Wc * 2 - 1) * asp, qy = 1 - hy / Hc * 2;
+    if (!RM && on > 0.002 && t - lastPush > 40) {
+      lastPush = t; rHead = (rHead + 1) % 15; var o = rHead * 4;
+      ring[o] = qx; ring[o + 1] = qy; ring[o + 2] = t; ring[o + 3] = on;
+    }
+    TR[0] = qx; TR[1] = qy; TR[2] = 0; TR[3] = on;
+    var energy = on;
+    for (var i = RM ? 2 : 0; i < 15; i++) {
+      var idx = ((rHead - i) % 15 + 15) % 15, oo = idx * 4, jj = (i + 1) * 4, age = (t - ring[oo + 2]) / 1000;
+      var live = !RM && age < 0.8 ? ring[oo + 3] : 0;
+      TR[jj] = ring[oo]; TR[jj + 1] = ring[oo + 1]; TR[jj + 2] = age; TR[jj + 3] = live;
+      energy += live;
+    }
+    if (RM) { TR[3] = 1; for (var r2 = 4; r2 < 12; r2 += 4) { TR[r2] = qx; TR[r2 + 1] = qy; TR[r2 + 2] = 0.05; TR[r2 + 3] = 1; } }
+    var tapAge = (t - tapT) / 1000;
+    TP[0] = tapX; TP[1] = tapY; TP[2] = tapAge; TP[3] = tapAge < 0.7 ? 1 : 0;
+    if (TP[3]) energy += 1;
+
+    /* light: pointer swings it (smoothed); scroll lowers it as a pure function of hero progress */
+    var p = RM ? 0 : clamp(sy / heroH, 0, 1);
+    var tAz = 0, tEl = 0;
+    if (FINE && ptr.active && !RM) { tAz = (ptr.x / Wc - 0.5) * 2 * 0.384; tEl = (0.5 - ptr.y / Hc) * 2 * 0.175; }
+    var kl = RM ? 1 : 1 - Math.exp(-dt / 0.6); pAz += (tAz - pAz) * kl; pEl += (tEl - pEl) * kl;
+    var az = -0.78 + pAz, el = (wide ? 0.62 : 0.72) + pEl - (wide ? 0.5 : 0.95) * p;
+    var ce = Math.cos(el);
+    gl.uniform3f(U.uL, ce * Math.sin(az), Math.sin(el), ce * Math.cos(az));
+    gl.uniform4f(U.uCm, cam[0] * (1 + 0.12 * p), 0.14 * p, cam[2], cam[3]);
+    FX[0] = 1 - 0.45 * p;
+    /* a low resting sheen so the still frame reads bronze, not black; scroll adds to it */
+    FX[1] = 0.2 + (wide ? 0.2 : 0.38) * sstep(0.02, 0.3, p) * (1 - sstep(0.65, 1, p));
+    FX[2] = PHONE ? 0.012 : 0.022;
+    FX[3] = desk ? 0 : 96 * dpr;
+    gl.uniform4fv(U.uFx, FX);
+    var pr = desk && !RM ? Math.round(sy * 0.25 * 10) / 10 : 0;
+    if (pr !== par) { par = pr; field.style.transform = pr ? 'translate3d(0,' + pr + 'px,0)' : ''; }
+    SF[0] = cRel[0] * dpr; SF[2] = cRel[2] * dpr; SF[1] = (Hc - (cRel[3] - par)) * dpr; SF[3] = (Hc - (cRel[1] - par)) * dpr;
+    gl.uniform4fv(U.uSf, SF);
+    gl.uniform1f(U.uT, RM ? 0 : ((t - t0) / 1000) % (2 * Math.PI / 0.7 * 64));
+    gl.uniform1f(U.uBre, RM ? 0 : 0.016);
+    gl.uniform4fv(U.uTr, TR);
+    gl.uniform4fv(U.uTp, TP);
+    gl.viewport(0, 0, cvs.width, cvs.height);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    draw();
+    return energy > 0.01 || Math.abs(sy - calmY) > 0.5 || Math.abs(pAz - tAz) > 0.002 || Math.abs(pEl - tEl) > 0.002;
+  }
+
+  function adapt(t) {
+    if (lastF) { ft[fi] = t - lastF; fi = (fi + 1) % 90; if (fn < 90) fn++; }
+    lastF = t;
+    if (fn < 90 || fps) return;
+    var s = 0; for (var i = 0; i < 90; i++) s += ft[i];
+    if (s / 90 > 20) {
+      fn = 0; steps++;
+      if (dpr > 1.01) { dprCap = Math.max(1, dpr - 0.25); layout(); } else fps = 30;
+    }
+  }
+  function tooSlow(t) {
+    /* after every step-down, under ~21 fps sustained means the still plate serves better */
+    if (!fps || fn < 90 || FORCEGL) return false;
+    var s = 0; for (var i = 0; i < 90; i++) s += ft[i];
+    return s / 90 > 48;
+  }
+
+  var busy = true;
+  actor('gl', function () {
+    var t = now();
+    if (!ready) return false;
+    if (RM) { if (needOne) { needOne = false; render(t); } return false; }
+    if (!visible || !pageVis) { lastNow = 0; lastF = 0; return false; }
+    var minGap = fps ? 1000 / fps : (busy ? 0 : 1000 / 30);
+    if (minGap && t - lastDraw < minGap - 4) return true;
+    lastDraw = t;
+    busy = render(t);
+    calmY = sy;
+    if (busy || fps) adapt(t); else lastF = 0;
+    if (tooSlow(t)) { off('too slow'); return false; }
+    return true;
+  }, function () { off('frame error'); });
+
+  /* Input. The canvas never blocks scrolling: touch-action pan-y, passive listeners, no preventDefault. */
+  function local(ev) { ptr.x = ev.clientX - fLeft; ptr.y = ev.clientY - (fTop + Math.max(par, 0) - W.scrollY); }
+  function inField() { return ptr.x >= 0 && ptr.x <= Wc && ptr.y >= 0 && ptr.y <= Hc; }
+  hero.addEventListener('pointermove', function (ev) {
+    if (!ready) return;
+    local(ev);
+    if (ev.pointerType === 'mouse') { ptr.active = inField(); }
+    if (ptr.active) { ptr.last = now(); ptr.moved = true; if (ev.pointerType !== 'mouse') lastTouch = ptr.last; }
+    needOne = true; kick();
+  }, { passive: true });
+  hero.addEventListener('pointerdown', function (ev) {
+    if (!ready) return;
+    local(ev);
+    if (!inField() || (ev.target.closest && ev.target.closest('a,button'))) return;
+    ptr.moved = true; ptr.last = now();
+    if (ev.pointerType !== 'mouse') { ptr.active = true; lastTouch = ptr.last; hx = ptr.x; hy = ptr.y; }
+    if (!RM) { tapT = ptr.last; tapX = (ptr.x / Wc * 2 - 1) * asp; tapY = 1 - ptr.y / Hc * 2; }
+    needOne = true; kick();
+  }, { passive: true });
+  function release(ev) { if (ev.pointerType !== 'mouse' || ev.type === 'pointerleave') { ptr.active = false; lastTouch = now(); needOne = true; kick(); } }
+  hero.addEventListener('pointerup', release, { passive: true });
+  hero.addEventListener('pointercancel', release, { passive: true });
+  hero.addEventListener('pointerleave', release, { passive: true });
+
+  if (W.IntersectionObserver) {
+    new IntersectionObserver(function (en) {
+      var v = en[en.length - 1].isIntersecting;
+      if (v && !visible && left && ready && !RM && !FINE && now() - lastTouch > 2500) pass(300, 2.2, 0.7);
+      if (!v) left = true;
+      visible = v; if (v) kick();
+    }, { rootMargin: '100px' }).observe(hero);
+  }
+  D.addEventListener('visibilitychange', function () { pageVis = !D.hidden; if (pageVis) { lastNow = 0; kick(); } });
+  cvs.addEventListener('webglcontextlost', function (e) { e.preventDefault(); lost++; off('context lost'); }, false);
+  cvs.addEventListener('webglcontextrestored', function () { if (lost < 2) initGL(); }, false);
+
+  layout();
+  var ric = W.requestIdleCallback || function (f) { return setTimeout(f, 200); };
+  ric(initGL, { timeout: 800 });
+});
+
+measure();
+})();
+</script>
