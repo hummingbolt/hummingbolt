@@ -1,0 +1,337 @@
+/* Hummingbolt - hb.css.
+   A field of tiny feathers lives behind the page. It re-forms into a different shape for every section, the camera glides
+   between them, and feathers ruffle where a pointer or finger passes. Now and then the same feathers gather into Flux, a
+   faceted hummingbird: it visits, hovers, plays, then lets go and falls back into the formation. A tap or a click on an
+   empty part of the page summons it. Everything else is type and space.
+   Colour lives in tokens: ANNA'S, light and dark. TOKENS in hb.js is the one source for the scene; the page tokens below
+   mirror its page colours (keep them in step). theme.js sets data-theme before the first paint; without scripts the page
+   follows the visitor's colour scheme. */
+
+/* ---------- fonts: our own copies of Funnel Display and Funnel Sans (SIL Open Font License, see /fonts/OFL.txt) ---------- */
+@font-face{font-family:"Funnel Display";font-style:normal;font-weight:300 500;font-display:swap;src:url("/fonts/funnel-display-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Funnel Sans";font-style:normal;font-weight:400 600;font-display:swap;src:url("/fonts/funnel-sans-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+/* sized fallbacks: while the fonts load (or if they never do) the words take nearly the same room. Measured against
+   Arial (and its metric twins): Funnel Display Light sets 5% wider, Funnel Sans Regular the same width. Both fonts are
+   1.00 em ascent, 0.25 em descent, no line gap; the overrides are scaled by size-adjust, so they are divided by it. */
+@font-face{font-family:"FD Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica"),local("Liberation Sans"),local("Arimo");size-adjust:105%;ascent-override:95.24%;descent-override:23.81%;line-gap-override:0%}
+@font-face{font-family:"FS Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica"),local("Liberation Sans"),local("Arimo");size-adjust:100%;ascent-override:100%;descent-override:25%;line-gap-override:0%}
+/* every colour token is registered, so a change of theme eases everywhere it is used, gradients included */
+@property --bg{syntax:'<color>';inherits:true;initial-value:#082725}
+@property --surface{syntax:'<color>';inherits:true;initial-value:#11312F}
+@property --text{syntax:'<color>';inherits:true;initial-value:#F5F1E8}
+@property --text-2{syntax:'<color>';inherits:true;initial-value:#C8DBD0}
+@property --muted{syntax:'<color>';inherits:true;initial-value:#ABCBBC}
+@property --hair{syntax:'<color>';inherits:true;initial-value:#274340}
+@property --hair-2{syntax:'<color>';inherits:true;initial-value:#44625B}
+@property --accent{syntax:'<color>';inherits:true;initial-value:#FF99BF}
+@property --accent-2{syntax:'<color>';inherits:true;initial-value:#B6DB66}
+@property --focus{syntax:'<color>';inherits:true;initial-value:#FF98C2}
+:root{
+  color-scheme:dark;
+  --bg:#082725; --surface:#11312F; --text:#F5F1E8; --text-2:#C8DBD0; --muted:#ABCBBC;
+  --hair:#274340; --hair-2:#44625B; --accent:#FF99BF; --accent-2:#B6DB66; --focus:#FF98C2;
+  /* the page colour, a little transparent: the soft veil behind words, and the faint halo on their glyphs */
+  --veil:color-mix(in srgb,var(--bg) 92%,transparent);
+  --halo:color-mix(in srgb,var(--bg) 72%,transparent);
+  --display:"Funnel Display","FD Fallback","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --sans:"Funnel Sans","FS Fallback","Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --hdr:60px;
+  --gl:max(16px, env(safe-area-inset-left, 0px));
+  --gr:max(16px, env(safe-area-inset-right, 0px));
+  --ease:cubic-bezier(.2,.7,0,1);
+}
+/* Anna's light: the chosen theme, or (without scripts) the visitor's colour scheme */
+:root[data-theme="light"]{color-scheme:light;--bg:#F8F3EB;--surface:#F0E9DE;--text:#0C2721;--text-2:#2A4339;--muted:#3D564B;--hair:#DDD9CE;--hair-2:#BEBFB1;--accent:#A30C5A;--accent-2:#3A7224;--focus:#A30C5A}
+@media (prefers-color-scheme:light){:root:not([data-theme]){color-scheme:light;--bg:#F8F3EB;--surface:#F0E9DE;--text:#0C2721;--text-2:#2A4339;--muted:#3D564B;--hair:#DDD9CE;--hair-2:#BEBFB1;--accent:#A30C5A;--accent-2:#3A7224;--focus:#A30C5A}}
+/* a change of theme: every token eases over 400 ms (the scene follows on the same curve) */
+:root.theme-anim{transition:--bg .4s ease,--surface .4s ease,--text .4s ease,--text-2 .4s ease,--muted .4s ease,--hair .4s ease,--hair-2 .4s ease,--accent .4s ease,--accent-2 .4s ease,--focus .4s ease}
+/* during a switch (driven by the scene frame by frame, or eased by CSS), elements with colour transitions of their own follow the tokens exactly */
+:root.theme-drive :is(.btn,.nav a,.theme-btn,.legal a,.prose a,.v-rail a .t,.v-rail a i,.menu-btn){transition-duration:0s!important}
+@media (min-width:900px){:root{--hdr:72px;--gl:max(clamp(24px,4vw,64px), env(safe-area-inset-left, 0px));--gr:max(clamp(24px,4vw,64px), env(safe-area-inset-right, 0px))}}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg);overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text-2);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip;touch-action:pan-y pinch-zoom}
+@media (min-width:900px){body{font-size:18px}}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:42;background:var(--bg)}
+a{color:inherit}
+p,h1,h2,h3,ol,ul{margin:0}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:2px}
+[tabindex="-1"]:focus{outline:none}
+::selection{background:var(--accent);color:var(--bg)}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{width:100%;max-width:1440px;margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
+
+/* ---------- the living form (fixed, behind everything) ---------- */
+#gl,#poster{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;z-index:0;pointer-events:none;display:block;background:var(--bg)}
+#poster{transition:opacity .2s ease}
+#poster.swap{opacity:0}
+main{position:relative;z-index:2;display:block}
+/* the soft veils may spill sideways past the screen's edge: clipped there, sideways only (never into a band above or below) */
+main,.foot{overflow-x:clip}
+main:focus{outline:none}
+
+/* ---------- skip + header ---------- */
+.skip{position:fixed;left:var(--gl);top:calc(env(safe-area-inset-top,0px) + 8px);z-index:300;background:var(--text);color:var(--bg);font:500 15px/1 var(--sans);padding:15px 18px;border-radius:999px;text-decoration:none;transform:translateY(-220%)}
+.skip:focus{transform:none}
+.hdr{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:40;height:var(--hdr)}
+/* a long, soft fade of the page colour under the header: never an edge */
+.hdr::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(var(--hdr) + 72px);z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 92%,transparent) 0,color-mix(in srgb,var(--bg) 80%,transparent) calc(var(--hdr) * .7),color-mix(in srgb,var(--bg) 44%,transparent) calc(var(--hdr) + 16px),color-mix(in srgb,var(--bg) 14%,transparent) calc(var(--hdr) + 44px),transparent 100%)}
+.hdr-in{height:100%;display:flex;align-items:center;gap:12px;max-width:1440px;margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
+.brand{display:inline-flex;align-items:center;gap:10px;min-height:44px;text-decoration:none;color:var(--text);font:500 18px/1 var(--display);letter-spacing:-.01em}
+.brand .mark{width:32px;height:32px;flex:none;color:var(--text)}
+.nav{margin-left:auto}
+.nav ul{display:flex;gap:4px;list-style:none;padding:0}
+.nav a{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:0 14px;text-decoration:none;color:var(--text-2);font:450 15px/1 var(--sans);letter-spacing:.005em;transition:color .3s}
+.nav a::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:1px;background:linear-gradient(90deg,var(--accent-2),var(--accent));transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.nav a:hover{color:var(--text)}
+.nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
+.nav a[aria-current="page"]{color:var(--text)}
+.hdr-r{display:flex;align-items:center;gap:6px}
+.menu-btn{display:none;min-height:44px;min-width:44px;padding:0 18px;background:color-mix(in srgb,var(--bg) 60%,transparent);color:var(--text);border:1px solid var(--hair-2);border-radius:999px;font:500 15px/1 var(--sans);cursor:pointer}
+@media (max-width:899px){.nav{display:none}.hdr-r{margin-left:auto}.menu-btn{display:inline-flex;align-items:center}}
+/* the theme switch: a sun that becomes a crescent (it shows the mode it switches to) */
+.theme-btn{display:inline-grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--text);cursor:pointer;transition:background-color .3s}
+.theme-btn:hover{background:color-mix(in srgb,var(--text) 9%,transparent)}
+.theme-btn svg{width:22px;height:22px;overflow:visible}
+.ti-core,.ti-rays,.ti-cut{transform-box:fill-box;transform-origin:50% 50%;transition:transform .5s var(--ease),opacity .35s ease}
+.ti-core{transform:scale(.62)}
+.ti-cut{transform:translate(9px,-9px)}
+:root[data-theme="light"] .ti-core{transform:none}
+:root[data-theme="light"] .ti-cut{transform:none}
+:root[data-theme="light"] .ti-rays{opacity:0;transform:scale(.5) rotate(-40deg)}
+.menu{position:fixed;inset:0;z-index:38;background:var(--bg);padding-top:calc(var(--hdr) + env(safe-area-inset-top,0px) + 24px);overflow-y:auto;overscroll-behavior:contain}
+html.menu-open{overflow:hidden}
+html.menu-open .hdr::before{display:none}
+.menu ul{list-style:none;padding:0}
+.menu li{border-top:1px solid var(--hair)}
+.menu li:last-child{border-bottom:1px solid var(--hair)}
+.menu a{display:flex;align-items:center;min-height:68px;padding:10px 0;text-decoration:none;color:var(--text);font:300 38px/1.1 var(--display);letter-spacing:-.02em}
+.menu-foot{margin-top:28px;color:var(--muted);font-size:15px}
+
+/* ---------- type ---------- */
+.eyebrow,.count{font:500 13px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.count{font-variant-numeric:tabular-nums}
+.giant{font:300 clamp(64px,13vw,200px)/.88 var(--display);letter-spacing:-.04em;color:var(--text);margin:.04em 0 .1em -.045em}
+.giant.xlong{font-size:clamp(46px,12.2vw,184px)}
+@media (min-width:900px){.giant.xlong{font-size:clamp(64px,9vw,156px)}.giant.long{font-size:clamp(64px,9.6vw,156px)}}
+.line{font:400 clamp(20px,1.9vw,28px)/1.32 var(--sans);color:var(--text);max-width:30ch;letter-spacing:-.006em;text-wrap:balance}
+.body{color:var(--text-2);max-width:42ch}
+.statement{font:300 clamp(42px,6.2vw,100px)/.98 var(--display);letter-spacing:-.032em;color:var(--text);text-wrap:balance;max-width:11em}
+.stack{display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:0 24px;border:1px solid var(--hair-2);border-radius:999px;background:color-mix(in srgb,var(--bg) 74%,transparent);color:var(--text);font:500 16px/1 var(--sans);letter-spacing:.005em;text-decoration:none;cursor:pointer;text-shadow:none;transition:border-color .3s,background-color .3s,color .3s}
+.btn:hover{border-color:var(--accent)}
+.btn-primary{background:var(--text);border-color:var(--text);color:var(--bg)}
+.btn-primary:hover{background:color-mix(in srgb,var(--text) 84%,var(--accent));border-color:color-mix(in srgb,var(--text) 84%,var(--accent))}
+.btn .url{font-weight:400;opacity:.78}
+.arrow{display:inline-block;width:14px;height:1px;background:currentColor;position:relative}
+.arrow::after{content:"";position:absolute;right:0;top:-3px;width:7px;height:7px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg);transform-origin:100% 0}
+em.r{font-style:normal;color:var(--accent)}
+
+/* ---------- words on the scene ----------
+   Text sits straight on the scene: no boxes, no bands. The formations keep to the other side of the layout (the camera's
+   lens shift), and where a feather still drifts behind the words, a wide, soft veil of the page colour (a blurred field:
+   it has no edge anywhere) and a faint halo on the glyphs keep the contrast. Where nothing is behind them, both are the
+   page colour on the page colour, and invisible. */
+.slab,.hero-copy,.v-head,.v-intro .wrap > .stack,.foot-in{position:relative;isolation:isolate}
+.slab{max-width:620px}
+.slab::before,.hero-copy::before,.v-head::before,.foot-in::before{content:"";position:absolute;inset:-32px -52px;z-index:-1;pointer-events:none;border-radius:42%;background:var(--veil);filter:blur(38px)}
+.slab,.hero-copy,.v-intro .stack,.foot-in,.v-rail{text-shadow:0 0 1px var(--halo),0 0 16px var(--halo)}
+/* small words (eyebrows, counts, numbers, the hint, the footer) keep the page colour close around every glyph */
+.eyebrow,.count,.v-num,.v-index .n,.vt-list li::before,.flux-hint,.foot-in,.status,.body{text-shadow:0 0 1px var(--bg),0 0 3px var(--bg),0 0 10px var(--halo)}
+/* the small labels sit at a corner of their block, where its veil thins out: each keeps a small, soft, round veil of its
+   own (no edge: the page colour fading to nothing), so a feather passing right behind one never touches its glyphs.
+   Not isolated: the veils sit in their block's layer, under all of its words (a label's veil never dims its neighbour) */
+.eyebrow,.count,.v-num,.v-index .n{position:relative}
+.eyebrow::before,.count::before,.v-num::before,.v-index .n::before{content:"";position:absolute;inset:-26px -48px;z-index:-1;pointer-events:none;filter:blur(5px);background:radial-gradient(closest-side,var(--bg) 0,var(--bg) 40%,color-mix(in srgb,var(--bg) 82%,transparent) 58%,color-mix(in srgb,var(--bg) 42%,transparent) 77%,color-mix(in srgb,var(--bg) 12%,transparent) 90%,transparent 100%)}
+[data-side="left"] .slab{margin-left:auto}
+/* the address's block hugs it, so the bird can hover close to the words */
+@media (min-width:900px){#contact .email{max-width:9.4em}#contact .status{max-width:36ch}}
+/* On a wide screen every block hugs its words (and so does its veil), so the open space beside a short block is really
+   open: Flux, called there, is seen there. A right-hand block keeps its left edge where a full-width one would start. */
+@media (min-width:900px){.slab{width:fit-content}[data-side="left"] .slab{margin-left:max(0px,calc(100% - 620px))}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-block:calc(var(--hdr) + 28px) 84px}
+.hero-copy{width:fit-content;max-width:100%}
+.h1{color:var(--text);font-weight:300}
+.h1-a,.h1-c{display:block;font:400 clamp(18px,1.6vw,23px)/1.3 var(--sans);color:var(--text);letter-spacing:-.004em}
+.h1-b{display:block;font:300 clamp(54px,10vw,164px)/.88 var(--display);letter-spacing:-.042em;margin:.1em 0 .14em -.04em}
+.h1-b .ln{display:block}
+.hero .lede{margin-top:20px;font:400 clamp(19px,1.5vw,22px)/1.45 var(--sans);color:var(--text-2);max-width:34ch}
+.hero .ctas{margin-top:28px}
+@media (min-width:900px){.hero{padding-bottom:104px}}
+/* how to call the bird: one quiet line under the buttons (it shows only while the feathers can answer) */
+.flux-hint{display:flex;align-items:center;gap:12px;margin-top:20px;min-height:22px;font:400 14px/1.3 var(--sans);color:var(--muted);letter-spacing:.01em;opacity:0;transition:opacity .8s ease}
+html.can-summon .flux-hint{opacity:1}
+.fh-dot{position:relative;flex:none;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.fh-dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--accent);opacity:0;animation:fh-ring 3.2s ease-out 1.4s infinite}
+@keyframes fh-ring{0%{transform:scale(.35);opacity:.7}70%{transform:scale(1.25);opacity:0}100%{opacity:0}}
+
+/* ---------- beats ---------- */
+.beat{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding-block:120px}
+.beat > .wrap,.v-beat > .wrap,.v-outro > .wrap{position:relative}
+.make .meta{display:flex;gap:18px;align-items:baseline}
+.vt-list{list-style:none;padding:0;display:grid;gap:4px;counter-reset:v}
+.vt-list li{counter-increment:v;display:flex;gap:18px;align-items:baseline;font:300 clamp(28px,3vw,44px)/1.14 var(--display);color:var(--text);letter-spacing:-.018em}
+.vt-list li::before{content:"0" counter(v);font:500 13px/1 var(--sans);letter-spacing:.1em;color:var(--muted);min-width:2em;font-variant-numeric:tabular-nums}
+.sig{font:300 clamp(24px,2.4vw,34px)/1.2 var(--display);letter-spacing:-.016em;color:var(--text);padding-top:18px;border-top:1px solid var(--hair-2)}
+.email{font:300 clamp(30px,4.4vw,62px)/1.1 var(--display);color:var(--text);letter-spacing:-.02em;user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
+.status{min-height:1.6em;font-size:15px;color:var(--text-2)}
+@media (max-width:899px){
+  .beat{align-items:flex-end;min-height:92svh;padding-block:46svh 64px}
+  [data-side="left"] .slab{margin-left:0}
+  .slab{max-width:none}
+  .hero-copy{width:auto}
+  /* below 900 px the words span the row: the veil spans it too, and only its top and bottom are seen to fade */
+  .slab::before,.hero-copy::before,.v-head::before,.v-intro .wrap > .stack::before{inset:-20px -24px;filter:blur(30px)}
+}
+/* a phone on its side: the words stay at the left and their blocks (and veils) hug them, so the form has the right side */
+@media (max-width:899px) and (orientation:landscape){.slab,.hero-copy{width:fit-content;max-width:100%}}
+
+/* ---------- values view ---------- */
+.v-intro{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;padding-block:calc(var(--hdr) + 40px) 96px}
+.v-intro .wrap > .stack{width:100%}
+.v-intro .giant .ln{display:block}
+.v-head{width:fit-content;max-width:100%}
+@media (min-width:900px){.v-intro .giant{font-size:clamp(76px,min(11vw,22vh),196px)}.v-intro .wrap > .stack{max-width:min(800px,62%)}}
+.v-index{list-style:none;padding:0;margin-top:30px;align-self:stretch;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--hair-2)}
+.v-index li{display:flex}
+.v-index li + li{border-left:1px solid var(--hair)}
+.v-index a{position:relative;flex:1 1 auto;min-width:0;display:grid;grid-template-rows:auto 1fr;gap:12px;min-height:112px;padding:18px 20px;text-decoration:none;color:var(--text)}
+.v-index li:first-child a{padding-left:0}
+.v-index a::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:linear-gradient(90deg,var(--accent-2),var(--accent));transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.v-index a:hover::before,.v-index a:focus-visible::before{transform:scaleX(1)}
+.v-index .n{font:500 13px/1 var(--sans);letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}
+.v-index .t{font:300 clamp(22px,1.9vw,30px)/1.08 var(--display);letter-spacing:-.014em;color:var(--text);text-wrap:balance}
+/* the index's own veil: it spans the four columns, so the stack carries one too (the head keeps its own) */
+.v-intro .wrap > .stack::before{content:"";position:absolute;inset:auto -44px -28px;top:42%;z-index:-1;pointer-events:none;border-radius:42%;background:var(--veil);filter:blur(38px)}
+@media (max-width:899px){
+  .v-intro{padding-top:max(calc(var(--hdr) + 40px), 48svh);padding-bottom:84px}
+  .v-intro .wrap > .stack::before{top:-20px}
+  .v-head::before{display:none}
+  .v-index{grid-template-columns:1fr;margin-top:24px}
+  .v-index li + li{border-left:0}
+  .v-index li{border-bottom:1px solid var(--hair)}
+  .v-index a,.v-index li:first-child a{grid-template-columns:2.4em minmax(0,1fr);grid-template-rows:auto;align-items:baseline;gap:12px;min-height:58px;padding:15px 0}
+  .v-index .t{font-size:24px}
+}
+.v-beat{position:relative;min-height:110vh;min-height:110svh;display:flex;align-items:center;padding-block:140px}
+.v-num{font:500 13px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.v-num b{font-weight:500;color:var(--accent)}
+.v-title{font:300 clamp(56px,10.4vw,168px)/.9 var(--display);letter-spacing:-.042em;color:var(--text);margin:.06em 0 .12em -.04em;text-wrap:balance;max-width:7.4em}
+.v-cap{font:400 clamp(21px,2vw,30px)/1.3 var(--sans);color:var(--text);max-width:24ch;letter-spacing:-.008em;text-wrap:balance}
+.v-outro{position:relative;min-height:84vh;min-height:84svh;display:flex;align-items:center;padding-block:120px}
+@media (max-width:899px){
+  .v-beat{align-items:flex-end;min-height:96svh;padding-block:48svh 72px}
+  .v-outro{align-items:flex-end;padding-block:42svh 72px}
+}
+.v-rail{position:fixed;right:var(--gr);top:50%;transform:translateY(-50%);z-index:30}
+/* the rail sits over the form: a soft, round, edgeless veil behind the numbers */
+.v-rail::before{content:"";position:absolute;top:-80px;bottom:-80px;right:-70px;width:240px;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,var(--veil) 0,color-mix(in srgb,var(--bg) 60%,transparent) 55%,transparent 100%)}
+.v-rail ol{list-style:none;padding:0;display:grid;gap:2px}
+.v-rail a{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:44px;padding:0 2px 0 12px;text-decoration:none;font:500 13px/1 var(--sans);letter-spacing:.06em;color:var(--muted)}
+.v-rail a .t{opacity:0;transform:translateX(6px);transition:opacity .3s,transform .4s var(--ease);background:color-mix(in srgb,var(--bg) 92%,transparent);padding:6px 9px;border-radius:999px;color:var(--text-2);letter-spacing:.01em;white-space:nowrap}
+.v-rail a::before{content:"";position:absolute;inset:-12px -34px -12px auto;width:96px;z-index:-1;pointer-events:none;filter:blur(6px);background:radial-gradient(closest-side,var(--bg) 0,var(--bg) 46%,color-mix(in srgb,var(--bg) 78%,transparent) 64%,color-mix(in srgb,var(--bg) 34%,transparent) 84%,transparent 100%)}
+.v-rail a i{display:block;width:18px;height:1px;background:var(--hair-2);transition:width .4s var(--ease),background-color .3s}
+.v-rail a:hover .t,.v-rail a:focus-visible .t{opacity:1;transform:none}
+.v-rail a[aria-current="true"]{color:var(--text)}
+.v-rail a[aria-current="true"] i{width:34px;background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+@media (max-width:1199px){.v-rail{display:none}}
+@media (min-width:1200px){.v-beat[data-side="left"] .slab,.v-outro[data-side="left"] .slab{margin-left:max(0px,calc(100% - 788px));margin-right:168px}}
+
+/* ---------- footer: no ground of its own, the scene runs on under it ---------- */
+.foot{position:relative;z-index:2;padding-block:44px calc(96px + env(safe-area-inset-bottom,0px))}
+.foot::before{content:"";position:absolute;left:var(--gl);right:var(--gr);top:0;height:1px;background:linear-gradient(90deg,transparent,var(--hair-2) 18%,var(--hair-2) 82%,transparent)}
+.foot-in{display:grid;grid-template-columns:1fr;gap:14px;font-size:15px;line-height:1.6;color:var(--muted)}
+.foot-in .brand{font-size:17px}
+.foot-in .brand .mark{width:26px;height:26px}
+.foot address{font-style:normal}
+.foot-flux{color:var(--muted)}
+.legal{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0 22px}
+.legal a{display:inline-flex;align-items:center;min-height:44px;color:var(--text-2);text-decoration:underline;text-decoration-color:var(--hair-2);text-underline-offset:4px}
+.legal a:hover{color:var(--text);text-decoration-color:var(--accent)}
+@media (min-width:900px){.foot-in{grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px 32px}.foot-flux{grid-column:1/-1}}
+
+/* ---------- Flux, the persistent hint (bottom right) ---------- */
+.flux-chip{position:fixed;right:var(--gr);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:9px;height:36px;padding:0 15px 0 13px;border-radius:999px;border:1px solid var(--hair);background:color-mix(in srgb,var(--surface) 93%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--text-2);font:450 13px/1 var(--sans);letter-spacing:.01em;white-space:nowrap;pointer-events:none;opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .7s var(--ease),padding .5s var(--ease)}
+.flux-chip .fh-dot{width:6px;height:6px}
+.flux-chip.on{opacity:1;transform:none}
+.flux-chip.met{padding:0 13px 0 11px}
+.flux-chip.gone{opacity:0;transform:translateY(4px);transition:opacity 1.6s ease,transform 1.6s ease}
+
+/* on a phone the words sit low and the scene fills the top: the hint sits up there, under the header */
+@media (max-width:899px){.flux-chip{top:calc(var(--hdr) + env(safe-area-inset-top,0px) + 10px);bottom:auto}.flux-chip.gone{transform:translateY(-4px)}}
+
+/* ---------- loader: the wingpath draws itself, then the feathers bloom out of the stroke ---------- */
+.loader{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;z-index:100;display:grid;place-items:center;pointer-events:none;animation:ld-auto .3s linear 2.2s forwards}
+.loader::before{content:"";position:absolute;inset:0;background:var(--bg);transition:opacity .8s ease}
+/* the hard cap, in CSS: whatever the script is doing, the loader has gone by 2.5 s */
+@keyframes ld-auto{to{opacity:0;visibility:hidden}}
+/* the mark is drawn at exactly the size and place of the feather stroke the camera starts on (see introPose) */
+.ld-mark{position:relative;width:min(440px,max(46vmin,62vw));height:auto;overflow:visible;transition:opacity .55s ease .1s}
+.ld-mark .lp{fill:none;stroke:var(--text);stroke-width:.9;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:1}
+.ld-mark .lp-main{animation:draw 1.05s cubic-bezier(.6,0,.25,1) .12s forwards}
+.ld-mark .lp-over{stroke:var(--accent);animation:draw .32s cubic-bezier(.4,0,.2,1) .86s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.loader.out::before{opacity:0}
+.loader.out .ld-mark{opacity:0}
+/* a transition, not a second animation: replacing the ld-auto cap would bring a lifted loader back for a moment */
+.loader.fade{opacity:0;transition:opacity .3s ease}
+
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){
+  .ld-mark .lp{animation:none;stroke-dashoffset:0}
+  .loader::before,.ld-mark{transition:none}
+  .fh-dot::after{animation:none}
+  :root.theme-anim{transition:none}
+  .v-rail a .t,.v-rail a i,.nav a::after,.v-index a::before,.ti-core,.ti-rays,.ti-cut,.flux-chip,.flux-hint,#poster{transition:none}
+}
+@media print{#gl,#poster,.loader,.v-rail,.flux-chip,.theme-btn,.menu-btn{display:none}}
+
+/* ---------- the hidden sprite that holds the wingpath mark ---------- */
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ---------- without scripts: no loader, no switch, no call for Flux; the header's links stay reachable ---------- */
+html:not(.js) .loader,html:not(.js) .theme-btn,html:not(.js) .flux-hint,html:not(.js) .flux-chip,html:not(.js) .menu-btn{display:none}
+@media (max-width:899px){html:not(.js) .nav{display:block;min-width:0;overflow-x:auto}html:not(.js) .nav a{padding:0 9px}}
+
+/* ---------- the text pages: privacy, legal, not found ----------
+   The same header and footer. The head of the page carries the wingpath, drawn once and still from the same feathers
+   (beside the title on a wide screen, above it on a narrow one); the reading column below sits on the plain page. */
+.page-top{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;min-height:600px;padding-block:calc(var(--hdr) + env(safe-area-inset-top,0px) + 48px) 64px}
+.page-top #poster{position:absolute;inset:0;width:100%;height:100%;z-index:-1;-webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent);mask-image:linear-gradient(to bottom,#000 78%,transparent)}
+.page-head{position:relative;isolation:isolate;width:fit-content;max-width:min(100%,640px);text-shadow:0 0 1px var(--halo),0 0 16px var(--halo)}
+.page-head::before{content:"";position:absolute;inset:-32px -52px;z-index:-1;pointer-events:none;border-radius:42%;background:var(--veil);filter:blur(38px)}
+.page-title{font:300 clamp(54px,8.4vw,128px)/.92 var(--display);letter-spacing:-.038em;color:var(--text);margin:.12em 0 .14em -.04em;text-wrap:balance}
+.page-lead{font:400 clamp(19px,1.6vw,23px)/1.4 var(--sans);color:var(--text);max-width:34ch;letter-spacing:-.006em;text-wrap:pretty}
+@media (max-width:899px){
+  .page-top{min-height:0;padding-top:calc(var(--hdr) + env(safe-area-inset-top,0px) + min(58vw,330px));padding-bottom:44px}
+  .page-head{width:auto}
+  .page-head::before{inset:-20px -24px;filter:blur(30px)}
+}
+.prose{position:relative;z-index:2;max-width:760px;padding-bottom:120px;color:var(--text-2)}
+.prose > * + *{margin-top:16px}
+.prose h2{font:400 clamp(25px,2.3vw,32px)/1.16 var(--display);letter-spacing:-.014em;color:var(--text);margin-top:64px;padding-top:22px;border-top:1px solid var(--hair)}
+.prose h2 + *{margin-top:14px}
+.prose p,.prose li{max-width:66ch}
+.prose ul{padding-left:1.15em;display:grid;gap:14px}
+.prose li::marker{color:var(--muted)}
+.prose strong{color:var(--text);font-weight:600}
+.prose a:not(.btn){color:var(--text);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px;overflow-wrap:anywhere;transition:text-decoration-color .3s}
+.prose a:not(.btn):hover{text-decoration-thickness:2px}
+.prose .ctas{margin-top:28px}
+.date{font:500 13px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.checks{list-style:none;padding:0!important;gap:0!important;border-top:1px solid var(--hair)}
+.checks li{display:flex;gap:14px;align-items:flex-start;padding:15px 0;border-bottom:1px solid var(--hair);max-width:none;color:var(--text)}
+.checks svg{flex:none;width:22px;height:22px;margin-top:2px;color:var(--accent-2)}
+.facts{margin:0;border-top:1px solid var(--hair)}
+.facts > div{display:grid;grid-template-columns:1fr;gap:4px;padding:18px 0;border-bottom:1px solid var(--hair)}
+.facts dt{font:500 13px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:0;color:var(--text);font-size:clamp(18px,1.4vw,20px)}
+.facts address{font-style:normal}
+@media (min-width:700px){.facts > div{grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:baseline}}
+.facts a{display:inline-flex;align-items:center;min-height:44px}
+.facts + h2{border-top:0;padding-top:0;margin-top:72px}
