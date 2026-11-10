@@ -1,73 +1,106 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Page not found — Hummingbolt</title>
-  <meta name="description" content="Page not found.">
-  <meta name="theme-color" content="#070a14">
-  <meta property="og:title" content="Page not found — Hummingbolt">
-  <meta property="og:description" content="Page not found.">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Hummingbolt">
-  <meta property="og:image" content="https://hummingbolt.com/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Hummingbolt: apps, games and AI.">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <meta name="robots" content="noindex">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Page not found — Hummingbolt</title>
+<meta name="description" content="Sorry, this page could not be found. Hummingbolt is a software lab in the San Francisco Bay Area. We make applications, games and AI.">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hummingbolt">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Page not found — Hummingbolt">
+<meta property="og:description" content="Sorry, this page could not be found. Hummingbolt is a software lab in the San Francisco Bay Area. We make applications, games and AI.">
+<meta property="og:image" content="https://hummingbolt.com/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hummingbolt: a software lab in the San Francisco Bay Area.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#082725" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F8F3EB" media="(prefers-color-scheme: light)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script src="/assets/theme.js"></script>
+<link rel="preload" href="/fonts/funnel-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/funnel-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/hb.css">
+<script src="/assets/hb.js" defer></script>
 </head>
-<body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="/"><img src="/logo.svg" alt="" width="34" height="34"><span>Hummingbolt</span></a>
-      <nav class="site-nav" aria-label="Main">
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/privacy/">Privacy</a></li>
-          <li><a href="/legal/">Legal</a></li>
-        </ul>
-      </nav>
+<body data-page="404">
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <mask id="wpm" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><path d="M30.45 40.5 L41.48 17.89" stroke="#000" stroke-width="11.6"/></mask>
+    <symbol id="wp" viewBox="0 0 64 64"><path d="M20.42 26.45 L47.34 31.2 A8.7 8.7 0 1 0 41.03 18.82 L29.05 43.39 A11.9 11.9 0 1 1 20.42 26.45 Z" fill="none" stroke="currentColor" stroke-width="7.4" mask="url(#wpm)"/><path d="M30.19 41.04 L41.75 17.35" fill="none" stroke="currentColor" stroke-width="7.4"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="/" aria-label="Hummingbolt home"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#wp"/></svg><span>Hummingbolt</span></a>
+    <nav class="nav" aria-label="Primary">
+      <ul>
+        <li><a href="/#make">Make</a></li>
+        <li><a href="/#toppleton">Toppleton</a></li>
+        <li><a href="/#story">Story</a></li>
+        <li><a href="/values/">Values</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="hdr-r">
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Switch theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <defs><mask id="ti-m" maskUnits="userSpaceOnUse" x="-12" y="-12" width="48" height="48"><rect x="-12" y="-12" width="48" height="48" fill="#fff"/><circle class="ti-cut" cx="16.6" cy="7.4" r="5.8" fill="#000"/></mask></defs>
+          <circle class="ti-core" cx="12" cy="12" r="7.6" fill="currentColor" mask="url(#ti-m)"/>
+          <path class="ti-rays" d="M12 1.9v2.3M12 19.8v2.3M1.9 12h2.3M19.8 12h2.3M4.86 4.86l1.63 1.63M17.51 17.51l1.63 1.63M4.86 19.14l1.63-1.63M17.51 6.49l1.63-1.63" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
     </div>
-  </header>
-  <main id="main">
-    <section class="page-hero">
-      <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div class="gridlines" aria-hidden="true"></div>
-      <div class="wrap">
-        <p class="kicker">Error 404</p>
-        <h1>Page not found</h1>
-        <p class="lead">Sorry, we can&rsquo;t find that page.</p>
-      </div>
-    </section>
-    <div class="wrap">
-      <div class="prose">
-        <p><a class="btn btn-primary" href="/">Go to the home page</a></p>
-      </div>
-    </div>
-  </main>
-  <footer class="site-footer">
-    <div class="wrap">
-      <div>
-        <a class="brand" href="/"><img src="/logo.svg" alt="" width="28" height="28"><span>Hummingbolt</span></a>
-        <p>&copy; 2026 Hummingbolt LLC</p>
-        <p>2108 N St #18140, Sacramento, CA 95816</p>
-        <p><a href="mailto:admin@hummingbolt.com">admin@hummingbolt.com</a></p>
-      </div>
-      <nav aria-label="Footer">
-        <ul class="footer-links">
-          <li><a href="/privacy/">Privacy</a></li>
-          <li><a href="/legal/">Legal notice</a></li>
-          <li><a href="https://play.toppleton.app">Play Toppleton</a></li>
-        </ul>
-      </nav>
-    </div>
-  </footer>
+  </div>
+</header>
+<div class="menu" id="menu" hidden>
+  <div class="wrap">
+    <nav aria-label="Menu">
+      <ul>
+        <li><a href="/#make">Make</a></li>
+        <li><a href="/#toppleton">Toppleton</a></li>
+        <li><a href="/#story">Story</a></li>
+        <li><a href="/values/">Values</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <p class="menu-foot">admin@hummingbolt.com</p>
+  </div>
+</div>
+
+<main id="main" tabindex="-1">
+  <section class="page-top" aria-labelledby="page-h1">
+    <canvas id="poster" aria-hidden="true" hidden></canvas>
+    <div class="wrap"><div class="page-head stack">
+      <p class="eyebrow">Error 404</p>
+      <h1 class="page-title" id="page-h1">Page not found</h1>
+      <p class="page-lead">Sorry, we can&rsquo;t find that page.</p>
+    </div></div>
+  </section>
+  <div class="wrap"><div class="prose">
+    <div class="ctas"><a class="btn btn-primary" href="/">Go to the home page <span class="arrow" aria-hidden="true"></span></a></div>
+  </div></div>
+</main>
+
+<footer class="foot" id="foot">
+  <div class="wrap foot-in">
+    <a class="brand" href="/" aria-label="Hummingbolt home"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#wp"/></svg><span>Hummingbolt</span></a>
+    <p>&copy; 2026 Hummingbolt LLC</p>
+    <address>2108 N St #18140, Sacramento, CA 95816</address>
+    <ul class="legal"><li><a href="/privacy/">Privacy</a></li><li><a href="/legal/">Legal notice</a></li></ul>
+    <p class="foot-flux"><span data-mascot>Flux</span>, our hummingbird, is made of the same feathers as the page.</p>
+  </div>
+</footer>
+
 </body>
 </html>
